@@ -20,7 +20,7 @@ Unit Tests: GPS_parse (and static helper functions)
 	GPS_Parse #13 passed
 	GPS_Parse #14 passed
 	GPS_Parse #15 passed
-test_gps.c:293:test_GPS_parse:PASS
+test_gps.c:448:test_GPS_parse:PASS
 
 Unit Tests: test_gps_mesg_validate
 	gps_mesg_validate #1 passed
@@ -28,8 +28,34 @@ Unit Tests: test_gps_mesg_validate
 	gps_mesg_validate #3 passed
 	gps_mesg_validate #4 passed
 	gps_mesg_validate #5 passed
-test_gps.c:294:test_gps_mesg_validate:PASS
+test_gps.c:449:test_gps_mesg_validate:PASS
+
+Unit Tests: test_gps_transmit
+(NOTE: This tests exists for statement coverage in gps.c only. It does not verify lower functionalities.)
+	gps_transmit #1 passed
+	gps_transmit #2 passed
+	gps_transmit #3 passed
+	gps_transmit #4 passed
+test_gps.c:450:test_gps_transmit:PASS
+
+Unit Tests: test_gps_receive
+(NOTE: This tests exists for statement coverage in gps.c only. It does not verify lower functionalities.)
+	gps_receive #1 passed
+	gps_receive #2 passed
+	gps_receive #3 passed
+	gps_receive #4 passed
+test_gps.c:451:test_gps_receive:PASS
+
+Unit Tests: test_gps_receive_IT
+(NOTE: This tests exists for statement coverage in gps.c only. It does not verify lower functionalities.)
+	gps_receive_IT #1 passed
+	gps_receive_IT #2 passed
+	gps_receive_IT #3 passed
+	gps_receive_IT #4 passed
+test_gps.c:452:test_gps_receive_IT:PASS
+
+This test suite expects full coverage (100%).
 
 -----------------------
-2 Tests 0 Failures 0 Ignored 
+5 Tests 0 Failures 0 Ignored 
 OK

@@ -8,14 +8,6 @@
 *
 *******************************************************************************/
 
-/*
-*	Functions currently covered by testing:
-*	- void GPS_parse()
-*	- static float gps_string_to_float()
-*	- static char gps_string_to_char()
-*
-*	Full file coverage **NOT** achieved.
-*/
 
 /*------------------------------------------------------------------------------
 Standard Includes                                                                     
@@ -44,7 +36,7 @@ UART_HandleTypeDef huart4;  /* GPS */
 /*------------------------------------------------------------------------------
 Macros
 ------------------------------------------------------------------------------*/
-
+#define EXPECTED_COVERAGE 100
 
 /*------------------------------------------------------------------------------
 Procedures: Test Helpers
@@ -208,6 +200,7 @@ GPS_DATA data;
 FILE* f = fopen("cases/gps_parse_actual.txt", "w");
 for ( int i = 0; i < num_cases; i++ ) 
 	{
+	memset(&data, 0, sizeof(data));
 	GPS_parse(&data, input_strings[i]);
 	gpsStructToCSV(&data, f);
 	}
@@ -271,6 +264,168 @@ for ( int test_num = 0; test_num < NUM_CASES_GPS_MESG_VALIDATE; test_num++ )
 /*******************************************************************************
 *                                                                              *
 * PROCEDURE:                                                                   * 
+*       test_gps_transmit				                                       *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Test the transmission function for gps.								   *
+*		COVERAGE ISSUE - This function is currently never called.			   *
+*       Instead, we will merely be testing error handling.                     *
+*                                                                              *
+*******************************************************************************/
+void test_gps_transmit
+	(
+	void
+    )
+{
+/*------------------------------------------------------------------------------
+Initializations
+------------------------------------------------------------------------------*/
+#define NUM_CASES_GPS_TRANSMIT 4
+
+printf("\nUnit Tests: test_gps_transmit\n");
+printf("(NOTE: This tests exists for statement coverage in gps.c only. It does not verify lower functionalities.)\n");
+
+/* Step: Prepare mocked function returns */
+HAL_StatusTypeDef statuses[NUM_CASES_GPS_TRANSMIT] =
+{
+HAL_OK,
+HAL_ERROR,
+HAL_BUSY,
+HAL_TIMEOUT
+}; // These happen to be the same as the expected returns
+
+// Set function inputs
+size_t size = 8;
+void* tx_data_ptr = malloc(size);
+uint16_t timeout = 10000;
+
+for ( int test_num = 0; test_num < NUM_CASES_GPS_TRANSMIT; test_num++ )
+	{
+	MOCK_HAL_Status_Return(statuses[test_num]);
+	TEST_ASSERT_EQUAL_INT(statuses[test_num], gps_transmit(tx_data_ptr, size, timeout));
+	printf("\tgps_transmit #%d passed\n", test_num + 1);
+	}
+free(tx_data_ptr);
+} /* test_gps_transmit */
+
+
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
+*       test_gps_receive				                                       *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Test the reception function for gps.								   *
+*		COVERAGE ISSUE - This function is currently never called.			   *
+*       Instead, we will merely be testing error handling.                     *
+*                                                                              *
+*******************************************************************************/
+void test_gps_receive
+	(
+	void
+    )
+{
+/*------------------------------------------------------------------------------
+Initializations
+------------------------------------------------------------------------------*/
+#define NUM_CASES_GPS_RECEIVE 4
+
+printf("\nUnit Tests: test_gps_receive\n");
+printf("(NOTE: This tests exists for statement coverage in gps.c only. It does not verify lower functionalities.)\n");
+
+/* Step: Prepare mocked function returns */
+HAL_StatusTypeDef statuses[NUM_CASES_GPS_RECEIVE] =
+{
+HAL_OK,
+HAL_ERROR,
+HAL_BUSY,
+HAL_TIMEOUT
+}; // These happen to be the same as the expected returns
+
+/* Step: Prepare expected */
+HAL_StatusTypeDef expected[NUM_CASES_GPS_RECEIVE] =
+{
+HAL_OK,
+GPS_FAIL,
+GPS_FAIL,
+GPS_TIMEOUT
+}; // These happen to be the same as the expected returns
+
+// Set function inputs
+size_t size = 8;
+void* tx_data_ptr = malloc(size);
+uint16_t timeout = 10000;
+
+for ( int test_num = 0; test_num < NUM_CASES_GPS_RECEIVE; test_num++ )
+	{
+	MOCK_HAL_Status_Return(statuses[test_num]);
+	TEST_ASSERT_EQUAL_INT(expected[test_num], gps_receive(tx_data_ptr, size, timeout));
+	printf("\tgps_receive #%d passed\n", test_num + 1);
+	}
+free(tx_data_ptr);
+} /* test_gps_receive */
+
+
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
+*       test_gps_receive_IT				                                       *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Test the interrupt handler gps reception function.					   *
+*		COVERAGE ISSUE - This function is currently never called.			   *
+*       Instead, we will merely be testing error handling.                     *
+*                                                                              *
+*******************************************************************************/
+void test_gps_receive_IT
+	(
+	void
+    )
+{
+/*------------------------------------------------------------------------------
+Initializations
+------------------------------------------------------------------------------*/
+#define NUM_CASES_GPS_RECEIVE_IT 4
+
+printf("\nUnit Tests: test_gps_receive_IT\n");
+printf("(NOTE: This tests exists for statement coverage in gps.c only. It does not verify lower functionalities.)\n");
+
+/* Step: Prepare mocked function returns */
+HAL_StatusTypeDef statuses[NUM_CASES_GPS_RECEIVE_IT] =
+{
+HAL_OK,
+HAL_ERROR,
+HAL_BUSY,
+HAL_TIMEOUT
+}; // These happen to be the same as the expected returns
+
+/* Step: Prepare expected */
+HAL_StatusTypeDef expected[NUM_CASES_GPS_RECEIVE_IT] =
+{
+HAL_OK,
+GPS_FAIL,
+GPS_FAIL,
+GPS_TIMEOUT
+}; // These happen to be the same as the expected returns
+
+// Set function inputs
+size_t size = 8;
+void* tx_data_ptr = malloc(size);
+
+for ( int test_num = 0; test_num < NUM_CASES_GPS_RECEIVE_IT; test_num++ )
+	{
+	MOCK_HAL_Status_Return(statuses[test_num]);
+	TEST_ASSERT_EQUAL_INT(expected[test_num], gps_receive_IT(tx_data_ptr, size));
+	printf("\tgps_receive_IT #%d passed\n", test_num + 1);
+	}
+
+free(tx_data_ptr);
+} /* test_gps_receive_IT */
+
+
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
 *       main			                                   			           *
 *                                                                              *
 * DESCRIPTION:                                                                 * 
@@ -292,6 +447,16 @@ printf("\nNote: These unit tests exit on a failed assert. If the test fails, go 
 // List test functions here.
 RUN_TEST( test_GPS_parse );
 RUN_TEST( test_gps_mesg_validate );
+RUN_TEST( test_gps_transmit );
+RUN_TEST( test_gps_receive );
+RUN_TEST( test_gps_receive_IT );
+
+if (EXPECTED_COVERAGE == 100) {
+	printf("\nThis test suite expects full coverage (100%%).\n");
+}
+else {
+	printf("\nThis test does not expect full coverage (> 100%%)\n");
+}
 
 return UNITY_END();
 } /* main */

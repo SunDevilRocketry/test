@@ -12,6 +12,17 @@
 #include <stdint.h>
 #include "main.h"
 
+HAL_StatusTypeDef mocked_return = HAL_OK; /* Default to "OK" return */
+
+/* Used to mock these functions */
+void MOCK_HAL_Status_Return
+    (
+    HAL_StatusTypeDef statusToReturn
+    )
+{
+mocked_return = statusToReturn;
+}
+
 HAL_StatusTypeDef HAL_UART_Receive_IT 
     (
     UART_HandleTypeDef *huart, 
@@ -19,7 +30,7 @@ HAL_StatusTypeDef HAL_UART_Receive_IT
     uint16_t Size
     )      
 {
-return HAL_OK;
+return mocked_return;
 }
 
 HAL_StatusTypeDef HAL_UART_Receive 
@@ -30,7 +41,7 @@ HAL_StatusTypeDef HAL_UART_Receive
     uint32_t Timeout
     )      
 {
-return HAL_OK;
+return mocked_return;
 }
 
 HAL_StatusTypeDef HAL_UART_Transmit 
@@ -41,5 +52,5 @@ HAL_StatusTypeDef HAL_UART_Transmit
     unsigned int Timeout
     )      
 {
-return HAL_OK;
+return mocked_return;
 }
