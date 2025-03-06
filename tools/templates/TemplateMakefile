@@ -120,9 +120,13 @@ $(BUILD_DIR):
 # This runs the test and generates the coverage report.
 # Windows users should have a .exe on the second line of this following $(TARGET)
 # Linux users may not need this
+# This set of bash commands is why windows users should use Git Bash
 test: $(BUILD_DIR)/$(TARGET)
+	@echo THIS TEST MUST BE EXECUTED IN A BASH TERMINAL. CMD/PS do not work.
 	"$(BUILD_DIR)/$(TARGET).exe" > "$(TARGET)_results.txt"
-	gcov -o $(BUILD_DIR) $(COV_C_SOURCES)
+	tail -n 3 "$(TARGET)_results.txt"
+	@echo -e "\nCOVERAGE SUMMARY:\n" >> "$(TARGET)_results.txt"
+	gcov -o $(BUILD_DIR) $(COV_C_SOURCES) | tee -a "$(TARGET)_results.txt"
 
 ################################################################
 # clean up 
