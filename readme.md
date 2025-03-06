@@ -4,6 +4,7 @@ Submodule for unit testing in Sun Devil Rocketry firmware.
 DEPENDENCIES:
 - [Unity from ThrowTheSwitch](https://github.com/ThrowTheSwitch/Unity/tree/master). This should be included in the root directory of the repository that this submodule appears in. If not, you need to add the submodule.
 - GNU GCov. This should be included in whatever gives you access to GCC. GDB is also highly recommended.
+- A bash terminal of some kind. Git Bash is recommended on Windows, any Linux terminal should do. The makefiles use bash commands during execution to achieve the desired terminal and file output.
 
 GETTING STARTED:
 - Remember to correctly clone the submodule into your firmware repo. It should look similar to how lib and mod do.
