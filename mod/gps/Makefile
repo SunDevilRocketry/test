@@ -119,8 +119,11 @@ $(BUILD_DIR):
 	mkdir $@		
 
 test: $(BUILD_DIR)/$(TARGET)
+	@echo THIS TEST MUST BE EXECUTED IN A BASH TERMINAL. CMD/PS do not work.
 	"$(BUILD_DIR)/$(TARGET).exe" > "$(TARGET)_results.txt"
-	gcov -o $(BUILD_DIR) $(COV_C_SOURCES)
+	tail -n 3 "$(TARGET)_results.txt"
+	@echo -e "\nCOVERAGE SUMMARY:\n" >> "$(TARGET)_results.txt"
+	gcov -o $(BUILD_DIR) $(COV_C_SOURCES) | tee -a "$(TARGET)_results.txt"
 
 ################################################################
 # clean up 
