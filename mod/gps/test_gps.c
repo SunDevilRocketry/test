@@ -74,8 +74,8 @@ void printChar(FILE* f, char c) {
 *******************************************************************************/
 void gpsStructToCSV(GPS_DATA* data, FILE* f) {
 	// calculated values
-    fprintf(f, "%f,", data->dec_longitude);
 	fprintf(f, "%f,", data->dec_latitude);
+    fprintf(f, "%f,", data->dec_longitude);
 	fprintf(f, "%f,", data->altitude_ft);
 
     // GGA - Global Positioning System Fixed Data

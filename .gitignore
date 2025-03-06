@@ -1,2 +1,2 @@
-*/build/*
-*/*.gcov
+build/
+*.gcov
