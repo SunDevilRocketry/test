@@ -63,7 +63,7 @@ OK
 COVERAGE SUMMARY:
 
 File '../../../mod/gps/gps.c'
-Lines executed:100.00% of 136
+Lines executed:100.00% of 135
 Creating 'gps.c.gcov'
 
-Lines executed:100.00% of 136
+Lines executed:100.00% of 135
