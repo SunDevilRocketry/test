@@ -1,0 +1,71 @@
+        -:    0:Source:../../../../app/canard/rev2/launch_detect.c
+        -:    0:Graph:build/launch_detect.gcno
+        -:    0:Data:build/launch_detect.gcda
+        -:    0:Runs:4
+        -:    1:/*******************************************************************************
+        -:    2:*                                                                              *
+        -:    3:* FILE:                                                                        * 
+        -:    4:* 		launch_detect.c                                                        *
+        -:    5:*                                                                              *
+        -:    6:* DESCRIPTION:                                                                 * 
+        -:    7:* 		Includes functions that handle launch detection based on sensor readouts                                     *
+        -:    8:*                                                                              *
+        -:    9:*******************************************************************************/
+        -:   10:
+        -:   11:/*------------------------------------------------------------------------------
+        -:   12: Project Includes                                                                     
+        -:   13:------------------------------------------------------------------------------*/
+        -:   14:
+        -:   15:/* Application Layer */
+        -:   16:#include "main.h"
+        -:   17:
+        -:   18:/*------------------------------------------------------------------------------
+        -:   19: Macros                                                                     
+        -:   20:------------------------------------------------------------------------------*/
+        -:   21:#define ACC_DETECT_THRESHOLD 60
+        -:   22:#define ACC_DETECT_ASAMPLES 10
+        -:   23:
+        -:   24:/*------------------------------------------------------------------------------
+        -:   25: Global Variables                                                                     
+        -:   26:------------------------------------------------------------------------------*/
+        -:   27:
+        -:   28:/* Timing */
+        -:   29:extern uint32_t start_time, end_time, timecycle;
+        -:   30:extern uint32_t tdelta;
+        -:   31:
+        -:   32:/* DAQ */
+        -:   33:extern SENSOR_DATA   sensor_data;      /* Struct with all sensor */
+        -:   34:
+        -:   35:
+        -:   36:/*********************************************************************************
+        -:   37:*                                                                                *
+        -:   38:* FUNCTION:                                                                      * 
+        -:   39:* 		acc_launch_detection                                                     *
+        -:   40:*                                                                                *
+        -:   41:* DESCRIPTION:                                                                   * 
+        -:   42:* 		Launch detection using acceleration readout.                             * 
+        -:   43:*       Return true if the count acceleration over desired threshold exceeds set *
+        -:   44:*       sample.                                                                  *
+        -:   45:*       Note: Only use in the main application loop                              *
+        -:   46:*                                                                                *
+        -:   47:*********************************************************************************/
+        -:   48:uint8_t acc_detect_cnts = 0;
+      214:   49:void acc_launch_detection(uint8_t* acc_detect_flag){
+      214:   50:    float accX = sensor_data.imu_data.imu_converted.accel_x;
+      214:   51:    float accY = sensor_data.imu_data.imu_converted.accel_y;
+      214:   52:    float accZ = sensor_data.imu_data.imu_converted.accel_z;
+        -:   53:
+      214:   54:    float acc_scalar = sqrtf(accX*accX + accY*accY + accZ*accZ);
+        -:   55:    
+      214:   56:    if (acc_scalar > ACC_DETECT_THRESHOLD){
+        -:   57:        // Count detection counts
+      150:   58:        acc_detect_cnts++;
+        -:   59:    } else {
+       64:   60:        acc_detect_cnts = 0;
+        -:   61:    }
+        -:   62:
+        -:   63:    // Trigger the flag once pass the threshold for number of times
+      214:   64:    if (acc_detect_cnts > ACC_DETECT_ASAMPLES){
+       10:   65:        *acc_detect_flag = 1;
+        -:   66:    }
+      214:   67:}
