@@ -8,6 +8,7 @@
 ################################################################
 # target
 ################################################################
+TEST = test_gps
 TARGET = test_gps.out
 
 
@@ -120,10 +121,10 @@ $(BUILD_DIR):
 
 test: $(BUILD_DIR)/$(TARGET)
 	@echo THIS TEST MUST BE EXECUTED IN A BASH TERMINAL. CMD/PS do not work.
-	"$(BUILD_DIR)/$(TARGET)" > "$(TARGET)_results.txt"
-	tail -n 3 "$(TARGET)_results.txt"
-	@echo -e "\nCOVERAGE SUMMARY:\n" >> "$(TARGET)_results.txt"
-	gcov -o $(BUILD_DIR) $(COV_C_SOURCES) | tee -a "$(TARGET)_results.txt"
+	"$(BUILD_DIR)/$(TARGET)" > "$(TEST)_results.txt"
+	tail -n 3 "$(TEST)_results.txt"
+	@echo -e "\nCOVERAGE SUMMARY:\n" >> "$(TEST)_results.txt"
+	gcov -o $(BUILD_DIR) $(COV_C_SOURCES) | tee -a "$(TEST)_results.txt"
 
 ################################################################
 # clean up 

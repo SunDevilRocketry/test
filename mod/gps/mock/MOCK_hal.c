@@ -37,8 +37,8 @@ HAL_StatusTypeDef HAL_UART_Receive
     (
     UART_HandleTypeDef *huart, 
     uint8_t *pData, 
-    uint16_t Size, 
-    uint32_t Timeout
+    uint16_t size, 
+    uint32_t timeout
     )      
 {
 return mocked_return;
@@ -47,9 +47,9 @@ return mocked_return;
 HAL_StatusTypeDef HAL_UART_Transmit 
     (
     UART_HandleTypeDef *huart, 
-    const unsigned char *pData, 
-    short unsigned int Size, 
-    unsigned int Timeout
+    const uint8_t* pData, 
+    uint16_t size, 
+    uint32_t timeout
     )      
 {
 return mocked_return;
