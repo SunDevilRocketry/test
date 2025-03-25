@@ -34,6 +34,7 @@ Global Variables
 ------------------------------------------------------------------------------*/
 UART_HandleTypeDef huart4;  /* GPS */
 SENSOR_DATA sensor_data;
+BARO_PRESET baro_preset;
 
 /*------------------------------------------------------------------------------
 Macros
@@ -112,7 +113,7 @@ Procedures: Tests // Define the tests used here
 *       Test the launch detection function in Canard.						   *
 *                                                                              *
 *******************************************************************************/
-void test_acc_launch_detection 
+void test_launch_detection 
 	(
 	void
     )
@@ -143,19 +144,19 @@ for ( int test_num = 0; test_num < NUM_CASES_LAUNCH_DETECT; test_num++ )
 			sensor_data.imu_data.imu_converted.accel_x = inputs[test_num][i];
 			sensor_data.imu_data.imu_converted.accel_y = inputs[test_num][i];
 			sensor_data.imu_data.imu_converted.accel_z = inputs[test_num][i];
-			acc_launch_detection(&acc_detect_flag);
+			launch_detection(&acc_detect_flag);
 			TEST_ASSERT_EQUAL_INT(expected[test_num][i], acc_detect_flag);
-			printf("\tacc_launch_detect #%d-b%d passed\n", test_num + 1, i+1); // prints a 1-indexed number instead of 0-indexed
+			printf("\tlaunch_detect #%d-b%d passed\n", test_num + 1, i+1); // prints a 1-indexed number instead of 0-indexed
 		}
 	/* reset test */
 	acc_detect_flag = 0;
 	sensor_data.imu_data.imu_converted.accel_x = 0;
 	sensor_data.imu_data.imu_converted.accel_y = 0;
 	sensor_data.imu_data.imu_converted.accel_z = 0;
-	acc_launch_detection(&acc_detect_flag);
+	launch_detection(&acc_detect_flag);
 	}
 
-} /* test_bar */
+} /* test_launch_detect */
 
 
 /*******************************************************************************
@@ -180,7 +181,7 @@ printf("-------------------------------------------------\n");
 printf("\nNote: These unit tests exit on a failed assert. If the test fails, go to the case after the last pass.\n");
 
 // List test functions here.
-RUN_TEST( test_acc_launch_detection );
+RUN_TEST( test_launch_detection );
 
 if (EXPECTED_COVERAGE == 100) {
 	printf("\nThis test suite expects full coverage (100%%).\n");

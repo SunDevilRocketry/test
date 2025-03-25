@@ -15,7 +15,7 @@
 #include <stdint.h>
 
 /* launch_detect.c */
-void acc_launch_detection(uint8_t* acc_detect_flag);
+void launch_detection(uint8_t* acc_detect_flag);
 
 void MOCK_HAL_Status_Return
     (

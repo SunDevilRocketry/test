@@ -5,62 +5,62 @@
 Note: These unit tests exit on a failed assert. If the test fails, go to the case after the last pass.
 
 Unit Tests: test_launch_detect
-	acc_launch_detect #1-b1 passed
-	acc_launch_detect #1-b2 passed
-	acc_launch_detect #1-b3 passed
-	acc_launch_detect #1-b4 passed
-	acc_launch_detect #1-b5 passed
-	acc_launch_detect #1-b6 passed
-	acc_launch_detect #1-b7 passed
-	acc_launch_detect #1-b8 passed
-	acc_launch_detect #1-b9 passed
-	acc_launch_detect #1-b10 passed
-	acc_launch_detect #1-b11 passed
-	acc_launch_detect #2-b1 passed
-	acc_launch_detect #2-b2 passed
-	acc_launch_detect #2-b3 passed
-	acc_launch_detect #2-b4 passed
-	acc_launch_detect #2-b5 passed
-	acc_launch_detect #2-b6 passed
-	acc_launch_detect #2-b7 passed
-	acc_launch_detect #2-b8 passed
-	acc_launch_detect #2-b9 passed
-	acc_launch_detect #2-b10 passed
-	acc_launch_detect #2-b11 passed
-	acc_launch_detect #3-b1 passed
-	acc_launch_detect #3-b2 passed
-	acc_launch_detect #3-b3 passed
-	acc_launch_detect #3-b4 passed
-	acc_launch_detect #3-b5 passed
-	acc_launch_detect #3-b6 passed
-	acc_launch_detect #3-b7 passed
-	acc_launch_detect #3-b8 passed
-	acc_launch_detect #3-b9 passed
-	acc_launch_detect #3-b10 passed
-	acc_launch_detect #3-b11 passed
-	acc_launch_detect #4-b1 passed
-	acc_launch_detect #4-b2 passed
-	acc_launch_detect #4-b3 passed
-	acc_launch_detect #4-b4 passed
-	acc_launch_detect #4-b5 passed
-	acc_launch_detect #4-b6 passed
-	acc_launch_detect #4-b7 passed
-	acc_launch_detect #4-b8 passed
-	acc_launch_detect #4-b9 passed
-	acc_launch_detect #4-b10 passed
-	acc_launch_detect #4-b11 passed
-	acc_launch_detect #5-b1 passed
-	acc_launch_detect #5-b2 passed
-	acc_launch_detect #5-b3 passed
-	acc_launch_detect #5-b4 passed
-	acc_launch_detect #5-b5 passed
-	acc_launch_detect #5-b6 passed
-	acc_launch_detect #5-b7 passed
-	acc_launch_detect #5-b8 passed
-	acc_launch_detect #5-b9 passed
-	acc_launch_detect #5-b10 passed
-	acc_launch_detect #5-b11 passed
-test_launch_detect.c:183:test_acc_launch_detection:PASS
+	launch_detect #1-b1 passed
+	launch_detect #1-b2 passed
+	launch_detect #1-b3 passed
+	launch_detect #1-b4 passed
+	launch_detect #1-b5 passed
+	launch_detect #1-b6 passed
+	launch_detect #1-b7 passed
+	launch_detect #1-b8 passed
+	launch_detect #1-b9 passed
+	launch_detect #1-b10 passed
+	launch_detect #1-b11 passed
+	launch_detect #2-b1 passed
+	launch_detect #2-b2 passed
+	launch_detect #2-b3 passed
+	launch_detect #2-b4 passed
+	launch_detect #2-b5 passed
+	launch_detect #2-b6 passed
+	launch_detect #2-b7 passed
+	launch_detect #2-b8 passed
+	launch_detect #2-b9 passed
+	launch_detect #2-b10 passed
+	launch_detect #2-b11 passed
+	launch_detect #3-b1 passed
+	launch_detect #3-b2 passed
+	launch_detect #3-b3 passed
+	launch_detect #3-b4 passed
+	launch_detect #3-b5 passed
+	launch_detect #3-b6 passed
+	launch_detect #3-b7 passed
+	launch_detect #3-b8 passed
+	launch_detect #3-b9 passed
+	launch_detect #3-b10 passed
+	launch_detect #3-b11 passed
+	launch_detect #4-b1 passed
+	launch_detect #4-b2 passed
+	launch_detect #4-b3 passed
+	launch_detect #4-b4 passed
+	launch_detect #4-b5 passed
+	launch_detect #4-b6 passed
+	launch_detect #4-b7 passed
+	launch_detect #4-b8 passed
+	launch_detect #4-b9 passed
+	launch_detect #4-b10 passed
+	launch_detect #4-b11 passed
+	launch_detect #5-b1 passed
+	launch_detect #5-b2 passed
+	launch_detect #5-b3 passed
+	launch_detect #5-b4 passed
+	launch_detect #5-b5 passed
+	launch_detect #5-b6 passed
+	launch_detect #5-b7 passed
+	launch_detect #5-b8 passed
+	launch_detect #5-b9 passed
+	launch_detect #5-b10 passed
+	launch_detect #5-b11 passed
+test_launch_detect.c:184:test_launch_detection:PASS
 
 This test suite expects full coverage (100%).
 
@@ -71,7 +71,7 @@ OK
 COVERAGE SUMMARY:
 
 File '../../../../app/canard/rev2/launch_detect.c'
-Lines executed:100.00% of 11
+Lines executed:93.33% of 15
 Creating 'launch_detect.c.gcov'
 
-Lines executed:100.00% of 11
+Lines executed:93.33% of 15
