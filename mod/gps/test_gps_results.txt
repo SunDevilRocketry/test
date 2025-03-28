@@ -59,3 +59,11 @@ This test suite expects full coverage (100%).
 -----------------------
 5 Tests 0 Failures 0 Ignored 
 OK
+
+COVERAGE SUMMARY:
+
+File '../../../mod/gps/gps.c'
+Lines executed:100.00% of 135
+Creating 'gps.c.gcov'
+
+Lines executed:100.00% of 135

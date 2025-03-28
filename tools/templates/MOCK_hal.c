@@ -5,7 +5,7 @@
 *
 * DESCRIPTION: 
 *      Mocked source file. Contains empty function prototypes for HAL to trick
-*      the tests into compiling.
+*      tests into compiling.
 *
 *******************************************************************************/
 
@@ -37,8 +37,8 @@ HAL_StatusTypeDef HAL_UART_Receive
     (
     UART_HandleTypeDef *huart, 
     uint8_t *pData, 
-    uint16_t size, 
-    uint32_t timeout
+    uint16_t Size, 
+    uint32_t Timeout
     )      
 {
 return mocked_return;
@@ -47,9 +47,9 @@ return mocked_return;
 HAL_StatusTypeDef HAL_UART_Transmit 
     (
     UART_HandleTypeDef *huart, 
-    const uint8_t* pData, 
-    uint16_t size, 
-    uint32_t timeout
+    const unsigned char *pData, 
+    short unsigned int Size, 
+    unsigned int Timeout
     )      
 {
 return mocked_return;

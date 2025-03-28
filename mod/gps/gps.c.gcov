@@ -1,7 +1,7 @@
         -:    0:Source:../../../mod/gps/gps.c
         -:    0:Graph:build/gps.gcno
         -:    0:Data:build/gps.gcda
-        -:    0:Runs:12
+        -:    0:Runs:6
         -:    1:/*******************************************************************************
         -:    2:*
         -:    3:* FILE: 
@@ -42,362 +42,413 @@
         -:   38:#include <string.h>
         -:   39:#include <stdlib.h>
         -:   40:#include <stdio.h>
-        -:   41:
-        -:   42:/*------------------------------------------------------------------------------
-        -:   43: Preprocesor Directives 
-        -:   44:------------------------------------------------------------------------------*/
-        -:   45:
-        -:   46:/*------------------------------------------------------------------------------
-        -:   47:Global Variables                                                                  
-        -:   48:------------------------------------------------------------------------------*/
-        -:   49:
-        -:   50:/*------------------------------------------------------------------------------
-        -:   51: Procedures 
-        -:   52:------------------------------------------------------------------------------*/
-        -:   53:
+        -:   41:#include <stdint.h>
+        -:   42:
+        -:   43:/*------------------------------------------------------------------------------
+        -:   44: Preprocesor Directives 
+        -:   45:------------------------------------------------------------------------------*/
+        -:   46:
+        -:   47:/*------------------------------------------------------------------------------
+        -:   48:Global Variables                                                                  
+        -:   49:------------------------------------------------------------------------------*/
+        -:   50:
+        -:   51:/*------------------------------------------------------------------------------
+        -:   52: Procedures 
+        -:   53:------------------------------------------------------------------------------*/
         -:   54:
-        -:   55:/*******************************************************************************
-        -:   56:*                                                                              *
-        -:   57:* PROCEDURE:                                                                   * 
-        -:   58:* 		gps_transmit                                                    *
-        -:   59:*                                                                              *
-        -:   60:* DESCRIPTION:                                                                 * 
-        -:   61:* 		transmits a specified number of bytes over USB                         *
-        -:   62:*                                                                              *
-        -:   63:*******************************************************************************/
-       45:   64:GPS_STATUS gps_transmit 
-        -:   65:	(
-        -:   66:    void*    tx_data_ptr , /* Data to be sent       */	
-        -:   67:	size_t   tx_data_size, /* Size of transmit data */ 
-        -:   68:	uint32_t timeout       /* UART timeout          */
-        -:   69:	)
-        -:   70:{
-        -:   71:/*------------------------------------------------------------------------------
-        -:   72: Local Variables
-        -:   73:------------------------------------------------------------------------------*/
-       45:   74:HAL_StatusTypeDef gps_status;
-        -:   75:
+        -:   55:
+        -:   56:/*******************************************************************************
+        -:   57:*                                                                              *
+        -:   58:* PROCEDURE:                                                                   * 
+        -:   59:* 		gps_transmit                                                    *
+        -:   60:*                                                                              *
+        -:   61:* DESCRIPTION:                                                                 * 
+        -:   62:* 		transmits a specified number of bytes over USB                         *
+        -:   63:*                                                                              *
+        -:   64:*******************************************************************************/
+       24:   65:GPS_STATUS gps_transmit 
+        -:   66:	(
+        -:   67:    void*    tx_data_ptr , /* Data to be sent       */	
+        -:   68:	size_t   tx_data_size, /* Size of transmit data */ 
+        -:   69:	uint32_t timeout       /* UART timeout          */
+        -:   70:	)
+        -:   71:{
+        -:   72:/*------------------------------------------------------------------------------
+        -:   73: Local Variables
+        -:   74:------------------------------------------------------------------------------*/
+       24:   75:HAL_StatusTypeDef gps_status;
         -:   76:
-        -:   77:/*------------------------------------------------------------------------------
-        -:   78: API Function Implementation 
-        -:   79:------------------------------------------------------------------------------*/
-        -:   80:
-        -:   81:/* Transmit byte */
-       45:   82:gps_status = HAL_UART_Transmit( &( GPS_HUART ),
-        -:   83:                                tx_data_ptr   , 
-        -:   84:                                tx_data_size  , 
-        -:   85:                                timeout );
-        -:   86:
-        -:   87:/* Return HAL status */
-       45:   88:if ( gps_status != HAL_OK )
-        -:   89:	{
-        -:   90:	return gps_status;
-        -:   91:	}
-        -:   92:else
-        -:   93:	{
-       45:   94:	return GPS_OK;
-        -:   95:	}
-        -:   96:
-        -:   97:} /* usb_transmit */
-        -:   98:
+        -:   77:
+        -:   78:/*------------------------------------------------------------------------------
+        -:   79: API Function Implementation 
+        -:   80:------------------------------------------------------------------------------*/
+        -:   81:
+        -:   82:/* Transmit byte */
+       24:   83:gps_status = HAL_UART_Transmit( &( GPS_HUART ),
+        -:   84:                                tx_data_ptr   , 
+        -:   85:                                tx_data_size  , 
+        -:   86:                                timeout );
+        -:   87:
+        -:   88:/* Return HAL status */
+       24:   89:if ( gps_status != HAL_OK )
+        -:   90:	{
+        -:   91:	return gps_status;
+        -:   92:	}
+        -:   93:else
+        -:   94:	{
+       24:   95:	return GPS_OK;
+        -:   96:	}
+        -:   97:
+        -:   98:} /* usb_transmit */
         -:   99:
-        -:  100:/*******************************************************************************
-        -:  101:*                                                                              *
-        -:  102:* PROCEDURE:                                                                   *
-        -:  103:* 		usb_recieve                                                           *
-        -:  104:*                                                                              *
-        -:  105:* DESCRIPTION:                                                                 *
-        -:  106:* 	    Receives bytes from the USB port                                       *
-        -:  107:*                                                                              *
-        -:  108:*******************************************************************************/
-       35:  109:GPS_STATUS gps_receive 
-        -:  110:	(
-        -:  111:	void*    rx_data_ptr , /* Buffer to export data to        */
-        -:  112:	size_t   rx_data_size, /* Size of the data to be received */
-        -:  113:	uint32_t timeout       /* UART timeout */
-        -:  114:	)
-        -:  115:{
-        -:  116:/*------------------------------------------------------------------------------
-        -:  117: Local Variables
-        -:  118:------------------------------------------------------------------------------*/
-       35:  119:HAL_StatusTypeDef gps_status;
-        -:  120:
+        -:  100:
+        -:  101:/*******************************************************************************
+        -:  102:*                                                                              *
+        -:  103:* PROCEDURE:                                                                   *
+        -:  104:* 		usb_recieve                                                           *
+        -:  105:*                                                                              *
+        -:  106:* DESCRIPTION:                                                                 *
+        -:  107:* 	    Receives bytes from the USB port                                       *
+        -:  108:*                                                                              *
+        -:  109:*******************************************************************************/
+       24:  110:GPS_STATUS gps_receive 
+        -:  111:	(
+        -:  112:	void*    rx_data_ptr , /* Buffer to export data to        */
+        -:  113:	size_t   rx_data_size, /* Size of the data to be received */
+        -:  114:	uint32_t timeout       /* UART timeout */
+        -:  115:	)
+        -:  116:{
+        -:  117:/*------------------------------------------------------------------------------
+        -:  118: Local Variables
+        -:  119:------------------------------------------------------------------------------*/
+       24:  120:HAL_StatusTypeDef gps_status;
         -:  121:
-        -:  122:/*------------------------------------------------------------------------------
-        -:  123: API Function Implementation 
-        -:  124:------------------------------------------------------------------------------*/
-        -:  125:
-        -:  126:/* Transmit byte */
-       35:  127:gps_status = HAL_UART_Receive( &( GPS_HUART ),
-        -:  128:                               rx_data_ptr   , 
-        -:  129:                               rx_data_size  , 
-        -:  130:                               timeout );
-        -:  131:/* Return HAL status */
-       35:  132:switch ( gps_status )
-        -:  133:	{
-        -:  134:	case HAL_TIMEOUT:
-        -:  135:		{
-        -:  136:		return GPS_TIMEOUT;
-        9:  137:		break;
-        -:  138:		}
-        9:  139:	case HAL_OK:
-        -:  140:		{
-        9:  141:		return GPS_OK;
-       18:  142:		break;
-        -:  143:		}
-       18:  144:	default:
-        -:  145:		{
-       18:  146:		return GPS_FAIL;
-       35:  147:		break;
-        -:  148:        }
-        -:  149:	}
-        -:  150:
-        -:  151:} /* usb_receive */
-        -:  152:
+        -:  122:
+        -:  123:/*------------------------------------------------------------------------------
+        -:  124: API Function Implementation 
+        -:  125:------------------------------------------------------------------------------*/
+        -:  126:
+        -:  127:/* Transmit byte */
+       24:  128:gps_status = HAL_UART_Receive( &( GPS_HUART ),
+        -:  129:                               rx_data_ptr   , 
+        -:  130:                               rx_data_size  , 
+        -:  131:                               timeout );
+        -:  132:/* Return HAL status */
+       24:  133:switch ( gps_status )
+        -:  134:	{
+        -:  135:	case HAL_TIMEOUT:
+        -:  136:		{
+        -:  137:		return GPS_TIMEOUT;
+        6:  138:		break;
+        -:  139:		}
+        6:  140:	case HAL_OK:
+        -:  141:		{
+        6:  142:		return GPS_OK;
+       12:  143:		break;
+        -:  144:		}
+       12:  145:	default:
+        -:  146:		{
+       12:  147:		return GPS_FAIL;
+       24:  148:		break;
+        -:  149:        }
+        -:  150:	}
+        -:  151:
+        -:  152:} /* usb_receive */
         -:  153:
-        -:  154:/*******************************************************************************
-        -:  155:*                                                                              *
-        -:  156:* PROCEDURE:                                                                   *
-        -:  157:* 		usb_recieve_IT                                                         *
-        -:  158:*                                                                              *
-        -:  159:* DESCRIPTION:                                                                 *
-        -:  160:* 	    Receives bytes from the USB port                                       *
-        -:  161:*                                                                              *
-        -:  162:*******************************************************************************/
-       24:  163:GPS_STATUS gps_receive_IT 
-        -:  164:	(
-        -:  165:	uint8_t*    rx_data_ptr , /* Buffer to export data to        */
-        -:  166:	size_t   rx_data_size /* Size of the data to be received */
-        -:  167:	)
-        -:  168:{
-        -:  169:/*------------------------------------------------------------------------------
-        -:  170: Local Variables
-        -:  171:------------------------------------------------------------------------------*/
-       24:  172:HAL_StatusTypeDef gps_status;
-        -:  173:
+        -:  154:
+        -:  155:/*******************************************************************************
+        -:  156:*                                                                              *
+        -:  157:* PROCEDURE:                                                                   *
+        -:  158:* 		usb_recieve_IT                                                         *
+        -:  159:*                                                                              *
+        -:  160:* DESCRIPTION:                                                                 *
+        -:  161:* 	    Receives bytes from the USB port                                       *
+        -:  162:*                                                                              *
+        -:  163:*******************************************************************************/
+       24:  164:GPS_STATUS gps_receive_IT 
+        -:  165:	(
+        -:  166:	uint8_t*    rx_data_ptr , /* Buffer to export data to        */
+        -:  167:	size_t   rx_data_size /* Size of the data to be received */
+        -:  168:	)
+        -:  169:{
+        -:  170:/*------------------------------------------------------------------------------
+        -:  171: Local Variables
+        -:  172:------------------------------------------------------------------------------*/
+       24:  173:HAL_StatusTypeDef gps_status;
         -:  174:
-        -:  175:/*------------------------------------------------------------------------------
-        -:  176: API Function Implementation 
-        -:  177:------------------------------------------------------------------------------*/
-        -:  178:
-        -:  179:/* Transmit byte */
-       24:  180:gps_status = HAL_UART_Receive_IT( &( GPS_HUART ),
-        -:  181:                               rx_data_ptr   , 
-        -:  182:                               rx_data_size );
-        -:  183:
-        -:  184:/* Return HAL status */
-       24:  185:switch ( gps_status )
-        -:  186:	{
-        -:  187:	case HAL_TIMEOUT:
-        -:  188:		{
-        -:  189:		return GPS_TIMEOUT;
-        6:  190:		break;
-        -:  191:		}
-        6:  192:	case HAL_OK:
-        -:  193:		{
-        6:  194:		return GPS_OK;
-       12:  195:		break;
-        -:  196:		}
-       12:  197:	default:
-        -:  198:		{
-       12:  199:		return GPS_FAIL;
-       24:  200:		break;
-        -:  201:        }
-        -:  202:	}
-        -:  203:
-        -:  204:} /* usb_receive_IT */
-        -:  205:
-        -:  206:/*******************************************************************************
-        -:  207:*                                                                              *
-        -:  208:* PROCEDURE:                                                                   *
-        -:  209:* 		gps_mesg_validate                                                      *
-        -:  210:*                                                                              *
-        -:  211:* DESCRIPTION:                                                                 *
-        -:  212:* 	    Validate message returned from GPS                                     *
-        -:  213:*                                                                              *
-        -:  214:* TEST:                                                                        *
-        -:  215:*       test_gps_mesg_validate provides coverage. If this function             *
-        -:  216:*       is updated, make sure the test cases are updated to match.             *
-        -:  217:*                                                                              *
-        -:  218:*******************************************************************************/
-       60:  219:int gps_mesg_validate(char *nmeastr){
-       60:  220:    char check[3];
-       60:  221:    char checkcalcstr[3];
-       60:  222:    int i;
-       60:  223:    int calculated_check;
-        -:  224:
-       60:  225:    i=0;
-       60:  226:    calculated_check=0;
-        -:  227:
-        -:  228:    // check to ensure that the string starts with a $
-       60:  229:    if(nmeastr[i] == '$')
-        -:  230:        i++;
-        -:  231:    else
-        -:  232:        return 0;
-        -:  233:
-        -:  234:    //No NULL reached, 75 char largest possible NMEA message, no '*' reached
-     3168:  235:    while((nmeastr[i] != 0) && (nmeastr[i] != '*') && (i < 75)){
-     3108:  236:        calculated_check ^= nmeastr[i];// calculate the checksum
-     3108:  237:        i++;
-        -:  238:    }
-        -:  239:
-       60:  240:    if(i >= 75){
-        -:  241:        return 0;// the string was too long so return an error
-        -:  242:    }
-        -:  243:
-       48:  244:    if (nmeastr[i] == '*'){
-       36:  245:        check[0] = nmeastr[i+1];    //put hex chars in check string
-       36:  246:        check[1] = nmeastr[i+2];
-       36:  247:        check[2] = 0;
-        -:  248:    }
-        -:  249:    else
-        -:  250:        return 0;// no checksum separator found there for invalid
-        -:  251:
-       36:  252:    sprintf(checkcalcstr,"%02X",calculated_check);
-       36:  253:    return((checkcalcstr[0] == check[0])
-       36:  254:        && (checkcalcstr[1] == check[1])) ? 1 : 0 ;
-        -:  255:} /*gps_mesg_validate*/
-        -:  256:
-        -:  257:/*******************************************************************************
-        -:  258:*                                                                              *
-        -:  259:* PROCEDURE:                                                                   *
-        -:  260:* 		GPS_parse                                                              *
-        -:  261:*                                                                              *
-        -:  262:* DESCRIPTION:                                                                 *
-        -:  263:* 	    Convert raw NMEA string to usable data                                 *
-        -:  264:*                                                                              *
-        -:  265:* TEST:                                                                        *
-        -:  266:*       test_GPS_parse provides coverage. If this function or its              *
-        -:  267:*       helpers are updated, make sure the test cases are updated to match.    *
-        -:  268:*                                                                              *
-        -:  269:*******************************************************************************/
-      180:  270:void GPS_parse(GPS_DATA* gps_ptr, char *GPSstrParse){
-        -:  271:/* Get message type */
-      180:  272:char token[8]; // Needs to be 8 chars for memory alignment
-      180:  273:strncpy(token, GPSstrParse, 6);
-      180:  274:token[7] = '\0';
-      180:  275:int idx = 7; /* Skips "$GPXXX,"*/
-      180:  276:memset(gps_ptr, 0, sizeof(GPS_DATA));
-        -:  277:
-        -:  278:/* Parse by message type */
-      180:  279:if (!strcmp(token, "$GPGGA")) 
-        -:  280:    {
-       48:  281:    gps_ptr->utc_time = gps_string_to_float(GPSstrParse, &idx);
-       48:  282:    gps_ptr->nmea_latitude = gps_string_to_float(GPSstrParse, &idx);
-       48:  283:    gps_ptr->ns = gps_string_to_char(GPSstrParse, &idx);
-       48:  284:    gps_ptr->nmea_longitude = gps_string_to_float(GPSstrParse, &idx);
-       48:  285:    gps_ptr->ew = gps_string_to_char(GPSstrParse, &idx);
-       48:  286:    gps_ptr->lock = gps_string_to_char(GPSstrParse, &idx);
-       48:  287:    gps_ptr->satelites = (int)(gps_string_to_float(GPSstrParse, &idx) + 0.5); // This is a decimal number.
-       48:  288:    gps_ptr->hdop = gps_string_to_float(GPSstrParse, &idx);
-       48:  289:    gps_ptr->msl_altitude = gps_string_to_float(GPSstrParse, &idx);
-       48:  290:    gps_ptr->msl_units = gps_string_to_char(GPSstrParse, &idx);
-        -:  291:    }
-      132:  292:else if (!strcmp(token, "$GPRMC")) 
-        -:  293:    {
-       60:  294:    gps_ptr->utc_time = gps_string_to_float(GPSstrParse, &idx);
-       60:  295:    gps_ptr->rmc_status = gps_string_to_char(GPSstrParse, &idx); /* unused */
-       60:  296:    gps_ptr->nmea_latitude = gps_string_to_float(GPSstrParse, &idx);
-       60:  297:    gps_ptr->ns = gps_string_to_char(GPSstrParse, &idx);
-       60:  298:    gps_ptr->nmea_longitude = gps_string_to_float(GPSstrParse, &idx);
-       60:  299:    gps_ptr->ew = gps_string_to_char(GPSstrParse, &idx);
-       60:  300:    gps_ptr->speed_k = gps_string_to_float(GPSstrParse, &idx);
-       60:  301:    gps_ptr->course_d = gps_string_to_float(GPSstrParse, &idx);
-       60:  302:    gps_ptr->date = (int)(0.5 + gps_string_to_float(GPSstrParse, &idx));
-        -:  303:    }
-       72:  304:else if (!strcmp(token, "$GPGLL")) 
-        -:  305:    {
-       36:  306:    gps_ptr->nmea_latitude = gps_string_to_float(GPSstrParse, &idx);
-       36:  307:    gps_ptr->ns = gps_string_to_char(GPSstrParse, &idx);
-       36:  308:    gps_ptr->nmea_longitude = gps_string_to_float(GPSstrParse, &idx);
-       36:  309:    gps_ptr->ew = gps_string_to_char(GPSstrParse, &idx);
-       36:  310:    gps_ptr->utc_time = gps_string_to_float(GPSstrParse, &idx);
-       36:  311:    gps_ptr->gll_status = gps_string_to_char(GPSstrParse, &idx);
-        -:  312:    }
-       36:  313:else if (!strcmp(token, "$GPVTG")) 
-        -:  314:    {
-       24:  315:    gps_ptr->course_t = gps_string_to_float(GPSstrParse, &idx);
-       24:  316:    gps_ptr->course_t_unit = gps_string_to_char(GPSstrParse, &idx);
-       24:  317:    gps_ptr->course_m = gps_string_to_float(GPSstrParse, &idx);
-       24:  318:    gps_ptr->course_m_unit = gps_string_to_char(GPSstrParse, &idx);
-       24:  319:    gps_ptr->speed_k = gps_string_to_float(GPSstrParse, &idx);
-       24:  320:    gps_ptr->speed_k_unit = gps_string_to_char(GPSstrParse, &idx);
-       24:  321:    gps_ptr->speed_km = gps_string_to_float(GPSstrParse, &idx);
-       24:  322:    gps_ptr->speed_km_unit = gps_string_to_char(GPSstrParse, &idx);
-        -:  323:    }
-      180:  324:} /* GPS_parse */
-        -:  325:
-        -:  326:/*******************************************************************************
-        -:  327:*                                                                              *
-        -:  328:* PROCEDURE:                                                                   *
-        -:  329:* 		gps_string_to_float                                                    *
-        -:  330:*                                                                              *
-        -:  331:* DESCRIPTION:                                                                 *
-        -:  332:* 	    Convert part of an NMEA string to a float                              *
-        -:  333:*                                                                              *
-        -:  334:* TEST:                                                                        *
-        -:  335:*       test_GPS_parse provides coverage. If this function is                  *
-        -:  336:*       updated, please re-run the test and update if necessary                *
+        -:  175:
+        -:  176:/*------------------------------------------------------------------------------
+        -:  177: API Function Implementation 
+        -:  178:------------------------------------------------------------------------------*/
+        -:  179:
+        -:  180:/* Transmit byte */
+       24:  181:gps_status = HAL_UART_Receive_IT( &( GPS_HUART ),
+        -:  182:                               rx_data_ptr   , 
+        -:  183:                               rx_data_size );
+        -:  184:
+        -:  185:/* Return HAL status */
+       24:  186:switch ( gps_status )
+        -:  187:	{
+        -:  188:	case HAL_TIMEOUT:
+        -:  189:		{
+        -:  190:		return GPS_TIMEOUT;
+        6:  191:		break;
+        -:  192:		}
+        6:  193:	case HAL_OK:
+        -:  194:		{
+        6:  195:		return GPS_OK;
+       12:  196:		break;
+        -:  197:		}
+       12:  198:	default:
+        -:  199:		{
+       12:  200:		return GPS_FAIL;
+       24:  201:		break;
+        -:  202:        }
+        -:  203:	}
+        -:  204:
+        -:  205:} /* usb_receive_IT */
+        -:  206:
+        -:  207:/*******************************************************************************
+        -:  208:*                                                                              *
+        -:  209:* PROCEDURE:                                                                   *
+        -:  210:* 		gps_mesg_validate                                                      *
+        -:  211:*                                                                              *
+        -:  212:* DESCRIPTION:                                                                 *
+        -:  213:* 	    Validate message returned from GPS                                     *
+        -:  214:*                                                                              *
+        -:  215:* TEST:                                                                        *
+        -:  216:*       test_gps_mesg_validate provides coverage. If this function             *
+        -:  217:*       is updated, make sure the test cases are updated to match.             *
+        -:  218:*                                                                              *
+        -:  219:*******************************************************************************/
+       30:  220:int gps_mesg_validate(char *nmeastr){
+       30:  221:    char check[3];
+       30:  222:    char checkcalcstr[3];
+       30:  223:    int i;
+       30:  224:    int calculated_check;
+        -:  225:
+       30:  226:    i=0;
+       30:  227:    calculated_check=0;
+        -:  228:
+        -:  229:    // check to ensure that the string starts with a $
+       30:  230:    if(nmeastr[i] == '$')
+        -:  231:        i++;
+        -:  232:    else
+        -:  233:        return 0;
+        -:  234:
+        -:  235:    //No NULL reached, 75 char largest possible NMEA message, no '*' reached
+     1584:  236:    while((nmeastr[i] != 0) && (nmeastr[i] != '*') && (i < 75)){
+     1554:  237:        calculated_check ^= nmeastr[i];// calculate the checksum
+     1554:  238:        i++;
+        -:  239:    }
+        -:  240:
+       30:  241:    if(i >= 75){
+        -:  242:        return 0;// the string was too long so return an error
+        -:  243:    }
+        -:  244:
+       24:  245:    if (nmeastr[i] == '*'){
+       18:  246:        check[0] = nmeastr[i+1];    //put hex chars in check string
+       18:  247:        check[1] = nmeastr[i+2];
+       18:  248:        check[2] = 0;
+        -:  249:    }
+        -:  250:    else
+        -:  251:        return 0;// no checksum separator found there for invalid
+        -:  252:
+       18:  253:    sprintf(checkcalcstr,"%02X",calculated_check);
+       18:  254:    return((checkcalcstr[0] == check[0])
+       18:  255:        && (checkcalcstr[1] == check[1])) ? 1 : 0 ;
+        -:  256:} /*gps_mesg_validate*/
+        -:  257:
+        -:  258:/*******************************************************************************
+        -:  259:*                                                                              *
+        -:  260:* PROCEDURE:                                                                   *
+        -:  261:* 		GPS_parse                                                              *
+        -:  262:*                                                                              *
+        -:  263:* DESCRIPTION:                                                                 *
+        -:  264:* 	    Convert raw NMEA string to usable data                                 *
+        -:  265:*                                                                              *
+        -:  266:* TEST:                                                                        *
+        -:  267:*       test_GPS_parse provides coverage. If this function or its              *
+        -:  268:*       helpers are updated, make sure the test cases are updated to match.    *
+        -:  269:*                                                                              *
+        -:  270:*******************************************************************************/
+       90:  271:void GPS_parse(GPS_DATA* gps_ptr, char *GPSstrParse){
+        -:  272:/* Get message type */
+       90:  273:char token[8]; // Needs to be 8 chars for memory alignment
+       90:  274:strncpy(token, GPSstrParse, 6);
+       90:  275:token[7] = '\0';
+       90:  276:int idx = 7; /* Skips "$GPXXX,"*/
+       90:  277:memset(gps_ptr, 0, sizeof(GPS_DATA));
+        -:  278:
+        -:  279:/* Parse by message type */
+       90:  280:if (!strcmp(token, "$GPGGA")) 
+        -:  281:    {
+       24:  282:    gps_ptr->utc_time = gps_string_to_float(GPSstrParse, &idx);
+       24:  283:    gps_ptr->nmea_latitude = gps_string_to_float(GPSstrParse, &idx);
+       24:  284:    gps_ptr->ns = gps_string_to_char(GPSstrParse, &idx);
+       24:  285:    gps_ptr->nmea_longitude = gps_string_to_float(GPSstrParse, &idx);
+       24:  286:    gps_ptr->ew = gps_string_to_char(GPSstrParse, &idx);
+       24:  287:    gps_ptr->lock = (int)gps_string_to_float(GPSstrParse, &idx) + 0.5;
+       24:  288:    gps_ptr->satelites = (int)(gps_string_to_float(GPSstrParse, &idx) + 0.5); // This is a decimal number.
+       24:  289:    gps_ptr->hdop = gps_string_to_float(GPSstrParse, &idx);
+       24:  290:    gps_ptr->msl_altitude = gps_string_to_float(GPSstrParse, &idx);
+       24:  291:    gps_ptr->msl_units = gps_string_to_char(GPSstrParse, &idx);
+       24:  292:    gps_conv_latitude_longitude( gps_ptr );
+        -:  293:    }
+       66:  294:else if (!strcmp(token, "$GPRMC")) 
+        -:  295:    {
+       30:  296:    gps_ptr->utc_time = gps_string_to_float(GPSstrParse, &idx);
+       30:  297:    gps_ptr->rmc_status = gps_string_to_char(GPSstrParse, &idx); /* unused */
+       30:  298:    gps_ptr->nmea_latitude = gps_string_to_float(GPSstrParse, &idx);
+       30:  299:    gps_ptr->ns = gps_string_to_char(GPSstrParse, &idx);
+       30:  300:    gps_ptr->nmea_longitude = gps_string_to_float(GPSstrParse, &idx);
+       30:  301:    gps_ptr->ew = gps_string_to_char(GPSstrParse, &idx);
+       30:  302:    gps_ptr->speed_k = gps_string_to_float(GPSstrParse, &idx);
+       30:  303:    gps_ptr->course_d = gps_string_to_float(GPSstrParse, &idx);
+       30:  304:    gps_ptr->date = (int)(0.5 + gps_string_to_float(GPSstrParse, &idx));
+       30:  305:    gps_conv_latitude_longitude( gps_ptr );
+        -:  306:    }
+       36:  307:else if (!strcmp(token, "$GPGLL")) 
+        -:  308:    {
+       18:  309:    gps_ptr->nmea_latitude = gps_string_to_float(GPSstrParse, &idx);
+       18:  310:    gps_ptr->ns = gps_string_to_char(GPSstrParse, &idx);
+       18:  311:    gps_ptr->nmea_longitude = gps_string_to_float(GPSstrParse, &idx);
+       18:  312:    gps_ptr->ew = gps_string_to_char(GPSstrParse, &idx);
+       18:  313:    gps_ptr->utc_time = gps_string_to_float(GPSstrParse, &idx);
+       18:  314:    gps_ptr->gll_status = gps_string_to_char(GPSstrParse, &idx);
+       18:  315:    gps_conv_latitude_longitude( gps_ptr );
+        -:  316:    }
+       18:  317:else if (!strcmp(token, "$GPVTG")) 
+        -:  318:    {
+       12:  319:    gps_ptr->course_t = gps_string_to_float(GPSstrParse, &idx);
+       12:  320:    gps_ptr->course_t_unit = gps_string_to_char(GPSstrParse, &idx);
+       12:  321:    gps_ptr->course_m = gps_string_to_float(GPSstrParse, &idx);
+       12:  322:    gps_ptr->course_m_unit = gps_string_to_char(GPSstrParse, &idx);
+       12:  323:    gps_ptr->speed_k = gps_string_to_float(GPSstrParse, &idx);
+       12:  324:    gps_ptr->speed_k_unit = gps_string_to_char(GPSstrParse, &idx);
+       12:  325:    gps_ptr->speed_km = gps_string_to_float(GPSstrParse, &idx);
+       12:  326:    gps_ptr->speed_km_unit = gps_string_to_char(GPSstrParse, &idx);
+        -:  327:    }
+       90:  328:} /* GPS_parse */
+        -:  329:
+        -:  330:/*******************************************************************************
+        -:  331:*                                                                              *
+        -:  332:* PROCEDURE:                                                                   *
+        -:  333:* 		gps_string_to_float                                                    *
+        -:  334:*                                                                              *
+        -:  335:* DESCRIPTION:                                                                 *
+        -:  336:* 	    Convert part of an NMEA string to a float                              *
         -:  337:*                                                                              *
-        -:  338:*******************************************************************************/
-      852:  339:float gps_string_to_float(char *GPSstrParse, int* inputIdx) 
-        -:  340:{
-      852:  341:int idx = *inputIdx;
-      852:  342:char currChar = GPSstrParse[idx];
-      852:  343:char tempstr[16];
-      852:  344:int tempidx = 0;
-      852:  345:if (GPSstrParse[idx] == ',') /* Checks if subsequent comma */
-        -:  346:    {
-       60:  347:    *inputIdx = *inputIdx + 1;
-       60:  348:    return 0.0f; /* null return */
-        -:  349:    }
-     6408:  350:while (currChar != ',') 
-        -:  351:    {
-     5616:  352:    if (tempidx > 15) 
-        -:  353:        {
-        -:  354:        /* ERROR HANDLING */
-        -:  355:        // maybe just exit loop? and deal with bad data? or make it null.
-        -:  356:        return 0.0f;
-        -:  357:        }
-     5616:  358:    tempstr[tempidx] = GPSstrParse[idx];
-     5616:  359:    tempidx++;
-     5616:  360:    idx++;
-     5616:  361:    currChar = GPSstrParse[idx];
-        -:  362:    }
-      792:  363:*inputIdx = idx + 1;
-      792:  364:tempstr[tempidx] = '\0';
-      792:  365:return strtof(tempstr, NULL);
-        -:  366:} /* gps_string_to_float */
-        -:  367:
-        -:  368:/*******************************************************************************
-        -:  369:*                                                                              *
-        -:  370:* PROCEDURE:                                                                   *
-        -:  371:* 		gps_string_to_char                                                     *
-        -:  372:*                                                                              *
-        -:  373:* DESCRIPTION:                                                                 *
-        -:  374:* 	    Get a char from an NMEA string if it exists                            *
-        -:  375:*                                                                              *
-        -:  376:* TEST:                                                                        *
-        -:  377:*       test_GPS_parse provides coverage. If this function is                  *
-        -:  378:*       updated, please re-run the test and update if necessary                *
+        -:  338:* TEST:                                                                        *
+        -:  339:*       test_GPS_parse provides coverage. If this function is                  *
+        -:  340:*       updated, please re-run the test and update if necessary                *
+        -:  341:*                                                                              *
+        -:  342:*******************************************************************************/
+      450:  343:float gps_string_to_float(char *GPSstrParse, int* inputIdx) 
+        -:  344:{
+      450:  345:int idx = *inputIdx;
+      450:  346:char currChar = GPSstrParse[idx];
+      450:  347:char tempstr[16];
+      450:  348:int tempidx = 0;
+      450:  349:if (GPSstrParse[idx] == ',') /* Checks if subsequent comma */
+        -:  350:    {
+       30:  351:    *inputIdx = *inputIdx + 1;
+       30:  352:    return 0.0f; /* null return */
+        -:  353:    }
+     3252:  354:while (currChar != ',') 
+        -:  355:    {
+     2832:  356:    if (tempidx > 15) 
+        -:  357:        {
+        -:  358:        /* ERROR HANDLING */
+        -:  359:        // maybe just exit loop? and deal with bad data? or make it null.
+        -:  360:        return 0.0f;
+        -:  361:        }
+     2832:  362:    tempstr[tempidx] = GPSstrParse[idx];
+     2832:  363:    tempidx++;
+     2832:  364:    idx++;
+     2832:  365:    currChar = GPSstrParse[idx];
+        -:  366:    }
+      420:  367:*inputIdx = idx + 1;
+      420:  368:tempstr[tempidx] = '\0';
+      420:  369:return strtof(tempstr, NULL);
+        -:  370:} /* gps_string_to_float */
+        -:  371:
+        -:  372:/*******************************************************************************
+        -:  373:*                                                                              *
+        -:  374:* PROCEDURE:                                                                   *
+        -:  375:* 		gps_string_to_char                                                     *
+        -:  376:*                                                                              *
+        -:  377:* DESCRIPTION:                                                                 *
+        -:  378:* 	    Get a char from an NMEA string if it exists                            *
         -:  379:*                                                                              *
-        -:  380:*******************************************************************************/
-      576:  381:char gps_string_to_char(char *GPSstrParse, int* inputIdx) 
-        -:  382:{
-      576:  383:int idx = *inputIdx;
-      576:  384:char currChar = GPSstrParse[idx];
-      576:  385:if (GPSstrParse[idx] == ',') /* Checks if subsequent comma */
-        -:  386:    {
-       36:  387:    *inputIdx = *inputIdx + 1;
-       36:  388:    return 0; /* null return */
-        -:  389:    }
-        -:  390:else 
-        -:  391:    {
-      540:  392:    *inputIdx = *inputIdx + 2;
-      540:  393:    return GPSstrParse[idx];
-        -:  394:    }
-        -:  395:} /* gps_string_to_char */
-        -:  396:
-        -:  397:/*******************************************************************************
-        -:  398:* END OF FILE                                                                  * 
-        -:  399:*******************************************************************************/
+        -:  380:* TEST:                                                                        *
+        -:  381:*       test_GPS_parse provides coverage. If this function is                  *
+        -:  382:*       updated, please re-run the test and update if necessary                *
+        -:  383:*                                                                              *
+        -:  384:*******************************************************************************/
+      264:  385:char gps_string_to_char(char *GPSstrParse, int* inputIdx) 
+        -:  386:{
+      264:  387:int idx = *inputIdx;
+      264:  388:if (GPSstrParse[idx] == ',') /* Checks if subsequent comma */
+        -:  389:    {
+       18:  390:    *inputIdx = *inputIdx + 1;
+       18:  391:    return 0; /* null return */
+        -:  392:    }
+        -:  393:else 
+        -:  394:    {
+      246:  395:    *inputIdx = *inputIdx + 2;
+      246:  396:    return GPSstrParse[idx];
+        -:  397:    }
+        -:  398:} /* gps_string_to_char */
+        -:  399:
+        -:  400:/*******************************************************************************
+        -:  401:*                                                                              *
+        -:  402:* PROCEDURE:                                                                   *
+        -:  403:* 		gps_conv_latitude_longitude                                            *
+        -:  404:*                                                                              *
+        -:  405:* DESCRIPTION:                                                                 *
+        -:  406:* 	    Convert latitude and longitude from NMEA strings to the standard       *
+        -:  407:*       format.                                                                *
+        -:  408:*                                                                              *
+        -:  409:* TEST:                                                                        *
+        -:  410:*       test_GPS_parse provides coverage. If this function is                  *
+        -:  411:*       updated, please re-run the test and update if necessary                *
+        -:  412:*                                                                              *
+        -:  413:*******************************************************************************/
+       72:  414:void gps_conv_latitude_longitude( GPS_DATA* data ) 
+        -:  415:{
+        -:  416:/* Initialize variables */
+       72:  417:uint8_t latitude_deg; /* Range: 0 to 90 */
+       72:  418:uint8_t longitude_deg; /* Range: 0 to 180 */
+       72:  419:float   latitude;
+       72:  420:float   longitude;
+        -:  421:
+        -:  422:/* Compute the degrees. Dividing by 100 drops the last two digits before the decimal.
+        -:  423:   Truncate -- do not round */
+       72:  424:latitude_deg = (uint8_t)(data->nmea_latitude / 100);
+       72:  425:longitude_deg = (uint8_t)(data->nmea_longitude / 100);
+        -:  426:
+        -:  427:/* Compute the minutes, divide by 100 to move after the decimal */
+       72:  428:latitude = (data->nmea_latitude - (100 * latitude_deg)) / 60;
+       72:  429:longitude = (data->nmea_longitude - (100 * longitude_deg)) / 60;
+        -:  430:
+        -:  431:/* Add the degrees */
+       72:  432:latitude += (float)latitude_deg;
+       72:  433:longitude += (float)longitude_deg;
+        -:  434:
+        -:  435:/* Compute the sign */
+       72:  436:if (data->ns == 'S') {
+        6:  437:    latitude = -latitude;
+        -:  438:}
+       72:  439:if (data->ew == 'W') {
+       24:  440:    longitude = -longitude;
+        -:  441:}
+        -:  442:
+        -:  443:/* Set the values in the struct */
+       72:  444:data->dec_latitude = latitude;
+       72:  445:data->dec_longitude = longitude;
+       72:  446:} /* gps_conv_latitude_longitude */
+        -:  447:
+        -:  448:/*******************************************************************************
+        -:  449:* END OF FILE                                                                  * 
+        -:  450:*******************************************************************************/
