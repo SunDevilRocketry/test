@@ -1,0 +1,94 @@
+        -:    0:Source:../../../../app/canard/rev2/launch_detect.c
+        -:    0:Graph:build/launch_detect.gcno
+        -:    0:Data:build/launch_detect.gcda
+        -:    0:Runs:7
+        -:    1:/*******************************************************************************
+        -:    2:*                                                                              *
+        -:    3:* FILE:                                                                        * 
+        -:    4:* 		launch_detect.c                                                        *
+        -:    5:*                                                                              *
+        -:    6:* DESCRIPTION:                                                                 * 
+        -:    7:* 		Includes functions that handle launch detection based on sensor readouts                                     *
+        -:    8:*                                                                              *
+        -:    9:*******************************************************************************/
+        -:   10:
+        -:   11:/*------------------------------------------------------------------------------
+        -:   12: Project Includes                                                                     
+        -:   13:------------------------------------------------------------------------------*/
+        -:   14:
+        -:   15:/* Application Layer */
+        -:   16:#include "main.h"
+        -:   17:
+        -:   18:/*------------------------------------------------------------------------------
+        -:   19: Macros                                                                     
+        -:   20:------------------------------------------------------------------------------*/
+        -:   21:#define ACC_DETECT_THRESHOLD 60
+        -:   22:#define ACC_DETECT_ASAMPLES 10
+        -:   23:#define BARO_DETECT_THRESHOLD 1000 
+        -:   24:#define BARO_DECTECT_PSAMPLES 10
+        -:   25:
+        -:   26:/*------------------------------------------------------------------------------
+        -:   27: Global Variables                                                                     
+        -:   28:------------------------------------------------------------------------------*/
+        -:   29:
+        -:   30:/* Timing */
+        -:   31:extern uint32_t start_time, end_time, timecycle;
+        -:   32:extern uint32_t tdelta;
+        -:   33:extern BARO_PRESET  baro_preset;
+        -:   34:
+        -:   35:/* DAQ */
+        -:   36:extern SENSOR_DATA   sensor_data;      /* Struct with all sensor */
+        -:   37:
+        -:   38:
+        -:   39:/*********************************************************************************
+        -:   40:*                                                                                *
+        -:   41:* FUNCTION:                                                                      * 
+        -:   42:* 		launch_detection                                                         *
+        -:   43:*                                                                                *
+        -:   44:* DESCRIPTION:                                                                   * 
+        -:   45:* 		Launch detection using acceleration or baro readout.                     * 
+        -:   46:*       Return true if the count acceleration over desired threshold exceeds set *
+        -:   47:*       sample.                                                                  *
+        -:   48:*       Note: Only use in the main application loop                              *
+        -:   49:*                                                                                *
+        -:   50:*********************************************************************************/
+        -:   51:uint8_t acc_detect_cnts = 0;
+        -:   52:uint8_t baro_detect_cnts = 0;
+      528:   53:void launch_detection
+        -:   54:    (
+        -:   55:    uint8_t* launch_detect_flag
+        -:   56:    )
+        -:   57:{
+      528:   58:float accX = sensor_data.imu_data.imu_converted.accel_x;
+      528:   59:float accY = sensor_data.imu_data.imu_converted.accel_y;
+      528:   60:float accZ = sensor_data.imu_data.imu_converted.accel_z;
+      528:   61:float pressure = sensor_data.baro_pressure;
+        -:   62:
+      528:   63:float acc_scalar = sqrtf(accX*accX + accY*accY + accZ*accZ);
+        -:   64:
+      528:   65:if (acc_scalar > ACC_DETECT_THRESHOLD)
+        -:   66:    {
+        -:   67:    // Count detection counts
+      383:   68:    acc_detect_cnts++;
+        -:   69:    } 
+        -:   70:else 
+        -:   71:    {
+      145:   72:    acc_detect_cnts = 0;
+        -:   73:    }
+        -:   74:
+      528:   75:if (pressure < (baro_preset.baro_pres - BARO_DETECT_THRESHOLD))
+        -:   76:    {
+      256:   77:    baro_detect_cnts++;
+        -:   78:    } 
+        -:   79:else 
+        -:   80:    {
+      272:   81:    baro_detect_cnts = 0;
+        -:   82:    }
+        -:   83:
+        -:   84:// Trigger the flag once pass the threshold for number of times
+      528:   85:if (acc_detect_cnts > ACC_DETECT_ASAMPLES || baro_detect_cnts > BARO_DECTECT_PSAMPLES)
+        -:   86:    {
+       19:   87:    *launch_detect_flag = 1;
+        -:   88:    }
+        -:   89:
+      528:   90:} /* launch_detection */
