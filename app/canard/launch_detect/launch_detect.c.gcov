@@ -1,7 +1,7 @@
         -:    0:Source:../../../../app/canard/rev2/launch_detect.c
         -:    0:Graph:build/launch_detect.gcno
         -:    0:Data:build/launch_detect.gcda
-        -:    0:Runs:1
+        -:    0:Runs:7
         -:    1:/*******************************************************************************
         -:    2:*                                                                              *
         -:    3:* FILE:                                                                        * 
@@ -54,41 +54,41 @@
         -:   50:*********************************************************************************/
         -:   51:uint8_t acc_detect_cnts = 0;
         -:   52:uint8_t baro_detect_cnts = 0;
-       60:   53:void launch_detection
+      528:   53:void launch_detection
         -:   54:    (
         -:   55:    uint8_t* launch_detect_flag
         -:   56:    )
         -:   57:{
-       60:   58:float accX = sensor_data.imu_data.imu_converted.accel_x;
-       60:   59:float accY = sensor_data.imu_data.imu_converted.accel_y;
-       60:   60:float accZ = sensor_data.imu_data.imu_converted.accel_z;
-       60:   61:float pressure = sensor_data.baro_pressure;
+      528:   58:float accX = sensor_data.imu_data.imu_converted.accel_x;
+      528:   59:float accY = sensor_data.imu_data.imu_converted.accel_y;
+      528:   60:float accZ = sensor_data.imu_data.imu_converted.accel_z;
+      528:   61:float pressure = sensor_data.baro_pressure;
         -:   62:
-       60:   63:float acc_scalar = sqrtf(accX*accX + accY*accY + accZ*accZ);
+      528:   63:float acc_scalar = sqrtf(accX*accX + accY*accY + accZ*accZ);
         -:   64:
-       60:   65:if (acc_scalar > ACC_DETECT_THRESHOLD)
+      528:   65:if (acc_scalar > ACC_DETECT_THRESHOLD)
         -:   66:    {
         -:   67:    // Count detection counts
-       42:   68:    acc_detect_cnts++;
+      383:   68:    acc_detect_cnts++;
         -:   69:    } 
         -:   70:else 
         -:   71:    {
-       18:   72:    acc_detect_cnts = 0;
+      145:   72:    acc_detect_cnts = 0;
         -:   73:    }
         -:   74:
-       60:   75:if (pressure < (baro_preset.baro_pres - BARO_DETECT_THRESHOLD))
+      528:   75:if (pressure < (baro_preset.baro_pres - BARO_DETECT_THRESHOLD))
         -:   76:    {
-    #####:   77:    baro_detect_cnts++;
+      256:   77:    baro_detect_cnts++;
         -:   78:    } 
         -:   79:else 
         -:   80:    {
-       60:   81:    baro_detect_cnts = 0;
+      272:   81:    baro_detect_cnts = 0;
         -:   82:    }
         -:   83:
         -:   84:// Trigger the flag once pass the threshold for number of times
-       60:   85:if (acc_detect_cnts > ACC_DETECT_ASAMPLES || baro_detect_cnts > BARO_DECTECT_PSAMPLES)
+      528:   85:if (acc_detect_cnts > ACC_DETECT_ASAMPLES || baro_detect_cnts > BARO_DECTECT_PSAMPLES)
         -:   86:    {
-        2:   87:    *launch_detect_flag = 1;
+       19:   87:    *launch_detect_flag = 1;
         -:   88:    }
         -:   89:
-       60:   90:} /* launch_detection */
+      528:   90:} /* launch_detection */
