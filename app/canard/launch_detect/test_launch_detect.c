@@ -33,6 +33,8 @@ Project Includes
 Global Variables 
 ------------------------------------------------------------------------------*/
 UART_HandleTypeDef huart4;  /* GPS */
+I2C_HandleTypeDef  hi2c1;   /* Baro sensor    */
+I2C_HandleTypeDef  hi2c2;   /* IMU and GPS    */
 SENSOR_DATA sensor_data;
 BARO_PRESET baro_preset;
 
@@ -119,16 +121,21 @@ void test_launch_detection
     )
 {
 /* Step: Set up test */
-#define NUM_CASES_LAUNCH_DETECT 5
+#define NUM_CASES_LAUNCH_DETECT 10
 #define NUM_EXPECTED_SAMPLES 11
 printf("\nUnit Tests: test_launch_detect\n");
 
 uint8_t acc_detect_flag = 0;
 
 /* Step: Set up test vectors (inputs, expected) */
-int inputs[NUM_CASES_LAUNCH_DETECT][NUM_EXPECTED_SAMPLES] = 
+int inputsAcc[NUM_CASES_LAUNCH_DETECT][NUM_EXPECTED_SAMPLES] = 
 {
 #include "cases/acc_inputs.txt"
+};
+
+int inputsBaro[NUM_CASES_LAUNCH_DETECT][NUM_EXPECTED_SAMPLES] = 
+{
+#include "cases/baro_inputs.txt"
 };
 
 int expected[NUM_CASES_LAUNCH_DETECT][NUM_EXPECTED_SAMPLES] = 
@@ -141,9 +148,10 @@ for ( int test_num = 0; test_num < NUM_CASES_LAUNCH_DETECT; test_num++ )
 	{
 	for ( int i = 0; i < NUM_EXPECTED_SAMPLES; i++ )
 		{
-			sensor_data.imu_data.imu_converted.accel_x = inputs[test_num][i];
-			sensor_data.imu_data.imu_converted.accel_y = inputs[test_num][i];
-			sensor_data.imu_data.imu_converted.accel_z = inputs[test_num][i];
+			sensor_data.imu_data.imu_converted.accel_x = inputsAcc[test_num][i];
+			sensor_data.imu_data.imu_converted.accel_y = inputsAcc[test_num][i];
+			sensor_data.imu_data.imu_converted.accel_z = inputsAcc[test_num][i];
+			sensor_data.baro_pressure = inputsBaro[test_num][i];
 			launch_detection(&acc_detect_flag);
 			TEST_ASSERT_EQUAL_INT(expected[test_num][i], acc_detect_flag);
 			printf("\tlaunch_detect #%d-b%d passed\n", test_num + 1, i+1); // prints a 1-indexed number instead of 0-indexed
@@ -153,6 +161,7 @@ for ( int test_num = 0; test_num < NUM_CASES_LAUNCH_DETECT; test_num++ )
 	sensor_data.imu_data.imu_converted.accel_x = 0;
 	sensor_data.imu_data.imu_converted.accel_y = 0;
 	sensor_data.imu_data.imu_converted.accel_z = 0;
+	sensor_data.baro_pressure = 0;
 	launch_detection(&acc_detect_flag);
 	}
 
