@@ -14,7 +14,8 @@ def generate_makefile( testName, testDir ):
             makefile.write("################################################################\n")
             makefile.write("# target\n")
             makefile.write("################################################################\n")
-            makefile.write(f"TARGET = {testName}\n")
+            makefile.write(f"TEST = {testName}\n")
+            makefile.write(f"TARGET = {testName}.out\n")
             templatePath = os.getcwd() + "/tools/templates/TemplateMakefile"
             with open(templatePath, 'r') as template:
                 for line in template:
