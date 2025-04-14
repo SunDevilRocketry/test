@@ -1,0 +1,38 @@
+-----------------------
+	SERVO UNIT TESTING
+-----------------------
+
+Note: These unit tests exit on a failed assert. If the test fails, go to the case after the last pass.
+
+Unit Tests: test_servo_init
+	servo_init #1 passed
+	servo_init #2 passed
+	servo_init #3 passed
+test_servo.c:309:test_servo_init:PASS
+
+Unit Tests: test_servo_reset
+	servo_init #1 passed
+	servo_init #2 passed
+test_servo.c:310:test_servo_reset:PASS
+
+Unit Tests: test_servo_cmd_execute
+	servo_cmd_execute #1 passed
+	servo_cmd_execute #2 passed
+	servo_cmd_execute #3 passed
+	servo_cmd_execute #4 passed
+	servo_cmd_execute #5 passed
+test_servo.c:311:test_servo_cmd_execute:PASS
+
+This test suite expects full coverage (100%).
+
+-----------------------
+3 Tests 0 Failures 0 Ignored 
+OK
+
+COVERAGE SUMMARY:
+
+File '../../../mod/servo/servo.c'
+Lines executed:100.00% of 61
+Creating 'servo.c.gcov'
+
+Lines executed:100.00% of 61

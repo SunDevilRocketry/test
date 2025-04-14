@@ -99,7 +99,7 @@ CFLAGS += -ftest-coverage
 CFLAGS += -fprofile-arcs
 
 # build all 
-all: $(BUILD_DIR)/$(TARGET)
+all: clean $(BUILD_DIR)/$(TARGET)
 
 
 ################################################################

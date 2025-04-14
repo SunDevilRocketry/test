@@ -1,3 +1,14 @@
+################################################################
+#
+# servo unit tests (based on gcc)
+#
+################################################################
+
+################################################################
+# target
+################################################################
+TEST = servo
+TARGET = servo.out
 
 
 ################################################################
@@ -36,16 +47,18 @@ INIT_DIR = $(ROOT_DIR)/init
 # Include the file being tested both in C_SOURCES and COV_C_SOURCES
 
 # C sources
-C_SOURCES =                                   						  \
-test_blank.c                       								  \
-mock/MOCK_hal.c													  \
-$(ROOT_DIR)/mod/gps/gps.c           							  	  \
+C_SOURCES =                                   						\
+test_servo.c                       								  	\
+mock/MOCK_hal.c													  	\
+mock/MOCK_led.c													  	\
+mock/MOCK_usb.c													  	\
+$(ROOT_DIR)/mod/servo/servo.c           							\
 $(ROOT_DIR)/Unity/src/unity.c    										
 
 # Coverage Tested Source Files
 # Whichever files are being unit tested should be listed here!
 COV_C_SOURCES =														\
-$(ROOT_DIR)/mod/gps/gps.c
+$(ROOT_DIR)/mod/servo/servo.c
 
 ################################################################
 # Compiler 
@@ -62,9 +75,12 @@ CC = gcc
 # This should include a path to all of the headers used in your test
 C_INCLUDES =                                           \
 -I.                                                    \
--I$(ROOT_DIR)/mod/gps/								   \
+-I$(ROOT_DIR)/mod/servo/							   \
 -I$(ROOT_DIR)/mod/sensor/							   \
 -I$(ROOT_DIR)/mod/imu/								   \
+-I$(ROOT_DIR)/mod/usb/								   \
+-I$(ROOT_DIR)/mod/led/								   \
+-I$(ROOT_DIR)/init/blink/							   \
 -I$(LIB_DIR)                                           \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc          \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc/Legacy   \
@@ -118,15 +134,14 @@ $(BUILD_DIR):
 
 # Run test
 # This runs the test and generates the coverage report.
-# Windows users should have a .exe on the second line of this following $(TARGET)
 # Linux users may not need this
 # This set of bash commands is why windows users should use Git Bash
 test: $(BUILD_DIR)/$(TARGET)
 	@echo THIS TEST MUST BE EXECUTED IN A BASH TERMINAL. CMD/PS do not work.
-	"$(BUILD_DIR)/$(TARGET)" > "$(TARGET)_results.txt"
-	tail -n 3 "$(TARGET)_results.txt"
-	@echo -e "\nCOVERAGE SUMMARY:\n" >> "$(TARGET)_results.txt"
-	gcov -o $(BUILD_DIR) $(COV_C_SOURCES) | tee -a "$(TARGET)_results.txt"
+	"$(BUILD_DIR)/$(TARGET)" > "$(TEST)_results.txt"
+	tail -n 3 "$(TEST)_results.txt"
+	@echo -e "\nCOVERAGE SUMMARY:\n" >> "$(TEST)_results.txt"
+	gcov -o $(BUILD_DIR) $(COV_C_SOURCES) | tee -a "$(TEST)_results.txt"
 
 ################################################################
 # clean up 
