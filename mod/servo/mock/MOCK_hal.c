@@ -46,7 +46,7 @@ if (call_number == 0)
     }
 else
     {
-        mocked_returns_HAL_TIM_PWM_Start[call_number] = mocked_status;
+    mocked_returns_HAL_TIM_PWM_Start[call_number] = mocked_status;
     }
 
 }
@@ -106,5 +106,5 @@ return mocked_returns_HAL_TIM_PWM_Start[calls_to_HAL_TIM_PWM_Start];
 
 void HAL_Delay(uint32_t Delay) 
 {
-sleep(Delay);
+
 }
