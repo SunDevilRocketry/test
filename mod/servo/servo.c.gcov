@@ -1,0 +1,237 @@
+        -:    0:Source:../../../mod/servo/servo.c
+        -:    0:Graph:build/servo.gcno
+        -:    0:Data:build/servo.gcda
+        -:    0:Runs:1
+        -:    1:/*******************************************************************************
+        -:    2:*
+        -:    3:* FILE: 
+        -:    4:* 		servo.c
+        -:    5:*
+        -:    6:* DESCRIPTION: 
+        -:    7:* 		Contains API functions to get access to the servo motors driver
+        -:    8:*
+        -:    9:*******************************************************************************/
+        -:   10:
+        -:   11:
+        -:   12:/*------------------------------------------------------------------------------
+        -:   13: Standard Includes                                                                     
+        -:   14:------------------------------------------------------------------------------*/
+        -:   15:
+        -:   16:
+        -:   17:/*------------------------------------------------------------------------------
+        -:   18: Project Includes                                                                     
+        -:   19:------------------------------------------------------------------------------*/
+        -:   20:#include "main.h"
+        -:   21:#include "sdr_pin_defines_A0002.h"
+        -:   22:#include "servo.h"
+        -:   23:#include "led.h"
+        -:   24:#include "init.h"
+        -:   25:#include "usb.h"
+        -:   26:/*------------------------------------------------------------------------------
+        -:   27: Global Variables 
+        -:   28:------------------------------------------------------------------------------*/
+        -:   29:#define SER_PER 0.55555
+        -:   30:
+        -:   31:extern SERVO_PRESET servo_preset;
+        -:   32:
+        -:   33:/*------------------------------------------------------------------------------
+        -:   34: Procedures 
+        -:   35:------------------------------------------------------------------------------*/
+        -:   36:
+        -:   37:/*******************************************************************************
+        -:   38:*                                                                              *
+        -:   39:* PROCEDURE:                                                                   * 
+        -:   40:* 		servo_init                                                             *
+        -:   41:*                                                                              *
+        -:   42:* DESCRIPTION:                                                                 * 
+        -:   43:* 		Initialize/Reset servo                             *
+        -:   44:*                                                                              *
+        -:   45:*******************************************************************************/
+        3:   46:SERVO_STATUS servo_init()
+        -:   47:{
+        -:   48:    // GPIO Initialization
+        3:   49:    HAL_GPIO_WritePin(MOTOR1_EN_PORT, MOTOR1_EN, GPIO_PIN_SET);
+        3:   50:    HAL_GPIO_WritePin(MOTOR2_EN_PORT, MOTOR2_EN, GPIO_PIN_SET);
+        3:   51:    HAL_GPIO_WritePin(MOTOR3_EN_PORT, MOTOR3_EN, GPIO_PIN_SET);
+        3:   52:    HAL_GPIO_WritePin(MOTOR4_EN_PORT, MOTOR4_EN, GPIO_PIN_SET);
+        -:   53:
+        -:   54:    // Timer intialization
+        3:   55:    HAL_StatusTypeDef hal_status1, hal_status2, hal_status3, hal_status4;
+        -:   56:
+        3:   57:    hal_status1 = HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
+        3:   58:    hal_status2 = HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
+        3:   59:    hal_status3 = HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
+        3:   60:    hal_status4 = HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
+        -:   61:
+        3:   62:    if ( hal_status1 == HAL_OK &&
+        -:   63:        hal_status2 == HAL_OK &&
+        3:   64:        hal_status3 == HAL_OK &&
+        -:   65:        hal_status4 == HAL_OK )
+        -:   66:        {
+        -:   67:        return SERVO_OK;
+        -:   68:        }
+        -:   69:        else
+        -:   70:        {
+        2:   71:        return SERVO_FAIL;
+        -:   72:        }
+        -:   73:}
+        -:   74:
+        -:   75:
+        -:   76:/*******************************************************************************
+        -:   77:*                                                                              *
+        -:   78:* PROCEDURE:                                                                   * 
+        -:   79:* 		servo_reset                                                             *
+        -:   80:*                                                                              *
+        -:   81:* DESCRIPTION:                                                                 * 
+        -:   82:* 		Initialize/Reset servo rotate to default                               *
+        -:   83:*                                                                              *
+        -:   84:*******************************************************************************/
+        3:   85:void servo_reset()
+        -:   86:{
+        3:   87:    motor1_drive(servo_preset.rp_servo1);
+        3:   88:    motor2_drive(servo_preset.rp_servo2);
+        3:   89:    motor3_drive(servo_preset.rp_servo3);
+        3:   90:    motor4_drive(servo_preset.rp_servo4);
+        3:   91:}
+        -:   92:
+        -:   93:/*******************************************************************************
+        -:   94:*                                                                              *
+        -:   95:* PROCEDURE:                                                                   * 
+        -:   96:* 		motor1_drive                                                           *
+        -:   97:*                                                                              *
+        -:   98:* DESCRIPTION:                                                                 * 
+        -:   99:* 		Drive the first servo motor with a desired angle (0-180)            *
+        -:  100:*                                                                              *
+        -:  101:*******************************************************************************/
+        6:  102:void motor1_drive(uint8_t angle)
+        -:  103:{
+        6:  104:    uint8_t pulse = angle_to_pulse(motor_snap_to_bound(angle, 180, 0));
+        6:  105:    htim3.Instance->CCR4 = pulse;
+        6:  106:}
+        -:  107:
+        -:  108:/*******************************************************************************
+        -:  109:*                                                                              *
+        -:  110:* PROCEDURE:                                                                   * 
+        -:  111:* 		motor2_drive                                                           *
+        -:  112:*                                                                              *
+        -:  113:* DESCRIPTION:                                                                 * 
+        -:  114:* 		Drive the second servo motor with a desired angle (0-180)              *
+        -:  115:*                                                                              *
+        -:  116:*******************************************************************************/
+        6:  117:void motor2_drive(uint8_t angle)
+        -:  118:{
+        6:  119:    uint8_t pulse = angle_to_pulse(motor_snap_to_bound(angle, 180, 0));
+        6:  120:    htim3.Instance->CCR3 = pulse;
+        6:  121:}
+        -:  122:
+        -:  123:/*******************************************************************************
+        -:  124:*                                                                              *
+        -:  125:* PROCEDURE:                                                                   * 
+        -:  126:* 		motor3_drive                                                           *
+        -:  127:*                                                                              *
+        -:  128:* DESCRIPTION:                                                                 * 
+        -:  129:* 		Drive the third servo motor with a desired angle (0-180)               *
+        -:  130:*                                                                              *
+        -:  131:*******************************************************************************/
+        6:  132:void motor3_drive(uint8_t angle)
+        -:  133:{
+        6:  134:    uint8_t pulse = angle_to_pulse(motor_snap_to_bound(angle, 180, 0));
+        6:  135:    htim3.Instance->CCR1 = pulse;
+        6:  136:}
+        -:  137:
+        -:  138:/*******************************************************************************
+        -:  139:*                                                                              *
+        -:  140:* PROCEDURE:                                                                   * 
+        -:  141:* 		motor4_drive                                                           *
+        -:  142:*                                                                              *
+        -:  143:* DESCRIPTION:                                                                 * 
+        -:  144:* 		Drive the forth servo motor with a desired angle (0-180)               *
+        -:  145:*                                                                              *
+        -:  146:*******************************************************************************/
+        6:  147:void motor4_drive(uint8_t angle)
+        -:  148:{
+        6:  149:    uint8_t pulse = angle_to_pulse(motor_snap_to_bound(angle, 180, 0));
+        6:  150:    htim2.Instance->CCR1 = pulse;
+        6:  151:}
+        -:  152:
+        -:  153:/*******************************************************************************
+        -:  154:*                                                                              *
+        -:  155:* PROCEDURE:                                                                   * 
+        -:  156:* 		motors_drive                                                           *
+        -:  157:*                                                                              *
+        -:  158:* DESCRIPTION:                                                                 * 
+        -:  159:* 		A complete function that drives all servos in this board               *
+        -:  160:*                                                                              *
+        -:  161:*******************************************************************************/
+        3:  162:void motors_drive(uint8_t angle)
+        -:  163:{
+        3:  164:    motor1_drive(angle);
+        3:  165:    motor2_drive(angle);
+        3:  166:    motor3_drive(angle);
+        3:  167:    motor4_drive(angle);
+        3:  168:}
+        -:  169:
+        -:  170:
+        -:  171:/*******************************************************************************
+        -:  172:*                                                                              *
+        -:  173:* PROCEDURE:                                                                   * 
+        -:  174:* 		servo_cmd_execute                                                      *
+        -:  175:*                                                                              *
+        -:  176:* DESCRIPTION:                                                                 * 
+        -:  177:* 		Executes a servo command given from the terminal.                      *
+        -:  178:*                                                                              *
+        -:  179:*******************************************************************************/
+        5:  180:SERVO_STATUS servo_cmd_execute(uint8_t subcommand){
+        5:  181:    USB_STATUS usb_status;
+        -:  182:
+        5:  183:    switch (subcommand){
+        3:  184:        case SERVO_SWEEP:
+        -:  185:        {
+        3:  186:            uint8_t degree;
+        3:  187:            usb_status = usb_receive(&degree, sizeof(uint8_t), 1000);
+        3:  188:            motors_drive(degree);
+        3:  189:            if (usb_status == USB_OK) 
+        -:  190:                {
+        -:  191:                return SERVO_OK;
+        -:  192:                }
+        -:  193:            else
+        -:  194:                {
+        1:  195:                led_set_color( LED_YELLOW );
+        1:  196:                HAL_Delay( 5000 );
+        1:  197:                return SERVO_FAIL;
+        -:  198:                }
+        -:  199:        }
+        1:  200:        case SERVO_RESET:
+        -:  201:        {
+        1:  202:            servo_reset();
+        1:  203:            return SERVO_OK;
+        -:  204:        }
+        -:  205:        default:
+        -:  206:            return SERVO_FAIL;
+        -:  207:    }
+        -:  208:}
+        -:  209:
+        -:  210:/*******************************************************************************
+        -:  211:*                                                                              *
+        -:  212:* PROCEDURE:                                                                   * 
+        -:  213:* 		angle_to_pulse                                                         *
+        -:  214:*                                                                              *
+        -:  215:* DESCRIPTION:                                                                 * 
+        -:  216:* 		Convert turn angle degree into PWM pulse                               *
+        -:  217:*                                                                              *
+        -:  218:*******************************************************************************/
+       24:  219:uint8_t angle_to_pulse(uint8_t angle)
+        -:  220:{
+       24:  221:    return 25 + (angle*SER_PER);
+        -:  222:}
+        -:  223:
+       24:  224:uint8_t motor_snap_to_bound(uint8_t angle, uint8_t upper, uint8_t lower)
+        -:  225:{
+       24:  226:    if (angle >= lower && angle <= upper) {
+        -:  227:        return angle;
+        2:  228:    } else if (angle > upper && angle <= (upper + ((255 - upper) / 2))) {
+        -:  229:        return upper;
+        -:  230:    } else {
+        1:  231:        return lower;
+        -:  232:    }
+        -:  233:}
