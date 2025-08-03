@@ -21,10 +21,10 @@ Standard Includes
 /*------------------------------------------------------------------------------
 Project Includes                                                                     
 ------------------------------------------------------------------------------*/
+#include "sdrtf_pub.h"
 #include "main.h"
 #include "sensor.h"
 #include "gps.h"
-#include "unity.h"
 
 
 /*------------------------------------------------------------------------------
@@ -211,11 +211,12 @@ fclose(f);
 FILE* actual = fopen("cases/gps_parse_actual.txt", "r");
 for ( int test_num = 0; test_num < num_cases; test_num++ )
 	{
+	char msg[80];
+	sprintf( msg, "Test parsing GPS message %d.", test_num );
 	fgets(buffer, sizeof(buffer), actual);
     /* Initialize input/output */
 	buffer[strcspn(buffer, "\n")] = 0;
-	TEST_ASSERT_EQUAL_STRING(expected[test_num], buffer); /* Test begins */
-	printf("\tGPS_Parse #%d passed\n", test_num + 1);
+	TEST_ASSERT_EQ_STRING( msg, buffer, expected[test_num], sizeof(buffer) ); /* Test begins */
 	}
 
 } /* test_GPS_parse */
@@ -254,8 +255,9 @@ int expected[NUM_CASES_GPS_MESG_VALIDATE] = {1,1,1,0,0};
 
 for ( int test_num = 0; test_num < NUM_CASES_GPS_MESG_VALIDATE; test_num++ )
 	{
-	TEST_ASSERT_EQUAL_INT(expected[test_num], gps_mesg_validate(input_strings[test_num]));
-	printf("\tgps_mesg_validate #%d passed\n", test_num + 1);
+	char msg[80];
+	sprintf( msg, "Test that the NMEA message validator works as expected for case %d.", test_num );
+	TEST_ASSERT_EQ_UINT( msg, gps_mesg_validate(input_strings[test_num]), expected[test_num] );
 	}
 
 } /* test_GPS_mesg_validate */
@@ -301,9 +303,10 @@ uint16_t timeout = 10000;
 
 for ( int test_num = 0; test_num < NUM_CASES_GPS_TRANSMIT; test_num++ )
 	{
+	char msg[80];
 	MOCK_HAL_Status_Return(statuses[test_num]);
-	TEST_ASSERT_EQUAL_INT(statuses[test_num], gps_transmit(tx_data_ptr, size, timeout));
-	printf("\tgps_transmit #%d passed\n", test_num + 1);
+	sprintf( msg, "Check that the error return matches the expected for case %d.", test_num );
+	TEST_ASSERT_EQ_UINT( msg, gps_transmit(tx_data_ptr, size, timeout), statuses[test_num] );
 	}
 free(tx_data_ptr);
 } /* test_gps_transmit */
@@ -358,9 +361,10 @@ uint16_t timeout = 10000;
 
 for ( int test_num = 0; test_num < NUM_CASES_GPS_RECEIVE; test_num++ )
 	{
+	char msg[80];
+	sprintf( msg, "Check that the error return matches the expected for case %d.", test_num );
 	MOCK_HAL_Status_Return(statuses[test_num]);
-	TEST_ASSERT_EQUAL_INT(expected[test_num], gps_receive(tx_data_ptr, size, timeout));
-	printf("\tgps_receive #%d passed\n", test_num + 1);
+	TEST_ASSERT_EQ_UINT( msg, gps_receive(tx_data_ptr, size, timeout), expected[test_num] );
 	}
 free(tx_data_ptr);
 } /* test_gps_receive */
@@ -414,9 +418,10 @@ void* tx_data_ptr = malloc(size);
 
 for ( int test_num = 0; test_num < NUM_CASES_GPS_RECEIVE_IT; test_num++ )
 	{
+	char msg[80];
+	sprintf( msg, "Check that the error return matches the expected for case %d.", test_num );
 	MOCK_HAL_Status_Return(statuses[test_num]);
-	TEST_ASSERT_EQUAL_INT(expected[test_num], gps_receive_IT(tx_data_ptr, size));
-	printf("\tgps_receive_IT #%d passed\n", test_num + 1);
+	TEST_ASSERT_EQ_UINT( msg, gps_receive_IT(tx_data_ptr, size), expected[test_num] );
 	}
 
 free(tx_data_ptr);
@@ -438,27 +443,37 @@ int main
 	void
 	)
 {
-UNITY_BEGIN();
-printf("-----------------------\n");
-printf("	GPS UNIT TESTING\n");
-printf("-----------------------\n");
-printf("\nNote: These unit tests exit on a failed assert. If the test fails, go to the case after the last pass.\n");
+/*------------------------------------------------------------------------------
+Test Cases
+------------------------------------------------------------------------------*/
+/* Do not modify */
+typedef void (*test_callback)(void);
+typedef struct unit_test {
+	const char* test_name;
+	test_callback test_pointer;
+} unit_test;
 
-// List test functions here.
-RUN_TEST( test_GPS_parse );
-RUN_TEST( test_gps_mesg_validate );
-RUN_TEST( test_gps_transmit );
-RUN_TEST( test_gps_receive );
-RUN_TEST( test_gps_receive_IT );
+/* Define test cases here */
+unit_test tests[] =
+	{
+	{ "GPS_parse", test_GPS_parse },
+	{ "gps_mesg_parse", test_gps_mesg_validate },
+	{ "gps_transmit", test_gps_transmit },
+	{ "gps_receive", test_gps_receive },
+	{ "gps_receive_IT", test_gps_receive_IT }
+	};
 
-if (EXPECTED_COVERAGE == 100) {
-	printf("\nThis test suite expects full coverage (100%%).\n");
-}
-else {
-	printf("\nThis test does not expect full coverage (> 100%%)\n");
-}
+/* Do not modify */
+FILE* outfile = fopen( "results.txt", "w" );
+TEST_init( outfile, "gps.c" );
+for( int i = 0; i < ( sizeof(tests) / sizeof(unit_test) ); i++ )
+	{
+	TEST_begin_group( tests[i].test_name );
+	tests[i].test_pointer();
+	TEST_end_group( tests[i].test_name );
+	}
 
-return UNITY_END();
+exit( -1 * TEST_finalize() );
 } /* main */
 
 

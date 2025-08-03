@@ -43,15 +43,20 @@ INIT_DIR = $(ROOT_DIR)/init
 ################################################################
 
 # C sources
-C_SOURCES =                                   						  \
+TEST_SOURCES =                                   				  \
 test_gps.c                       								  \
-mock/MOCK_hal.c													  \
-$(ROOT_DIR)/mod/gps/gps.c           							  \
-$(ROOT_DIR)/Unity/src/unity.c    
+mock/MOCK_hal.c
 
 # Tested Source Files
-COV_C_SOURCES =														\
+COV_C_SOURCES =													  \
 $(ROOT_DIR)/mod/gps/gps.c
+
+# Framework
+FRAMEWORK_SOURCES =												  \
+$(ROOT_DIR)/test/framework/sdrtf/src/test_assert.c          	  \
+$(ROOT_DIR)/test/framework/sdrtf/src/test_driver.c
+
+C_SOURCES = $(TEST_SOURCES) $(COV_C_SOURCES) $(FRAMEWORK_SOURCES)
 
 ################################################################
 # Compiler 
@@ -76,7 +81,7 @@ C_INCLUDES =                                           \
 -I$(LIB_DIR)/Drivers/CMSIS/Include                     \
 -I$(ROOT_DIR)/init/terminal/config/Inc				   \
 -I$(INIT_DIR)/config/Inc                               \
--I$(ROOT_DIR)/Unity/src/                               \
+-I$(ROOT_DIR)/test/framework/sdrtf/src				   \
 -I$(ROOT_DIR)/test/mod/gps/mock/
 
 # Preprocessor definitions
@@ -111,7 +116,7 @@ OBJECTS = $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
 vpath %.c $(sort $(dir $(C_SOURCES)))
 
 $(BUILD_DIR)/%.o: %.c $(BUILD_DIR)
-	$(CC) -c $(CFLAGS) $< -o $@
+	$(CC) -c $(CFLAGS) -DTEST_FORMAL_RUN $< -o $@
 
 $(BUILD_DIR)/$(TARGET): $(OBJECTS) 
 	$(CC) $(OBJECTS) -o $@ -lgcov
