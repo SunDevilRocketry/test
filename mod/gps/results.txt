@@ -10,9 +10,9 @@
 --General Build Information--
 Test Name:   gps.c
 Build Date:  Aug  3 2025
-Build Time:  15:52:16
+Build Time:  16:52:18
 Run Date:    Aug 03 2025
-Run Time:    15:52:22
+Run Time:    16:52:24
 ISO C?:      1
 C Standard:  201710
 
@@ -39,49 +39,49 @@ Actual: TRUE | Expected: TRUE
 --BEGIN TEST GROUP: GPS_parse--
 
 Test parsing GPS message 0.
-Actual (address): 0xffffca60 | Expected (address): 0x00409630
+Actual (address): 0xffffca60 | Expected (address): 0x00409500
 
 Test parsing GPS message 1.
-Actual (address): 0xffffca60 | Expected (address): 0x004096d0
+Actual (address): 0xffffca60 | Expected (address): 0x004095a0
 
 Test parsing GPS message 2.
-Actual (address): 0xffffca60 | Expected (address): 0x00409770
+Actual (address): 0xffffca60 | Expected (address): 0x00409640
 
 Test parsing GPS message 3.
-Actual (address): 0xffffca60 | Expected (address): 0x00409810
+Actual (address): 0xffffca60 | Expected (address): 0x004096e0
 
 Test parsing GPS message 4.
-Actual (address): 0xffffca60 | Expected (address): 0x004098a0
+Actual (address): 0xffffca60 | Expected (address): 0x00409770
 
 Test parsing GPS message 5.
-Actual (address): 0xffffca60 | Expected (address): 0x00409940
+Actual (address): 0xffffca60 | Expected (address): 0x00409810
 
 Test parsing GPS message 6.
-Actual (address): 0xffffca60 | Expected (address): 0x004099e0
+Actual (address): 0xffffca60 | Expected (address): 0x004098b0
 
 Test parsing GPS message 7.
-Actual (address): 0xffffca60 | Expected (address): 0x00409a70
+Actual (address): 0xffffca60 | Expected (address): 0x00409940
 
 Test parsing GPS message 8.
-Actual (address): 0xffffca60 | Expected (address): 0x00409b10
+Actual (address): 0xffffca60 | Expected (address): 0x004099e0
 
 Test parsing GPS message 9.
-Actual (address): 0xffffca60 | Expected (address): 0x00409bb0
+Actual (address): 0xffffca60 | Expected (address): 0x00409a80
 
 Test parsing GPS message 10.
-Actual (address): 0xffffca60 | Expected (address): 0x00409c50
+Actual (address): 0xffffca60 | Expected (address): 0x00409b20
 
 Test parsing GPS message 11.
-Actual (address): 0xffffca60 | Expected (address): 0x00409cf0
+Actual (address): 0xffffca60 | Expected (address): 0x00409bc0
 
 Test parsing GPS message 12.
-Actual (address): 0xffffca60 | Expected (address): 0x00409d80
+Actual (address): 0xffffca60 | Expected (address): 0x00409c50
 
 Test parsing GPS message 13.
-Actual (address): 0xffffca60 | Expected (address): 0x00409e20
+Actual (address): 0xffffca60 | Expected (address): 0x00409cf0
 
 Test parsing GPS message 14.
-Actual (address): 0xffffca60 | Expected (address): 0x00409cf0
+Actual (address): 0xffffca60 | Expected (address): 0x00409bc0
 
 --TEST GROUP RESULTS:--
 Group Passes: 18

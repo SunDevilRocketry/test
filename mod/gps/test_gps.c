@@ -143,8 +143,6 @@ char buffer[200] = ""; // An NMEA message is 82 characters, but the way we parse
 
 // Source: https://github.com/esutton/gps-nmea-log-files/blob/master/AMOD_AGL3080_20121104_134730.txt
 
-printf("\nUnit Tests: GPS_parse (and static helper functions)\n");
-
 /* Step: Load inputs and expected results */
 char* input_strings[] = 
 {
@@ -204,8 +202,6 @@ char buffer[200] = ""; // An NMEA message is 82 characters, but the way we parse
 
 // Source: https://github.com/esutton/gps-nmea-log-files/blob/master/AMOD_AGL3080_20121104_134730.txt
 
-printf("\nUnit Tests: test_gps_mesg_validate\n");
-
 /* Step: Load inputs and expected results */
 char* input_strings[] = 
 {
@@ -244,9 +240,6 @@ void test_gps_transmit
 Initializations
 ------------------------------------------------------------------------------*/
 #define NUM_CASES_GPS_TRANSMIT 4
-
-printf("\nUnit Tests: test_gps_transmit\n");
-printf("(NOTE: This tests exists for statement coverage in gps.c only. It does not verify lower functionalities.)\n");
 
 /* Step: Prepare mocked function returns */
 HAL_StatusTypeDef statuses[NUM_CASES_GPS_TRANSMIT] =
@@ -293,9 +286,6 @@ void test_gps_receive
 Initializations
 ------------------------------------------------------------------------------*/
 #define NUM_CASES_GPS_RECEIVE 4
-
-printf("\nUnit Tests: test_gps_receive\n");
-printf("(NOTE: This tests exists for statement coverage in gps.c only. It does not verify lower functionalities.)\n");
 
 /* Step: Prepare mocked function returns */
 HAL_StatusTypeDef statuses[NUM_CASES_GPS_RECEIVE] =
@@ -351,9 +341,6 @@ void test_gps_receive_IT
 Initializations
 ------------------------------------------------------------------------------*/
 #define NUM_CASES_GPS_RECEIVE_IT 4
-
-printf("\nUnit Tests: test_gps_receive_IT\n");
-printf("(NOTE: This tests exists for statement coverage in gps.c only. It does not verify lower functionalities.)\n");
 
 /* Step: Prepare mocked function returns */
 HAL_StatusTypeDef statuses[NUM_CASES_GPS_RECEIVE_IT] =

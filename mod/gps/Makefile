@@ -126,10 +126,10 @@ $(BUILD_DIR):
 
 test: $(BUILD_DIR)/$(TARGET)
 	@echo THIS TEST MUST BE EXECUTED IN A BASH TERMINAL. CMD/PS do not work.
-	"$(BUILD_DIR)/$(TARGET)" > "$(TEST)_results.txt"
-	tail -n 3 "$(TEST)_results.txt"
-	@echo -e "\nCOVERAGE SUMMARY:\n" >> "$(TEST)_results.txt"
-	gcov -o $(BUILD_DIR) $(COV_C_SOURCES) | tee -a "$(TEST)_results.txt"
+	"$(BUILD_DIR)/$(TARGET)"
+	tail -n 3 "results.txt"
+	@echo -e "\nCOVERAGE SUMMARY:\n" >> "results.txt"
+	gcovr -o $(BUILD_DIR) $(COV_C_SOURCES) | tee -a "results.txt"
 
 ################################################################
 # clean up 
