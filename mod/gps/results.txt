@@ -10,9 +10,9 @@
 --General Build Information--
 Test Name:   gps.c
 Build Date:  Aug  3 2025
-Build Time:  15:50:02
+Build Time:  15:52:16
 Run Date:    Aug 03 2025
-Run Time:    15:50:06
+Run Time:    15:52:22
 ISO C?:      1
 C Standard:  201710
 
@@ -21,7 +21,6 @@ GCC Version: 12.4.0
 
 --Formal Test Run Info--
 Run Type:    FORMAL
-Repo Status: Dirty
 
 ----------------------------------------
 ----------------Results-----------------
@@ -34,60 +33,59 @@ Test Environment: Compiler is supported GCC version
 Actual: 12 | Expected: 12
 
 Test Environment: Repository is clean.
-FAIL: False at ../../../test/framework/sdrtf/src/test_driver.c:355
-Actual: FALSE | Expected: TRUE
+Actual: TRUE | Expected: TRUE
 
 
 --BEGIN TEST GROUP: GPS_parse--
 
 Test parsing GPS message 0.
-Actual (address): 0xffffca60 | Expected (address): 0x0040a630
+Actual (address): 0xffffca60 | Expected (address): 0x00409630
 
 Test parsing GPS message 1.
-Actual (address): 0xffffca60 | Expected (address): 0x0040a6d0
+Actual (address): 0xffffca60 | Expected (address): 0x004096d0
 
 Test parsing GPS message 2.
-Actual (address): 0xffffca60 | Expected (address): 0x0040a770
+Actual (address): 0xffffca60 | Expected (address): 0x00409770
 
 Test parsing GPS message 3.
-Actual (address): 0xffffca60 | Expected (address): 0x0040a810
+Actual (address): 0xffffca60 | Expected (address): 0x00409810
 
 Test parsing GPS message 4.
-Actual (address): 0xffffca60 | Expected (address): 0x0040a8a0
+Actual (address): 0xffffca60 | Expected (address): 0x004098a0
 
 Test parsing GPS message 5.
-Actual (address): 0xffffca60 | Expected (address): 0x0040a940
+Actual (address): 0xffffca60 | Expected (address): 0x00409940
 
 Test parsing GPS message 6.
-Actual (address): 0xffffca60 | Expected (address): 0x0040a9e0
+Actual (address): 0xffffca60 | Expected (address): 0x004099e0
 
 Test parsing GPS message 7.
-Actual (address): 0xffffca60 | Expected (address): 0x0040aa70
+Actual (address): 0xffffca60 | Expected (address): 0x00409a70
 
 Test parsing GPS message 8.
-Actual (address): 0xffffca60 | Expected (address): 0x0040ab10
+Actual (address): 0xffffca60 | Expected (address): 0x00409b10
 
 Test parsing GPS message 9.
-Actual (address): 0xffffca60 | Expected (address): 0x0040abb0
+Actual (address): 0xffffca60 | Expected (address): 0x00409bb0
 
 Test parsing GPS message 10.
-Actual (address): 0xffffca60 | Expected (address): 0x0040ac50
+Actual (address): 0xffffca60 | Expected (address): 0x00409c50
 
 Test parsing GPS message 11.
-Actual (address): 0xffffca60 | Expected (address): 0x0040acf0
+Actual (address): 0xffffca60 | Expected (address): 0x00409cf0
 
 Test parsing GPS message 12.
-Actual (address): 0xffffca60 | Expected (address): 0x0040ad80
+Actual (address): 0xffffca60 | Expected (address): 0x00409d80
 
 Test parsing GPS message 13.
-Actual (address): 0xffffca60 | Expected (address): 0x0040ae20
+Actual (address): 0xffffca60 | Expected (address): 0x00409e20
 
 Test parsing GPS message 14.
-Actual (address): 0xffffca60 | Expected (address): 0x0040acf0
+Actual (address): 0xffffca60 | Expected (address): 0x00409cf0
 
 --TEST GROUP RESULTS:--
-Group Passes: 17
-Group Fails:  1
+Group Passes: 18
+Group Fails:  0
 --END TEST GROUP: GPS_parse--
 
 
@@ -176,7 +174,7 @@ Group Fails:  0
 ----------------------------------------
 -------------Test Complete--------------
 ----------------------------------------
-Passes: 34
-Fails:  1
-Result: FAIL
+Passes: 35
+Fails:  0
+Result: PASS
 ----------------------------------------
