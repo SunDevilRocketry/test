@@ -1,0 +1,182 @@
+----------------------------------------
+-----------Sun Devil Rocketry-----------
+-----------Unit Test Results------------
+----------------------------------------
+
+----------------------------------------
+------------Test Environment------------
+----------------------------------------
+
+--General Build Information--
+Test Name:   gps.c
+Build Date:  Aug  3 2025
+Build Time:  15:50:02
+Run Date:    Aug 03 2025
+Run Time:    15:50:06
+ISO C?:      1
+C Standard:  201710
+
+--GNU C Compiler (GCC) Info--
+GCC Version: 12.4.0
+
+--Formal Test Run Info--
+Run Type:    FORMAL
+Repo Status: Dirty
+
+----------------------------------------
+----------------Results-----------------
+----------------------------------------
+
+Test Environment: ISO C standard is C17 or greater
+Actual: 201710 | Expected: 201700
+
+Test Environment: Compiler is supported GCC version
+Actual: 12 | Expected: 12
+
+Test Environment: Repository is clean.
+FAIL: False at ../../../test/framework/sdrtf/src/test_driver.c:355
+Actual: FALSE | Expected: TRUE
+
+
+--BEGIN TEST GROUP: GPS_parse--
+
+Test parsing GPS message 0.
+Actual (address): 0xffffca60 | Expected (address): 0x0040a630
+
+Test parsing GPS message 1.
+Actual (address): 0xffffca60 | Expected (address): 0x0040a6d0
+
+Test parsing GPS message 2.
+Actual (address): 0xffffca60 | Expected (address): 0x0040a770
+
+Test parsing GPS message 3.
+Actual (address): 0xffffca60 | Expected (address): 0x0040a810
+
+Test parsing GPS message 4.
+Actual (address): 0xffffca60 | Expected (address): 0x0040a8a0
+
+Test parsing GPS message 5.
+Actual (address): 0xffffca60 | Expected (address): 0x0040a940
+
+Test parsing GPS message 6.
+Actual (address): 0xffffca60 | Expected (address): 0x0040a9e0
+
+Test parsing GPS message 7.
+Actual (address): 0xffffca60 | Expected (address): 0x0040aa70
+
+Test parsing GPS message 8.
+Actual (address): 0xffffca60 | Expected (address): 0x0040ab10
+
+Test parsing GPS message 9.
+Actual (address): 0xffffca60 | Expected (address): 0x0040abb0
+
+Test parsing GPS message 10.
+Actual (address): 0xffffca60 | Expected (address): 0x0040ac50
+
+Test parsing GPS message 11.
+Actual (address): 0xffffca60 | Expected (address): 0x0040acf0
+
+Test parsing GPS message 12.
+Actual (address): 0xffffca60 | Expected (address): 0x0040ad80
+
+Test parsing GPS message 13.
+Actual (address): 0xffffca60 | Expected (address): 0x0040ae20
+
+Test parsing GPS message 14.
+Actual (address): 0xffffca60 | Expected (address): 0x0040acf0
+
+--TEST GROUP RESULTS:--
+Group Passes: 17
+Group Fails:  1
+--END TEST GROUP: GPS_parse--
+
+
+--BEGIN TEST GROUP: gps_mesg_parse--
+
+Test that the NMEA message validator works as expected for case 0.
+Actual: 1 | Expected: 1
+
+Test that the NMEA message validator works as expected for case 1.
+Actual: 1 | Expected: 1
+
+Test that the NMEA message validator works as expected for case 2.
+Actual: 1 | Expected: 1
+
+Test that the NMEA message validator works as expected for case 3.
+Actual: 0 | Expected: 0
+
+Test that the NMEA message validator works as expected for case 4.
+Actual: 0 | Expected: 0
+
+--TEST GROUP RESULTS:--
+Group Passes: 5
+Group Fails:  0
+--END TEST GROUP: gps_mesg_parse--
+
+
+--BEGIN TEST GROUP: gps_transmit--
+
+Check that the error return matches the expected for case 0.
+Actual: 0 | Expected: 0
+
+Check that the error return matches the expected for case 1.
+Actual: 1 | Expected: 1
+
+Check that the error return matches the expected for case 2.
+Actual: 2 | Expected: 2
+
+Check that the error return matches the expected for case 3.
+Actual: 3 | Expected: 3
+
+--TEST GROUP RESULTS:--
+Group Passes: 4
+Group Fails:  0
+--END TEST GROUP: gps_transmit--
+
+
+--BEGIN TEST GROUP: gps_receive--
+
+Check that the error return matches the expected for case 0.
+Actual: 0 | Expected: 0
+
+Check that the error return matches the expected for case 1.
+Actual: 1 | Expected: 1
+
+Check that the error return matches the expected for case 2.
+Actual: 1 | Expected: 1
+
+Check that the error return matches the expected for case 3.
+Actual: 2 | Expected: 2
+
+--TEST GROUP RESULTS:--
+Group Passes: 4
+Group Fails:  0
+--END TEST GROUP: gps_receive--
+
+
+--BEGIN TEST GROUP: gps_receive_IT--
+
+Check that the error return matches the expected for case 0.
+Actual: 0 | Expected: 0
+
+Check that the error return matches the expected for case 1.
+Actual: 1 | Expected: 1
+
+Check that the error return matches the expected for case 2.
+Actual: 1 | Expected: 1
+
+Check that the error return matches the expected for case 3.
+Actual: 2 | Expected: 2
+
+--TEST GROUP RESULTS:--
+Group Passes: 4
+Group Fails:  0
+--END TEST GROUP: gps_receive_IT--
+
+----------------------------------------
+-------------Test Complete--------------
+----------------------------------------
+Passes: 34
+Fails:  1
+Result: FAIL
+----------------------------------------
