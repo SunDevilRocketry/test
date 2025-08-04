@@ -53,8 +53,8 @@ $(ROOT_DIR)/mod/gps/gps.c
 
 # Framework
 FRAMEWORK_SOURCES =												  \
-$(ROOT_DIR)/test/framework/sdrtf/src/test_assert.c          	  \
-$(ROOT_DIR)/test/framework/sdrtf/src/test_driver.c
+$(ROOT_DIR)/test/framework/src/test_assert.c          	  		  \
+$(ROOT_DIR)/test/framework/src/test_driver.c
 
 C_SOURCES = $(TEST_SOURCES) $(COV_C_SOURCES) $(FRAMEWORK_SOURCES)
 
@@ -81,7 +81,7 @@ C_INCLUDES =                                           \
 -I$(LIB_DIR)/Drivers/CMSIS/Include                     \
 -I$(ROOT_DIR)/init/terminal/config/Inc				   \
 -I$(INIT_DIR)/config/Inc                               \
--I$(ROOT_DIR)/test/framework/sdrtf/src				   \
+-I$(ROOT_DIR)/test/framework/src				   	   \
 -I$(ROOT_DIR)/test/mod/gps/mock/
 
 # Preprocessor definitions
