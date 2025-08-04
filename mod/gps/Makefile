@@ -124,12 +124,15 @@ $(BUILD_DIR)/$(TARGET): $(OBJECTS)
 $(BUILD_DIR):
 	mkdir $@		
 
-test: $(BUILD_DIR)/$(TARGET)
+test:
+	-rm -fR $(BUILD_DIR)
+	$(MAKE) all
+	$(BUILD_DIR)/$(TARGET)
 	@echo THIS TEST MUST BE EXECUTED IN A BASH TERMINAL. CMD/PS do not work.
 	"$(BUILD_DIR)/$(TARGET)"
 	tail -n 3 "results.txt"
-	@echo -e "\nCOVERAGE SUMMARY:\n" >> "results.txt"
-	gcovr -o $(BUILD_DIR) $(COV_C_SOURCES) | tee -a "results.txt"
+	mkdir -p coverage
+	gcovr --filter $(COV_C_SOURCES) --html-details coverage/coverage.html
 
 ################################################################
 # clean up 
