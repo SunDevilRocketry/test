@@ -48,18 +48,18 @@ extern char test_name[32];
 /* test_driver.c */
 void test_error
     (
-    char* msg
+    const char* msg
     );
 
 void test_fail
     (
-    char* msg,
-    char* err_msg
+    const char* msg,
+    const char* err_msg
     );
 
 void test_pass
     (
-    char* msg
+    const char* msg
     );
 
 #ifdef __cplusplus

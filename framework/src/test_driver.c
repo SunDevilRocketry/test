@@ -205,7 +205,7 @@ return fail_counter;
 *******************************************************************************/
 void test_error
     (
-    char* msg
+    const char* msg
     )
 {
 /* log to console */
@@ -234,8 +234,8 @@ exit(1);
 *******************************************************************************/
 void test_fail
     (
-    char* msg,
-    char* err_msg
+    const char* msg,
+    const char* err_msg
     )
 {
 fprintf( outfile_handle, "%s\n", msg );
@@ -257,7 +257,7 @@ fail_counter++;
 *******************************************************************************/
 void test_pass
     (
-    char* msg
+    const char* msg
     )
 {
 fprintf( outfile_handle, "%s\n", msg );

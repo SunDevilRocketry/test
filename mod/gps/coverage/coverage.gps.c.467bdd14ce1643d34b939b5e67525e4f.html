@@ -26,7 +26,7 @@
     </tr>
     <tr>
       <th scope="row">Date:</th>
-      <td>2025-08-03 19:41:14</td>
+      <td>2025-08-04 17:53:59</td>
     </tr>
   </table>
 </div>
@@ -70,14 +70,14 @@
       <th>Call count</th>
       <th>Block coverage</th>
     </tr>
-    <tr><td><a href="#l271">GPS_parse (line 271)</a></td><td>called 30 times</td><td>100.0%</td></tr>
-    <tr><td><a href="#l414">gps_conv_latitude_longitude (line 414)</a></td><td>called 24 times</td><td>100.0%</td></tr>
-    <tr><td><a href="#l220">gps_mesg_validate (line 220)</a></td><td>called 12 times</td><td>90.0%</td></tr>
-    <tr><td><a href="#l110">gps_receive (line 110)</a></td><td>called 8 times</td><td>100.0%</td></tr>
-    <tr><td><a href="#l164">gps_receive_IT (line 164)</a></td><td>called 8 times</td><td>100.0%</td></tr>
-    <tr><td><a href="#l385">gps_string_to_char (line 385)</a></td><td>called 88 times</td><td>100.0%</td></tr>
-    <tr><td><a href="#l343">gps_string_to_float (line 343)</a></td><td>called 150 times</td><td>100.0%</td></tr>
-    <tr><td><a href="#l65">gps_transmit (line 65)</a></td><td>called 8 times</td><td>100.0%</td></tr>
+    <tr><td><a href="#l271">GPS_parse (line 271)</a></td><td>called 15 times</td><td>100.0%</td></tr>
+    <tr><td><a href="#l414">gps_conv_latitude_longitude (line 414)</a></td><td>called 12 times</td><td>100.0%</td></tr>
+    <tr><td><a href="#l220">gps_mesg_validate (line 220)</a></td><td>called 6 times</td><td>90.0%</td></tr>
+    <tr><td><a href="#l110">gps_receive (line 110)</a></td><td>called 4 times</td><td>100.0%</td></tr>
+    <tr><td><a href="#l164">gps_receive_IT (line 164)</a></td><td>called 4 times</td><td>100.0%</td></tr>
+    <tr><td><a href="#l385">gps_string_to_char (line 385)</a></td><td>called 44 times</td><td>100.0%</td></tr>
+    <tr><td><a href="#l343">gps_string_to_float (line 343)</a></td><td>called 75 times</td><td>100.0%</td></tr>
+    <tr><td><a href="#l65">gps_transmit (line 65)</a></td><td>called 4 times</td><td>100.0%</td></tr>
   </table>
 </details>
 
@@ -543,7 +543,7 @@
       <td class="lineno"><a id="l65" href="#l65">65</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">8</td>
+      <td class="linecount coveredLine">4</td>
       <td class="src coveredLine"><span class="n">GPS_STATUS</span><span class="w"> </span><span class="nf">gps_transmit</span><span class="w"> </span></td>
     </tr>
     <tr class="source-line">
@@ -613,7 +613,7 @@
       <td class="lineno"><a id="l75" href="#l75">75</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">8</td>
+      <td class="linecount coveredLine">4</td>
       <td class="src coveredLine"><span class="n">HAL_StatusTypeDef</span><span class="w"> </span><span class="n">gps_status</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
@@ -669,7 +669,7 @@
       <td class="lineno"><a id="l83" href="#l83">83</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">8</td>
+      <td class="linecount coveredLine">4</td>
       <td class="src coveredLine"><span class="n">gps_status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HAL_UART_Transmit</span><span class="p">(</span><span class="w"> </span><span class="o">&amp;</span><span class="p">(</span><span class="w"> </span><span class="n">GPS_HUART</span><span class="w"> </span><span class="p">),</span></td>
     </tr>
     <tr class="source-line">
@@ -713,12 +713,12 @@
         <details class="linebranchDetails">
           <summary class="linebranchSummary">2/2</summary>
           <div class="linebranchContents">
-            <div class="takenBranch">&check; Branch 0 taken 2 times.</div>
-            <div class="takenBranch">&check; Branch 1 taken 6 times.</div>
+            <div class="takenBranch">&check; Branch 0 taken 1 times.</div>
+            <div class="takenBranch">&check; Branch 1 taken 3 times.</div>
           </div>
         </details>
       </td>
-      <td class="linecount coveredLine">8</td>
+      <td class="linecount coveredLine">4</td>
       <td class="src coveredLine"><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">gps_status</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">HAL_OK</span><span class="w"> </span><span class="p">)</span></td>
     </tr>
     <tr class="source-line">
@@ -760,7 +760,7 @@
       <td class="lineno"><a id="l95" href="#l95">95</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">2</td>
+      <td class="linecount coveredLine">1</td>
       <td class="src coveredLine"><span class="w">	</span><span class="k">return</span><span class="w"> </span><span class="n">GPS_OK</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
@@ -865,7 +865,7 @@
       <td class="lineno"><a id="l110" href="#l110">110</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">8</td>
+      <td class="linecount coveredLine">4</td>
       <td class="src coveredLine"><span class="n">GPS_STATUS</span><span class="w"> </span><span class="nf">gps_receive</span><span class="w"> </span></td>
     </tr>
     <tr class="source-line">
@@ -935,7 +935,7 @@
       <td class="lineno"><a id="l120" href="#l120">120</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">8</td>
+      <td class="linecount coveredLine">4</td>
       <td class="src coveredLine"><span class="n">HAL_StatusTypeDef</span><span class="w"> </span><span class="n">gps_status</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
@@ -991,7 +991,7 @@
       <td class="lineno"><a id="l128" href="#l128">128</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">8</td>
+      <td class="linecount coveredLine">4</td>
       <td class="src coveredLine"><span class="n">gps_status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HAL_UART_Receive</span><span class="p">(</span><span class="w"> </span><span class="o">&amp;</span><span class="p">(</span><span class="w"> </span><span class="n">GPS_HUART</span><span class="w"> </span><span class="p">),</span></td>
     </tr>
     <tr class="source-line">
@@ -1028,13 +1028,13 @@
         <details class="linebranchDetails">
           <summary class="linebranchSummary">3/3</summary>
           <div class="linebranchContents">
-            <div class="takenBranch">&check; Branch 0 taken 2 times.</div>
-            <div class="takenBranch">&check; Branch 1 taken 4 times.</div>
-            <div class="takenBranch">&check; Branch 2 taken 2 times.</div>
+            <div class="takenBranch">&check; Branch 0 taken 1 times.</div>
+            <div class="takenBranch">&check; Branch 1 taken 2 times.</div>
+            <div class="takenBranch">&check; Branch 2 taken 1 times.</div>
           </div>
         </details>
       </td>
-      <td class="linecount coveredLine">8</td>
+      <td class="linecount coveredLine">4</td>
       <td class="src coveredLine"><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">gps_status</span><span class="w"> </span><span class="p">)</span></td>
     </tr>
     <tr class="source-line">
@@ -1069,7 +1069,7 @@
       <td class="lineno"><a id="l138" href="#l138">138</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">2</td>
+      <td class="linecount coveredLine">1</td>
       <td class="src coveredLine"><span class="w">		</span><span class="k">break</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
@@ -1083,7 +1083,7 @@
       <td class="lineno"><a id="l140" href="#l140">140</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">2</td>
+      <td class="linecount coveredLine">1</td>
       <td class="src coveredLine"><span class="w">	</span><span class="k">case</span><span class="w"> </span><span class="no">HAL_OK</span><span class="p">:</span></td>
     </tr>
     <tr class="source-line">
@@ -1097,14 +1097,14 @@
       <td class="lineno"><a id="l142" href="#l142">142</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">2</td>
+      <td class="linecount coveredLine">1</td>
       <td class="src coveredLine"><span class="w">		</span><span class="k">return</span><span class="w"> </span><span class="n">GPS_OK</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l143" href="#l143">143</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">4</td>
+      <td class="linecount coveredLine">2</td>
       <td class="src coveredLine"><span class="w">		</span><span class="k">break</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
@@ -1118,7 +1118,7 @@
       <td class="lineno"><a id="l145" href="#l145">145</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">4</td>
+      <td class="linecount coveredLine">2</td>
       <td class="src coveredLine"><span class="w">	</span><span class="k">default</span><span class="o">:</span></td>
     </tr>
     <tr class="source-line">
@@ -1132,14 +1132,14 @@
       <td class="lineno"><a id="l147" href="#l147">147</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">4</td>
+      <td class="linecount coveredLine">2</td>
       <td class="src coveredLine"><span class="w">		</span><span class="k">return</span><span class="w"> </span><span class="n">GPS_FAIL</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l148" href="#l148">148</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">8</td>
+      <td class="linecount coveredLine">4</td>
       <td class="src coveredLine"><span class="w">		</span><span class="k">break</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
@@ -1251,7 +1251,7 @@
       <td class="lineno"><a id="l164" href="#l164">164</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">8</td>
+      <td class="linecount coveredLine">4</td>
       <td class="src coveredLine"><span class="n">GPS_STATUS</span><span class="w"> </span><span class="nf">gps_receive_IT</span><span class="w"> </span></td>
     </tr>
     <tr class="source-line">
@@ -1314,7 +1314,7 @@
       <td class="lineno"><a id="l173" href="#l173">173</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">8</td>
+      <td class="linecount coveredLine">4</td>
       <td class="src coveredLine"><span class="n">HAL_StatusTypeDef</span><span class="w"> </span><span class="n">gps_status</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
@@ -1370,7 +1370,7 @@
       <td class="lineno"><a id="l181" href="#l181">181</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">8</td>
+      <td class="linecount coveredLine">4</td>
       <td class="src coveredLine"><span class="n">gps_status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HAL_UART_Receive_IT</span><span class="p">(</span><span class="w"> </span><span class="o">&amp;</span><span class="p">(</span><span class="w"> </span><span class="n">GPS_HUART</span><span class="w"> </span><span class="p">),</span></td>
     </tr>
     <tr class="source-line">
@@ -1407,13 +1407,13 @@
         <details class="linebranchDetails">
           <summary class="linebranchSummary">3/3</summary>
           <div class="linebranchContents">
-            <div class="takenBranch">&check; Branch 0 taken 2 times.</div>
-            <div class="takenBranch">&check; Branch 1 taken 4 times.</div>
-            <div class="takenBranch">&check; Branch 2 taken 2 times.</div>
+            <div class="takenBranch">&check; Branch 0 taken 1 times.</div>
+            <div class="takenBranch">&check; Branch 1 taken 2 times.</div>
+            <div class="takenBranch">&check; Branch 2 taken 1 times.</div>
           </div>
         </details>
       </td>
-      <td class="linecount coveredLine">8</td>
+      <td class="linecount coveredLine">4</td>
       <td class="src coveredLine"><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">gps_status</span><span class="w"> </span><span class="p">)</span></td>
     </tr>
     <tr class="source-line">
@@ -1448,7 +1448,7 @@
       <td class="lineno"><a id="l191" href="#l191">191</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">2</td>
+      <td class="linecount coveredLine">1</td>
       <td class="src coveredLine"><span class="w">		</span><span class="k">break</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
@@ -1462,7 +1462,7 @@
       <td class="lineno"><a id="l193" href="#l193">193</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">2</td>
+      <td class="linecount coveredLine">1</td>
       <td class="src coveredLine"><span class="w">	</span><span class="k">case</span><span class="w"> </span><span class="no">HAL_OK</span><span class="p">:</span></td>
     </tr>
     <tr class="source-line">
@@ -1476,14 +1476,14 @@
       <td class="lineno"><a id="l195" href="#l195">195</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">2</td>
+      <td class="linecount coveredLine">1</td>
       <td class="src coveredLine"><span class="w">		</span><span class="k">return</span><span class="w"> </span><span class="n">GPS_OK</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l196" href="#l196">196</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">4</td>
+      <td class="linecount coveredLine">2</td>
       <td class="src coveredLine"><span class="w">		</span><span class="k">break</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
@@ -1497,7 +1497,7 @@
       <td class="lineno"><a id="l198" href="#l198">198</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">4</td>
+      <td class="linecount coveredLine">2</td>
       <td class="src coveredLine"><span class="w">	</span><span class="k">default</span><span class="o">:</span></td>
     </tr>
     <tr class="source-line">
@@ -1511,14 +1511,14 @@
       <td class="lineno"><a id="l200" href="#l200">200</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">4</td>
+      <td class="linecount coveredLine">2</td>
       <td class="src coveredLine"><span class="w">		</span><span class="k">return</span><span class="w"> </span><span class="n">GPS_FAIL</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l201" href="#l201">201</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">8</td>
+      <td class="linecount coveredLine">4</td>
       <td class="src coveredLine"><span class="w">		</span><span class="k">break</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
@@ -1651,35 +1651,35 @@
       <td class="lineno"><a id="l220" href="#l220">220</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">12</td>
+      <td class="linecount coveredLine">6</td>
       <td class="src coveredLine"><span class="kt">int</span><span class="w"> </span><span class="nf">gps_mesg_validate</span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">nmeastr</span><span class="p">){</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l221" href="#l221">221</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">12</td>
+      <td class="linecount coveredLine">6</td>
       <td class="src coveredLine"><span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">check</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l222" href="#l222">222</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">12</td>
+      <td class="linecount coveredLine">6</td>
       <td class="src coveredLine"><span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">checkcalcstr</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l223" href="#l223">223</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">12</td>
+      <td class="linecount coveredLine">6</td>
       <td class="src coveredLine"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l224" href="#l224">224</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">12</td>
+      <td class="linecount coveredLine">6</td>
       <td class="src coveredLine"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">calculated_check</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
@@ -1693,14 +1693,14 @@
       <td class="lineno"><a id="l226" href="#l226">226</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">12</td>
+      <td class="linecount coveredLine">6</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l227" href="#l227">227</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">12</td>
+      <td class="linecount coveredLine">6</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">calculated_check</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
@@ -1723,12 +1723,12 @@
         <details class="linebranchDetails">
           <summary class="linebranchSummary">2/2</summary>
           <div class="linebranchContents">
-            <div class="takenBranch">&check; Branch 0 taken 10 times.</div>
-            <div class="takenBranch">&check; Branch 1 taken 2 times.</div>
+            <div class="takenBranch">&check; Branch 0 taken 5 times.</div>
+            <div class="takenBranch">&check; Branch 1 taken 1 times.</div>
           </div>
         </details>
       </td>
-      <td class="linecount coveredLine">12</td>
+      <td class="linecount coveredLine">6</td>
       <td class="src coveredLine"><span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="n">nmeastr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;$&#39;</span><span class="p">)</span></td>
     </tr>
     <tr class="source-line">
@@ -1772,28 +1772,28 @@
         <details class="linebranchDetails">
           <summary class="linebranchSummary">4/4</summary>
           <div class="linebranchContents">
-            <div class="takenBranch">&check; Branch 0 taken 520 times.</div>
-            <div class="takenBranch">&check; Branch 1 taken 8 times.</div>
-            <div class="takenBranch">&check; Branch 2 taken 518 times.</div>
-            <div class="takenBranch">&check; Branch 3 taken 2 times.</div>
+            <div class="takenBranch">&check; Branch 0 taken 260 times.</div>
+            <div class="takenBranch">&check; Branch 1 taken 4 times.</div>
+            <div class="takenBranch">&check; Branch 2 taken 259 times.</div>
+            <div class="takenBranch">&check; Branch 3 taken 1 times.</div>
           </div>
         </details>
       </td>
-      <td class="linecount coveredLine">528</td>
+      <td class="linecount coveredLine">264</td>
       <td class="src coveredLine"><span class="w">    </span><span class="k">while</span><span class="p">((</span><span class="n">nmeastr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">nmeastr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="sc">&#39;*&#39;</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">75</span><span class="p">)){</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l237" href="#l237">237</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">518</td>
+      <td class="linecount coveredLine">259</td>
       <td class="src coveredLine"><span class="w">        </span><span class="n">calculated_check</span><span class="w"> </span><span class="o">^=</span><span class="w"> </span><span class="n">nmeastr</span><span class="p">[</span><span class="n">i</span><span class="p">];</span><span class="c1">// calculate the checksum</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l238" href="#l238">238</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">518</td>
+      <td class="linecount coveredLine">259</td>
       <td class="src coveredLine"><span class="w">        </span><span class="n">i</span><span class="o">++</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
@@ -1816,12 +1816,12 @@
         <details class="linebranchDetails">
           <summary class="linebranchSummary">2/2</summary>
           <div class="linebranchContents">
-            <div class="takenBranch">&check; Branch 0 taken 8 times.</div>
-            <div class="takenBranch">&check; Branch 1 taken 2 times.</div>
+            <div class="takenBranch">&check; Branch 0 taken 4 times.</div>
+            <div class="takenBranch">&check; Branch 1 taken 1 times.</div>
           </div>
         </details>
       </td>
-      <td class="linecount coveredLine">10</td>
+      <td class="linecount coveredLine">5</td>
       <td class="src coveredLine"><span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">75</span><span class="p">){</span></td>
     </tr>
     <tr class="source-line">
@@ -1851,33 +1851,33 @@
         <details class="linebranchDetails">
           <summary class="linebranchSummary">2/2</summary>
           <div class="linebranchContents">
-            <div class="takenBranch">&check; Branch 0 taken 6 times.</div>
-            <div class="takenBranch">&check; Branch 1 taken 2 times.</div>
+            <div class="takenBranch">&check; Branch 0 taken 3 times.</div>
+            <div class="takenBranch">&check; Branch 1 taken 1 times.</div>
           </div>
         </details>
       </td>
-      <td class="linecount coveredLine">8</td>
+      <td class="linecount coveredLine">4</td>
       <td class="src coveredLine"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">nmeastr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;*&#39;</span><span class="p">){</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l246" href="#l246">246</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">6</td>
+      <td class="linecount coveredLine">3</td>
       <td class="src coveredLine"><span class="w">        </span><span class="n">check</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nmeastr</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">];</span><span class="w">    </span><span class="c1">//put hex chars in check string</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l247" href="#l247">247</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">6</td>
+      <td class="linecount coveredLine">3</td>
       <td class="src coveredLine"><span class="w">        </span><span class="n">check</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nmeastr</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">2</span><span class="p">];</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l248" href="#l248">248</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">6</td>
+      <td class="linecount coveredLine">3</td>
       <td class="src coveredLine"><span class="w">        </span><span class="n">check</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
@@ -1912,14 +1912,14 @@
       <td class="lineno"><a id="l253" href="#l253">253</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">6</td>
+      <td class="linecount coveredLine">3</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">sprintf</span><span class="p">(</span><span class="n">checkcalcstr</span><span class="p">,</span><span class="s">&quot;%02X&quot;</span><span class="p">,</span><span class="n">calculated_check</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l254" href="#l254">254</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">6</td>
+      <td class="linecount coveredLine">3</td>
       <td class="src coveredLine"><span class="w">    </span><span class="k">return</span><span class="p">((</span><span class="n">checkcalcstr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">check</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></td>
     </tr>
     <tr class="source-line">
@@ -1928,14 +1928,14 @@
         <details class="linebranchDetails">
           <summary class="linebranchSummary">2/4</summary>
           <div class="linebranchContents">
-            <div class="takenBranch">&check; Branch 0 taken 6 times.</div>
+            <div class="takenBranch">&check; Branch 0 taken 3 times.</div>
             <div class="notTakenBranch">&cross; Branch 1 not taken.</div>
             <div class="notTakenBranch">&cross; Branch 2 not taken.</div>
-            <div class="takenBranch">&check; Branch 3 taken 6 times.</div>
+            <div class="takenBranch">&check; Branch 3 taken 3 times.</div>
           </div>
         </details>
       </td>
-      <td class="linecount partialCoveredLine">6</td>
+      <td class="linecount partialCoveredLine">3</td>
       <td class="src partialCoveredLine"><span class="w">        </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">checkcalcstr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">check</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
@@ -2047,7 +2047,7 @@
       <td class="lineno"><a id="l271" href="#l271">271</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">30</td>
+      <td class="linecount coveredLine">15</td>
       <td class="src coveredLine"><span class="kt">void</span><span class="w"> </span><span class="nf">GPS_parse</span><span class="p">(</span><span class="n">GPS_DATA</span><span class="o">*</span><span class="w"> </span><span class="n">gps_ptr</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">GPSstrParse</span><span class="p">){</span></td>
     </tr>
     <tr class="source-line">
@@ -2061,35 +2061,35 @@
       <td class="lineno"><a id="l273" href="#l273">273</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">30</td>
+      <td class="linecount coveredLine">15</td>
       <td class="src coveredLine"><span class="kt">char</span><span class="w"> </span><span class="n">token</span><span class="p">[</span><span class="mi">8</span><span class="p">];</span><span class="w"> </span><span class="c1">// Needs to be 8 chars for memory alignment</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l274" href="#l274">274</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">30</td>
+      <td class="linecount coveredLine">15</td>
       <td class="src coveredLine"><span class="n">strncpy</span><span class="p">(</span><span class="n">token</span><span class="p">,</span><span class="w"> </span><span class="n">GPSstrParse</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l275" href="#l275">275</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">30</td>
+      <td class="linecount coveredLine">15</td>
       <td class="src coveredLine"><span class="n">token</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">&#39;\0&#39;</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l276" href="#l276">276</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">30</td>
+      <td class="linecount coveredLine">15</td>
       <td class="src coveredLine"><span class="kt">int</span><span class="w"> </span><span class="n">idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">7</span><span class="p">;</span><span class="w"> </span><span class="cm">/* Skips &quot;$GPXXX,&quot;*/</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l277" href="#l277">277</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">30</td>
+      <td class="linecount coveredLine">15</td>
       <td class="src coveredLine"><span class="n">memset</span><span class="p">(</span><span class="n">gps_ptr</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">GPS_DATA</span><span class="p">));</span></td>
     </tr>
     <tr class="source-line">
@@ -2112,12 +2112,12 @@
         <details class="linebranchDetails">
           <summary class="linebranchSummary">2/2</summary>
           <div class="linebranchContents">
-            <div class="takenBranch">&check; Branch 0 taken 8 times.</div>
-            <div class="takenBranch">&check; Branch 1 taken 22 times.</div>
+            <div class="takenBranch">&check; Branch 0 taken 4 times.</div>
+            <div class="takenBranch">&check; Branch 1 taken 11 times.</div>
           </div>
         </details>
       </td>
-      <td class="linecount coveredLine">30</td>
+      <td class="linecount coveredLine">15</td>
       <td class="src coveredLine"><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">strcmp</span><span class="p">(</span><span class="n">token</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;$GPGGA&quot;</span><span class="p">))</span><span class="w"> </span></td>
     </tr>
     <tr class="source-line">
@@ -2131,77 +2131,77 @@
       <td class="lineno"><a id="l282" href="#l282">282</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">8</td>
+      <td class="linecount coveredLine">4</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">gps_ptr</span><span class="o">-&gt;</span><span class="n">utc_time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gps_string_to_float</span><span class="p">(</span><span class="n">GPSstrParse</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">idx</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l283" href="#l283">283</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">8</td>
+      <td class="linecount coveredLine">4</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">gps_ptr</span><span class="o">-&gt;</span><span class="n">nmea_latitude</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gps_string_to_float</span><span class="p">(</span><span class="n">GPSstrParse</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">idx</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l284" href="#l284">284</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">8</td>
+      <td class="linecount coveredLine">4</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">gps_ptr</span><span class="o">-&gt;</span><span class="n">ns</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gps_string_to_char</span><span class="p">(</span><span class="n">GPSstrParse</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">idx</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l285" href="#l285">285</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">8</td>
+      <td class="linecount coveredLine">4</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">gps_ptr</span><span class="o">-&gt;</span><span class="n">nmea_longitude</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gps_string_to_float</span><span class="p">(</span><span class="n">GPSstrParse</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">idx</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l286" href="#l286">286</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">8</td>
+      <td class="linecount coveredLine">4</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">gps_ptr</span><span class="o">-&gt;</span><span class="n">ew</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gps_string_to_char</span><span class="p">(</span><span class="n">GPSstrParse</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">idx</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l287" href="#l287">287</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">8</td>
+      <td class="linecount coveredLine">4</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">gps_ptr</span><span class="o">-&gt;</span><span class="n">lock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">gps_string_to_float</span><span class="p">(</span><span class="n">GPSstrParse</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">idx</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">0.5</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l288" href="#l288">288</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">8</td>
+      <td class="linecount coveredLine">4</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">gps_ptr</span><span class="o">-&gt;</span><span class="n">satelites</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="p">)(</span><span class="n">gps_string_to_float</span><span class="p">(</span><span class="n">GPSstrParse</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">idx</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">0.5</span><span class="p">);</span><span class="w"> </span><span class="c1">// This is a decimal number.</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l289" href="#l289">289</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">8</td>
+      <td class="linecount coveredLine">4</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">gps_ptr</span><span class="o">-&gt;</span><span class="n">hdop</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gps_string_to_float</span><span class="p">(</span><span class="n">GPSstrParse</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">idx</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l290" href="#l290">290</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">8</td>
+      <td class="linecount coveredLine">4</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">gps_ptr</span><span class="o">-&gt;</span><span class="n">msl_altitude</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gps_string_to_float</span><span class="p">(</span><span class="n">GPSstrParse</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">idx</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l291" href="#l291">291</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">8</td>
+      <td class="linecount coveredLine">4</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">gps_ptr</span><span class="o">-&gt;</span><span class="n">msl_units</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gps_string_to_char</span><span class="p">(</span><span class="n">GPSstrParse</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">idx</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l292" href="#l292">292</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">8</td>
+      <td class="linecount coveredLine">4</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">gps_conv_latitude_longitude</span><span class="p">(</span><span class="w"> </span><span class="n">gps_ptr</span><span class="w"> </span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
@@ -2217,12 +2217,12 @@
         <details class="linebranchDetails">
           <summary class="linebranchSummary">2/2</summary>
           <div class="linebranchContents">
-            <div class="takenBranch">&check; Branch 0 taken 10 times.</div>
-            <div class="takenBranch">&check; Branch 1 taken 12 times.</div>
+            <div class="takenBranch">&check; Branch 0 taken 5 times.</div>
+            <div class="takenBranch">&check; Branch 1 taken 6 times.</div>
           </div>
         </details>
       </td>
-      <td class="linecount coveredLine">22</td>
+      <td class="linecount coveredLine">11</td>
       <td class="src coveredLine"><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">strcmp</span><span class="p">(</span><span class="n">token</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;$GPRMC&quot;</span><span class="p">))</span><span class="w"> </span></td>
     </tr>
     <tr class="source-line">
@@ -2236,70 +2236,70 @@
       <td class="lineno"><a id="l296" href="#l296">296</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">10</td>
+      <td class="linecount coveredLine">5</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">gps_ptr</span><span class="o">-&gt;</span><span class="n">utc_time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gps_string_to_float</span><span class="p">(</span><span class="n">GPSstrParse</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">idx</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l297" href="#l297">297</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">10</td>
+      <td class="linecount coveredLine">5</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">gps_ptr</span><span class="o">-&gt;</span><span class="n">rmc_status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gps_string_to_char</span><span class="p">(</span><span class="n">GPSstrParse</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">idx</span><span class="p">);</span><span class="w"> </span><span class="cm">/* unused */</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l298" href="#l298">298</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">10</td>
+      <td class="linecount coveredLine">5</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">gps_ptr</span><span class="o">-&gt;</span><span class="n">nmea_latitude</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gps_string_to_float</span><span class="p">(</span><span class="n">GPSstrParse</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">idx</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l299" href="#l299">299</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">10</td>
+      <td class="linecount coveredLine">5</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">gps_ptr</span><span class="o">-&gt;</span><span class="n">ns</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gps_string_to_char</span><span class="p">(</span><span class="n">GPSstrParse</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">idx</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l300" href="#l300">300</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">10</td>
+      <td class="linecount coveredLine">5</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">gps_ptr</span><span class="o">-&gt;</span><span class="n">nmea_longitude</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gps_string_to_float</span><span class="p">(</span><span class="n">GPSstrParse</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">idx</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l301" href="#l301">301</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">10</td>
+      <td class="linecount coveredLine">5</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">gps_ptr</span><span class="o">-&gt;</span><span class="n">ew</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gps_string_to_char</span><span class="p">(</span><span class="n">GPSstrParse</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">idx</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l302" href="#l302">302</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">10</td>
+      <td class="linecount coveredLine">5</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">gps_ptr</span><span class="o">-&gt;</span><span class="n">speed_k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gps_string_to_float</span><span class="p">(</span><span class="n">GPSstrParse</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">idx</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l303" href="#l303">303</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">10</td>
+      <td class="linecount coveredLine">5</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">gps_ptr</span><span class="o">-&gt;</span><span class="n">course_d</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gps_string_to_float</span><span class="p">(</span><span class="n">GPSstrParse</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">idx</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l304" href="#l304">304</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">10</td>
+      <td class="linecount coveredLine">5</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">gps_ptr</span><span class="o">-&gt;</span><span class="n">date</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="p">)(</span><span class="mf">0.5</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">gps_string_to_float</span><span class="p">(</span><span class="n">GPSstrParse</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">idx</span><span class="p">));</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l305" href="#l305">305</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">10</td>
+      <td class="linecount coveredLine">5</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">gps_conv_latitude_longitude</span><span class="p">(</span><span class="w"> </span><span class="n">gps_ptr</span><span class="w"> </span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
@@ -2315,12 +2315,12 @@
         <details class="linebranchDetails">
           <summary class="linebranchSummary">2/2</summary>
           <div class="linebranchContents">
-            <div class="takenBranch">&check; Branch 0 taken 6 times.</div>
-            <div class="takenBranch">&check; Branch 1 taken 6 times.</div>
+            <div class="takenBranch">&check; Branch 0 taken 3 times.</div>
+            <div class="takenBranch">&check; Branch 1 taken 3 times.</div>
           </div>
         </details>
       </td>
-      <td class="linecount coveredLine">12</td>
+      <td class="linecount coveredLine">6</td>
       <td class="src coveredLine"><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">strcmp</span><span class="p">(</span><span class="n">token</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;$GPGLL&quot;</span><span class="p">))</span><span class="w"> </span></td>
     </tr>
     <tr class="source-line">
@@ -2334,49 +2334,49 @@
       <td class="lineno"><a id="l309" href="#l309">309</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">6</td>
+      <td class="linecount coveredLine">3</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">gps_ptr</span><span class="o">-&gt;</span><span class="n">nmea_latitude</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gps_string_to_float</span><span class="p">(</span><span class="n">GPSstrParse</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">idx</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l310" href="#l310">310</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">6</td>
+      <td class="linecount coveredLine">3</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">gps_ptr</span><span class="o">-&gt;</span><span class="n">ns</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gps_string_to_char</span><span class="p">(</span><span class="n">GPSstrParse</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">idx</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l311" href="#l311">311</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">6</td>
+      <td class="linecount coveredLine">3</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">gps_ptr</span><span class="o">-&gt;</span><span class="n">nmea_longitude</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gps_string_to_float</span><span class="p">(</span><span class="n">GPSstrParse</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">idx</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l312" href="#l312">312</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">6</td>
+      <td class="linecount coveredLine">3</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">gps_ptr</span><span class="o">-&gt;</span><span class="n">ew</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gps_string_to_char</span><span class="p">(</span><span class="n">GPSstrParse</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">idx</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l313" href="#l313">313</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">6</td>
+      <td class="linecount coveredLine">3</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">gps_ptr</span><span class="o">-&gt;</span><span class="n">utc_time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gps_string_to_float</span><span class="p">(</span><span class="n">GPSstrParse</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">idx</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l314" href="#l314">314</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">6</td>
+      <td class="linecount coveredLine">3</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">gps_ptr</span><span class="o">-&gt;</span><span class="n">gll_status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gps_string_to_char</span><span class="p">(</span><span class="n">GPSstrParse</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">idx</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l315" href="#l315">315</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">6</td>
+      <td class="linecount coveredLine">3</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">gps_conv_latitude_longitude</span><span class="p">(</span><span class="w"> </span><span class="n">gps_ptr</span><span class="w"> </span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
@@ -2392,12 +2392,12 @@
         <details class="linebranchDetails">
           <summary class="linebranchSummary">2/2</summary>
           <div class="linebranchContents">
-            <div class="takenBranch">&check; Branch 0 taken 4 times.</div>
-            <div class="takenBranch">&check; Branch 1 taken 2 times.</div>
+            <div class="takenBranch">&check; Branch 0 taken 2 times.</div>
+            <div class="takenBranch">&check; Branch 1 taken 1 times.</div>
           </div>
         </details>
       </td>
-      <td class="linecount coveredLine">6</td>
+      <td class="linecount coveredLine">3</td>
       <td class="src coveredLine"><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">strcmp</span><span class="p">(</span><span class="n">token</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;$GPVTG&quot;</span><span class="p">))</span><span class="w"> </span></td>
     </tr>
     <tr class="source-line">
@@ -2411,56 +2411,56 @@
       <td class="lineno"><a id="l319" href="#l319">319</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">4</td>
+      <td class="linecount coveredLine">2</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">gps_ptr</span><span class="o">-&gt;</span><span class="n">course_t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gps_string_to_float</span><span class="p">(</span><span class="n">GPSstrParse</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">idx</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l320" href="#l320">320</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">4</td>
+      <td class="linecount coveredLine">2</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">gps_ptr</span><span class="o">-&gt;</span><span class="n">course_t_unit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gps_string_to_char</span><span class="p">(</span><span class="n">GPSstrParse</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">idx</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l321" href="#l321">321</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">4</td>
+      <td class="linecount coveredLine">2</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">gps_ptr</span><span class="o">-&gt;</span><span class="n">course_m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gps_string_to_float</span><span class="p">(</span><span class="n">GPSstrParse</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">idx</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l322" href="#l322">322</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">4</td>
+      <td class="linecount coveredLine">2</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">gps_ptr</span><span class="o">-&gt;</span><span class="n">course_m_unit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gps_string_to_char</span><span class="p">(</span><span class="n">GPSstrParse</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">idx</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l323" href="#l323">323</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">4</td>
+      <td class="linecount coveredLine">2</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">gps_ptr</span><span class="o">-&gt;</span><span class="n">speed_k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gps_string_to_float</span><span class="p">(</span><span class="n">GPSstrParse</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">idx</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l324" href="#l324">324</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">4</td>
+      <td class="linecount coveredLine">2</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">gps_ptr</span><span class="o">-&gt;</span><span class="n">speed_k_unit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gps_string_to_char</span><span class="p">(</span><span class="n">GPSstrParse</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">idx</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l325" href="#l325">325</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">4</td>
+      <td class="linecount coveredLine">2</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">gps_ptr</span><span class="o">-&gt;</span><span class="n">speed_km</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gps_string_to_float</span><span class="p">(</span><span class="n">GPSstrParse</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">idx</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l326" href="#l326">326</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">4</td>
+      <td class="linecount coveredLine">2</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">gps_ptr</span><span class="o">-&gt;</span><span class="n">speed_km_unit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gps_string_to_char</span><span class="p">(</span><span class="n">GPSstrParse</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">idx</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
@@ -2474,7 +2474,7 @@
       <td class="lineno"><a id="l328" href="#l328">328</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">30</td>
+      <td class="linecount coveredLine">15</td>
       <td class="src coveredLine"><span class="p">}</span><span class="w"> </span><span class="cm">/* GPS_parse */</span></td>
     </tr>
     <tr class="source-line">
@@ -2579,7 +2579,7 @@
       <td class="lineno"><a id="l343" href="#l343">343</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">150</td>
+      <td class="linecount coveredLine">75</td>
       <td class="src coveredLine"><span class="kt">float</span><span class="w"> </span><span class="nf">gps_string_to_float</span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">GPSstrParse</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="o">*</span><span class="w"> </span><span class="n">inputIdx</span><span class="p">)</span><span class="w"> </span></td>
     </tr>
     <tr class="source-line">
@@ -2593,28 +2593,28 @@
       <td class="lineno"><a id="l345" href="#l345">345</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">150</td>
+      <td class="linecount coveredLine">75</td>
       <td class="src coveredLine"><span class="kt">int</span><span class="w"> </span><span class="n">idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="n">inputIdx</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l346" href="#l346">346</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">150</td>
+      <td class="linecount coveredLine">75</td>
       <td class="src coveredLine"><span class="kt">char</span><span class="w"> </span><span class="n">currChar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GPSstrParse</span><span class="p">[</span><span class="n">idx</span><span class="p">];</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l347" href="#l347">347</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">150</td>
+      <td class="linecount coveredLine">75</td>
       <td class="src coveredLine"><span class="kt">char</span><span class="w"> </span><span class="n">tempstr</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l348" href="#l348">348</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">150</td>
+      <td class="linecount coveredLine">75</td>
       <td class="src coveredLine"><span class="kt">int</span><span class="w"> </span><span class="n">tempidx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
@@ -2623,12 +2623,12 @@
         <details class="linebranchDetails">
           <summary class="linebranchSummary">2/2</summary>
           <div class="linebranchContents">
-            <div class="takenBranch">&check; Branch 0 taken 10 times.</div>
-            <div class="takenBranch">&check; Branch 1 taken 140 times.</div>
+            <div class="takenBranch">&check; Branch 0 taken 5 times.</div>
+            <div class="takenBranch">&check; Branch 1 taken 70 times.</div>
           </div>
         </details>
       </td>
-      <td class="linecount coveredLine">150</td>
+      <td class="linecount coveredLine">75</td>
       <td class="src coveredLine"><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">GPSstrParse</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;,&#39;</span><span class="p">)</span><span class="w"> </span><span class="cm">/* Checks if subsequent comma */</span></td>
     </tr>
     <tr class="source-line">
@@ -2642,14 +2642,14 @@
       <td class="lineno"><a id="l351" href="#l351">351</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">10</td>
+      <td class="linecount coveredLine">5</td>
       <td class="src coveredLine"><span class="w">    </span><span class="o">*</span><span class="n">inputIdx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="n">inputIdx</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l352" href="#l352">352</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">10</td>
+      <td class="linecount coveredLine">5</td>
       <td class="src coveredLine"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">;</span><span class="w"> </span><span class="cm">/* null return */</span></td>
     </tr>
     <tr class="source-line">
@@ -2665,12 +2665,12 @@
         <details class="linebranchDetails">
           <summary class="linebranchSummary">2/2</summary>
           <div class="linebranchContents">
-            <div class="takenBranch">&check; Branch 0 taken 944 times.</div>
-            <div class="takenBranch">&check; Branch 1 taken 140 times.</div>
+            <div class="takenBranch">&check; Branch 0 taken 472 times.</div>
+            <div class="takenBranch">&check; Branch 1 taken 70 times.</div>
           </div>
         </details>
       </td>
-      <td class="linecount coveredLine">1084</td>
+      <td class="linecount coveredLine">542</td>
       <td class="src coveredLine"><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">currChar</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="sc">&#39;,&#39;</span><span class="p">)</span><span class="w"> </span></td>
     </tr>
     <tr class="source-line">
@@ -2686,12 +2686,12 @@
         <details class="linebranchDetails">
           <summary class="linebranchSummary">1/2</summary>
           <div class="linebranchContents">
-            <div class="takenBranch">&check; Branch 0 taken 944 times.</div>
+            <div class="takenBranch">&check; Branch 0 taken 472 times.</div>
             <div class="notTakenBranch">&cross; Branch 1 not taken.</div>
           </div>
         </details>
       </td>
-      <td class="linecount partialCoveredLine">944</td>
+      <td class="linecount partialCoveredLine">472</td>
       <td class="src partialCoveredLine"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">tempidx</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">15</span><span class="p">)</span><span class="w"> </span></td>
     </tr>
     <tr class="source-line">
@@ -2733,28 +2733,28 @@
       <td class="lineno"><a id="l362" href="#l362">362</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">944</td>
+      <td class="linecount coveredLine">472</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">tempstr</span><span class="p">[</span><span class="n">tempidx</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GPSstrParse</span><span class="p">[</span><span class="n">idx</span><span class="p">];</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l363" href="#l363">363</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">944</td>
+      <td class="linecount coveredLine">472</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">tempidx</span><span class="o">++</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l364" href="#l364">364</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">944</td>
+      <td class="linecount coveredLine">472</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">idx</span><span class="o">++</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l365" href="#l365">365</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">944</td>
+      <td class="linecount coveredLine">472</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">currChar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GPSstrParse</span><span class="p">[</span><span class="n">idx</span><span class="p">];</span></td>
     </tr>
     <tr class="source-line">
@@ -2768,21 +2768,21 @@
       <td class="lineno"><a id="l367" href="#l367">367</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">140</td>
+      <td class="linecount coveredLine">70</td>
       <td class="src coveredLine"><span class="o">*</span><span class="n">inputIdx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">idx</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l368" href="#l368">368</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">140</td>
+      <td class="linecount coveredLine">70</td>
       <td class="src coveredLine"><span class="n">tempstr</span><span class="p">[</span><span class="n">tempidx</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">&#39;\0&#39;</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l369" href="#l369">369</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">140</td>
+      <td class="linecount coveredLine">70</td>
       <td class="src coveredLine"><span class="k">return</span><span class="w"> </span><span class="n">strtof</span><span class="p">(</span><span class="n">tempstr</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
@@ -2894,7 +2894,7 @@
       <td class="lineno"><a id="l385" href="#l385">385</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">88</td>
+      <td class="linecount coveredLine">44</td>
       <td class="src coveredLine"><span class="kt">char</span><span class="w"> </span><span class="nf">gps_string_to_char</span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">GPSstrParse</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="o">*</span><span class="w"> </span><span class="n">inputIdx</span><span class="p">)</span><span class="w"> </span></td>
     </tr>
     <tr class="source-line">
@@ -2908,7 +2908,7 @@
       <td class="lineno"><a id="l387" href="#l387">387</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">88</td>
+      <td class="linecount coveredLine">44</td>
       <td class="src coveredLine"><span class="kt">int</span><span class="w"> </span><span class="n">idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="n">inputIdx</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
@@ -2917,12 +2917,12 @@
         <details class="linebranchDetails">
           <summary class="linebranchSummary">2/2</summary>
           <div class="linebranchContents">
-            <div class="takenBranch">&check; Branch 0 taken 6 times.</div>
-            <div class="takenBranch">&check; Branch 1 taken 82 times.</div>
+            <div class="takenBranch">&check; Branch 0 taken 3 times.</div>
+            <div class="takenBranch">&check; Branch 1 taken 41 times.</div>
           </div>
         </details>
       </td>
-      <td class="linecount coveredLine">88</td>
+      <td class="linecount coveredLine">44</td>
       <td class="src coveredLine"><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">GPSstrParse</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;,&#39;</span><span class="p">)</span><span class="w"> </span><span class="cm">/* Checks if subsequent comma */</span></td>
     </tr>
     <tr class="source-line">
@@ -2936,14 +2936,14 @@
       <td class="lineno"><a id="l390" href="#l390">390</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">6</td>
+      <td class="linecount coveredLine">3</td>
       <td class="src coveredLine"><span class="w">    </span><span class="o">*</span><span class="n">inputIdx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="n">inputIdx</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l391" href="#l391">391</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">6</td>
+      <td class="linecount coveredLine">3</td>
       <td class="src coveredLine"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="cm">/* null return */</span></td>
     </tr>
     <tr class="source-line">
@@ -2971,14 +2971,14 @@
       <td class="lineno"><a id="l395" href="#l395">395</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">82</td>
+      <td class="linecount coveredLine">41</td>
       <td class="src coveredLine"><span class="w">    </span><span class="o">*</span><span class="n">inputIdx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="n">inputIdx</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l396" href="#l396">396</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">82</td>
+      <td class="linecount coveredLine">41</td>
       <td class="src coveredLine"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">GPSstrParse</span><span class="p">[</span><span class="n">idx</span><span class="p">];</span></td>
     </tr>
     <tr class="source-line">
@@ -3104,7 +3104,7 @@
       <td class="lineno"><a id="l414" href="#l414">414</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">24</td>
+      <td class="linecount coveredLine">12</td>
       <td class="src coveredLine"><span class="kt">void</span><span class="w"> </span><span class="nf">gps_conv_latitude_longitude</span><span class="p">(</span><span class="w"> </span><span class="n">GPS_DATA</span><span class="o">*</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="p">)</span><span class="w"> </span></td>
     </tr>
     <tr class="source-line">
@@ -3125,28 +3125,28 @@
       <td class="lineno"><a id="l417" href="#l417">417</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">24</td>
+      <td class="linecount coveredLine">12</td>
       <td class="src coveredLine"><span class="kt">uint8_t</span><span class="w"> </span><span class="n">latitude_deg</span><span class="p">;</span><span class="w"> </span><span class="cm">/* Range: 0 to 90 */</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l418" href="#l418">418</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">24</td>
+      <td class="linecount coveredLine">12</td>
       <td class="src coveredLine"><span class="kt">uint8_t</span><span class="w"> </span><span class="n">longitude_deg</span><span class="p">;</span><span class="w"> </span><span class="cm">/* Range: 0 to 180 */</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l419" href="#l419">419</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">24</td>
+      <td class="linecount coveredLine">12</td>
       <td class="src coveredLine"><span class="kt">float</span><span class="w">   </span><span class="n">latitude</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l420" href="#l420">420</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">24</td>
+      <td class="linecount coveredLine">12</td>
       <td class="src coveredLine"><span class="kt">float</span><span class="w">   </span><span class="n">longitude</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
@@ -3174,14 +3174,14 @@
       <td class="lineno"><a id="l424" href="#l424">424</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">24</td>
+      <td class="linecount coveredLine">12</td>
       <td class="src coveredLine"><span class="n">latitude_deg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint8_t</span><span class="p">)(</span><span class="n">data</span><span class="o">-&gt;</span><span class="n">nmea_latitude</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">100</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l425" href="#l425">425</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">24</td>
+      <td class="linecount coveredLine">12</td>
       <td class="src coveredLine"><span class="n">longitude_deg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint8_t</span><span class="p">)(</span><span class="n">data</span><span class="o">-&gt;</span><span class="n">nmea_longitude</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">100</span><span class="p">);</span></td>
     </tr>
     <tr class="source-line">
@@ -3202,14 +3202,14 @@
       <td class="lineno"><a id="l428" href="#l428">428</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">24</td>
+      <td class="linecount coveredLine">12</td>
       <td class="src coveredLine"><span class="n">latitude</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">data</span><span class="o">-&gt;</span><span class="n">nmea_latitude</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="p">(</span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">latitude_deg</span><span class="p">))</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">60</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l429" href="#l429">429</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">24</td>
+      <td class="linecount coveredLine">12</td>
       <td class="src coveredLine"><span class="n">longitude</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">data</span><span class="o">-&gt;</span><span class="n">nmea_longitude</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="p">(</span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">longitude_deg</span><span class="p">))</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">60</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
@@ -3230,14 +3230,14 @@
       <td class="lineno"><a id="l432" href="#l432">432</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">24</td>
+      <td class="linecount coveredLine">12</td>
       <td class="src coveredLine"><span class="n">latitude</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="p">(</span><span class="kt">float</span><span class="p">)</span><span class="n">latitude_deg</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l433" href="#l433">433</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">24</td>
+      <td class="linecount coveredLine">12</td>
       <td class="src coveredLine"><span class="n">longitude</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="p">(</span><span class="kt">float</span><span class="p">)</span><span class="n">longitude_deg</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
@@ -3260,19 +3260,19 @@
         <details class="linebranchDetails">
           <summary class="linebranchSummary">2/2</summary>
           <div class="linebranchContents">
-            <div class="takenBranch">&check; Branch 0 taken 2 times.</div>
-            <div class="takenBranch">&check; Branch 1 taken 22 times.</div>
+            <div class="takenBranch">&check; Branch 0 taken 1 times.</div>
+            <div class="takenBranch">&check; Branch 1 taken 11 times.</div>
           </div>
         </details>
       </td>
-      <td class="linecount coveredLine">24</td>
+      <td class="linecount coveredLine">12</td>
       <td class="src coveredLine"><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">data</span><span class="o">-&gt;</span><span class="n">ns</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;S&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l437" href="#l437">437</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">2</td>
+      <td class="linecount coveredLine">1</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">latitude</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="n">latitude</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
@@ -3288,19 +3288,19 @@
         <details class="linebranchDetails">
           <summary class="linebranchSummary">2/2</summary>
           <div class="linebranchContents">
-            <div class="takenBranch">&check; Branch 0 taken 8 times.</div>
-            <div class="takenBranch">&check; Branch 1 taken 16 times.</div>
+            <div class="takenBranch">&check; Branch 0 taken 4 times.</div>
+            <div class="takenBranch">&check; Branch 1 taken 8 times.</div>
           </div>
         </details>
       </td>
-      <td class="linecount coveredLine">24</td>
+      <td class="linecount coveredLine">12</td>
       <td class="src coveredLine"><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">data</span><span class="o">-&gt;</span><span class="n">ew</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;W&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l440" href="#l440">440</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">8</td>
+      <td class="linecount coveredLine">4</td>
       <td class="src coveredLine"><span class="w">    </span><span class="n">longitude</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="n">longitude</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
@@ -3328,21 +3328,21 @@
       <td class="lineno"><a id="l444" href="#l444">444</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">24</td>
+      <td class="linecount coveredLine">12</td>
       <td class="src coveredLine"><span class="n">data</span><span class="o">-&gt;</span><span class="n">dec_latitude</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">latitude</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l445" href="#l445">445</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">24</td>
+      <td class="linecount coveredLine">12</td>
       <td class="src coveredLine"><span class="n">data</span><span class="o">-&gt;</span><span class="n">dec_longitude</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">longitude</span><span class="p">;</span></td>
     </tr>
     <tr class="source-line">
       <td class="lineno"><a id="l446" href="#l446">446</a></td>
       <td class="linebranch">
       </td>
-      <td class="linecount coveredLine">24</td>
+      <td class="linecount coveredLine">12</td>
       <td class="src coveredLine"><span class="p">}</span><span class="w"> </span><span class="cm">/* gps_conv_latitude_longitude */</span></td>
     </tr>
     <tr class="source-line">

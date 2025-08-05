@@ -125,12 +125,11 @@ $(BUILD_DIR):
 	mkdir $@		
 
 test:
+	@echo THIS TEST MUST BE EXECUTED IN A BASH TERMINAL. CMD/PS do not work.
 	-rm -fR $(BUILD_DIR)
 	$(MAKE) all
 	$(BUILD_DIR)/$(TARGET)
-	@echo THIS TEST MUST BE EXECUTED IN A BASH TERMINAL. CMD/PS do not work.
-	"$(BUILD_DIR)/$(TARGET)"
-	tail -n 3 "results.txt"
+	tail -n 7 "results.txt"
 	mkdir -p coverage
 	gcovr --filter $(COV_C_SOURCES) --html-details coverage/coverage.html
 

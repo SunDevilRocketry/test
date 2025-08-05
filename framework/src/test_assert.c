@@ -49,7 +49,7 @@ Procedures
 void TEST_assert
     (
     ASSERT_TYPE assert_type,
-    char* msg,
+    const char* msg,
     bool actual,
     uint32_t line, /* pass in __LINE__ from the caller */
     const char* file /* pass in __FILE__ from the caller */
@@ -60,7 +60,7 @@ Input validation
 ------------------------------------------------------------------------------*/
 if( msg == NULL )
     {
-    msg = &dflt_msg;
+    msg = dflt_msg;
     }
 
 /*------------------------------------------------------------------------------
@@ -120,7 +120,7 @@ switch( assert_type )
 void TEST_assert_float
     (
     ASSERT_TYPE assert_type,
-    char* msg,
+    const char* msg,
     float actual, 
     float expected,
     float tolerance,
@@ -133,7 +133,7 @@ Input validation
 ------------------------------------------------------------------------------*/
 if( msg == NULL )
     {
-    msg = &dflt_msg;
+    msg = dflt_msg;
     }
 
 /*------------------------------------------------------------------------------
@@ -259,7 +259,7 @@ switch( assert_type )
 void TEST_assert_uint
     (
     ASSERT_TYPE assert_type,
-    char* msg,
+    const char* msg,
     uint32_t actual, 
     uint32_t expected,
     uint32_t line, /* pass in __LINE__ from the caller */
@@ -271,7 +271,7 @@ Input validation
 ------------------------------------------------------------------------------*/
 if( msg == NULL )
     {
-    msg = &dflt_msg;
+    msg = dflt_msg;
     }
 
 /*------------------------------------------------------------------------------
@@ -395,7 +395,7 @@ switch( assert_type )
 void TEST_assert_sint
     (
     ASSERT_TYPE assert_type,
-    char* msg,
+    const char* msg,
     int32_t actual, 
     int32_t expected,
     uint32_t line, /* pass in __LINE__ from the caller */
@@ -407,7 +407,7 @@ Input validation
 ------------------------------------------------------------------------------*/
 if( msg == NULL )
     {
-    msg = &dflt_msg;
+    msg = dflt_msg;
     }
 
 /*------------------------------------------------------------------------------
@@ -531,7 +531,7 @@ switch( assert_type )
 void TEST_assert_memory
     (
     ASSERT_TYPE assert_type,
-    char* msg,
+    const char* msg,
     void* actual, 
     void* expected,
     size_t size,
@@ -549,7 +549,7 @@ if( actual == NULL || expected == NULL)
 
 if( msg == NULL )
     {
-    msg = &dflt_msg;
+    msg = dflt_msg;
     }
 
 /*------------------------------------------------------------------------------
@@ -610,7 +610,7 @@ switch( assert_type )
 void TEST_assert_string
     (
     ASSERT_TYPE assert_type,
-    char* msg,
+    const char* msg,
     char* actual, 
     char* expected,
     size_t size, /* maximum size of the string */
@@ -628,7 +628,7 @@ if( actual == NULL || expected == NULL)
 
 if( msg == NULL )
     {
-    msg = &dflt_msg;
+    msg = dflt_msg;
     }
 
 /*------------------------------------------------------------------------------

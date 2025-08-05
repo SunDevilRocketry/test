@@ -102,7 +102,7 @@ uint32_t TEST_finalize
 void TEST_assert
     (
     ASSERT_TYPE assert_type,
-    char* msg,
+    const char* msg,
     bool actual,
     uint32_t line, /* pass in __LINE__ from the caller */
     const char* file /* pass in __FILE__ from the caller */
@@ -111,7 +111,7 @@ void TEST_assert
 void TEST_assert_float
     (
     ASSERT_TYPE assert_type,
-    char* msg,
+    const char* msg,
     float actual, 
     float expected,
     float tolerance,
@@ -122,7 +122,7 @@ void TEST_assert_float
 void TEST_assert_uint
     (
     ASSERT_TYPE assert_type,
-    char* msg,
+    const char* msg,
     uint32_t actual, 
     uint32_t expected,
     uint32_t line, /* pass in __LINE__ from the caller */
@@ -132,7 +132,7 @@ void TEST_assert_uint
 void TEST_assert_sint
     (
     ASSERT_TYPE assert_type,
-    char* msg,
+    const char* msg,
     int32_t actual, 
     int32_t expected,
     uint32_t line, /* pass in __LINE__ from the caller */
@@ -142,7 +142,7 @@ void TEST_assert_sint
 void TEST_assert_memory
     (
     ASSERT_TYPE assert_type,
-    char* msg,
+    const char* msg,
     void* actual, 
     void* expected,
     size_t size,
@@ -153,7 +153,7 @@ void TEST_assert_memory
 void TEST_assert_string
     (
     ASSERT_TYPE assert_type,
-    char* msg,
+    const char* msg,
     char* actual, 
     char* expected,
     size_t size, /* maximum size of the string */
