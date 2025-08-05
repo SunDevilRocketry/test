@@ -64,12 +64,12 @@ extern "C" {
  Typdefs 
 ------------------------------------------------------------------------------*/
 typedef enum {
-    ASSERT_TYPE_EQ,
-    ASSERT_TYPE_GT,
-    ASSERT_TYPE_LT,
-    ASSERT_TYPE_GE,
-    ASSERT_TYPE_LE,
-    ASSERT_TYPE_NE
+    ASSERT_TYPE_EQ, /* Equal to */
+    ASSERT_TYPE_GT, /* Greater than */
+    ASSERT_TYPE_LT, /* Less than */
+    ASSERT_TYPE_GE, /* Greater than or equal to */
+    ASSERT_TYPE_LE, /* Less than or equal to */
+    ASSERT_TYPE_NE  /* Not equal */
 } ASSERT_TYPE;
 
 /*------------------------------------------------------------------------------
