@@ -46,6 +46,21 @@ extern char test_name[32];
 ------------------------------------------------------------------------------*/
 
 /* test_runner.c */
+void _test_begin_group
+    (
+    const char* group_description
+    );
+
+void _test_end_group
+    (
+    const char* group_description
+    );
+
+void _test_finalize
+    (
+    void
+    );
+    
 void _test_error
     (
     const char* msg

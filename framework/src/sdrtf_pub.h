@@ -27,9 +27,13 @@ extern "C" {
 /*------------------------------------------------------------------------------
  Macros and Globals 
 ------------------------------------------------------------------------------*/
+/* Tolerances */
 #define DFLT_FLOAT_TOLERANCE 0.0001f
 
-/* asserts */
+/* Initialize Test */
+#define TEST_INITIALIZE_TEST( test_suite_name, test_array ) _test_init( test_suite_name, test_array, (sizeof(test_array) / sizeof(test_array[0])) )
+
+/* Asserts */
 #define TEST_ASSERT_TRUE( msg, actual ) _test_assert( ASSERT_TYPE_EQ, msg, actual, __LINE__, __FILE__ )
 #define TEST_ASSERT_FALSE( msg, actual ) _test_assert( ASSERT_TYPE_NE, msg, actual, __LINE__, __FILE__ )
 
@@ -63,6 +67,8 @@ extern "C" {
 /*------------------------------------------------------------------------------
  Typdefs 
 ------------------------------------------------------------------------------*/
+/* Assert type is used inside each assert function. Largely abstracted from
+   test writers.    */
 typedef enum {
     ASSERT_TYPE_EQ, /* Equal to */
     ASSERT_TYPE_GT, /* Greater than */
@@ -72,30 +78,26 @@ typedef enum {
     ASSERT_TYPE_NE  /* Not equal */
 } ASSERT_TYPE;
 
+/* Pointer to a test function. All tests should have the signature:
+   void example_test_name() */
+typedef void (*test_callback)(void);
+
+/* A test should have a name and a pointer to the test function. */
+typedef struct unit_test {
+	const char* test_name;
+	test_callback test_pointer;
+} unit_test;
+
 /*------------------------------------------------------------------------------
  Function Prototypes 
 ------------------------------------------------------------------------------*/
 
 /* test_runner.c */
-void TEST_init
+void _test_init
     ( 
-    FILE* outfile_handle_in,
-    const char* test_name_in
-    );
-
-void TEST_begin_group
-    (
-    const char* group_description
-    );
-
-void TEST_end_group
-    (
-    const char* group_description
-    );
-
-uint32_t TEST_finalize
-    (
-    void
+    const char* test_name_in,
+    unit_test* test_array,
+    uint16_t test_array_count
     );
 
 /* test_assert.c */

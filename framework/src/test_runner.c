@@ -62,22 +62,25 @@ Procedures
 /*******************************************************************************
 *                                                                              *
 * PROCEDURE:                                                                   * 
-* 		TEST_init                                                              *
+* 		_test_init                                                              *
 *                                                                              *
 * DESCRIPTION:                                                                 * 
 * 		Initialize a unit test.                                                *
 *                                                                              *
 *******************************************************************************/
-void TEST_init
+void _test_init
     ( 
-    FILE* outfile_handle_in,
-    const char* test_name_in
+    const char* test_name_in,
+    unit_test* test_array,
+    uint16_t test_array_count
     )
 {
+FILE* outfile = fopen( "results.txt", "w" );
+
 /*------------------------------------------------------------------------------
 Validate Inputs
 ------------------------------------------------------------------------------*/
-if( outfile_handle_in == NULL || test_name_in == NULL )
+if( outfile == NULL || test_name_in == NULL )
     {
     _test_error( "Null pointers given to test_init." );
     }
@@ -85,7 +88,7 @@ if( outfile_handle_in == NULL || test_name_in == NULL )
 /*------------------------------------------------------------------------------
 Set Globals
 ------------------------------------------------------------------------------*/
-outfile_handle = outfile_handle_in;
+outfile_handle = outfile;
 strcpy( test_name, test_name_in );
 fail_counter = 0;
 pass_counter = 0;
@@ -98,19 +101,34 @@ Write Header Output
 ------------------------------------------------------------------------------*/
 print_test_header();
 
-} /* TEST_init */
+/*------------------------------------------------------------------------------
+Run Tests
+------------------------------------------------------------------------------*/
+for( int i = 0; i < test_array_count; i++ )
+	{
+	_test_begin_group( test_array[i].test_name );
+	test_array[i].test_pointer();
+	_test_end_group( test_array[i].test_name );
+	}
+
+/*------------------------------------------------------------------------------
+Finalize Tests
+------------------------------------------------------------------------------*/
+_test_finalize();
+
+} /* _test_init */
 
 
 /*******************************************************************************
 *                                                                              *
 * PROCEDURE:                                                                   * 
-* 		TEST_begin_group                                                       *
+* 		_test_begin_group                                                      *
 *                                                                              *
 * DESCRIPTION:                                                                 * 
 * 		Begin the test group.                                                  *
 *                                                                              *
 *******************************************************************************/
-void TEST_begin_group
+void _test_begin_group
     (
     const char* group_description
     )
@@ -124,19 +142,20 @@ else
     {
     _test_error( "Tried to open test group before closing previous." );
     }
-} /* TEST_begin_group */
+
+} /* _test_begin_group */
 
 
 /*******************************************************************************
 *                                                                              *
 * PROCEDURE:                                                                   * 
-* 		TEST_end_group                                                         *
+* 		_test_end_group                                                         *
 *                                                                              *
 * DESCRIPTION:                                                                 * 
 * 		End the test group.                                                    *
 *                                                                              *
 *******************************************************************************/
-void TEST_end_group
+void _test_end_group
     (
     const char* group_description
     )
@@ -155,19 +174,19 @@ else
     {
     _test_error( "Tried to close test group while not in one." );
     }
-} /* TEST_end_group */
+} /* _test_end_group */
 
 
 /*******************************************************************************
 *                                                                              *
 * PROCEDURE:                                                                   * 
-* 		TEST_finalize                                                          *
+* 		_test_finalize                                                         *
 *                                                                              *
 * DESCRIPTION:                                                                 * 
 * 		Finalize the test.                                                     *
 *                                                                              *
 *******************************************************************************/
-uint32_t TEST_finalize
+void _test_finalize
     (
     void
     )
@@ -191,8 +210,10 @@ fprintf( outfile_handle, "Fails:  %d\n", fail_counter );
 fprintf( outfile_handle, "Result: %s\n", status );
 fprintf( outfile_handle, "----------------------------------------\n" );
 
-return fail_counter;
-} /* TEST_finalize */
+/* will be zero with no fails. Else, returns a negative error code indicating num fails */
+exit( -1 * fail_counter );
+
+} /* _test_finalize */
 
 
 /*******************************************************************************

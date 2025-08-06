@@ -373,6 +373,7 @@ for ( int test_num = 0; test_num < NUM_CASES_GPS_RECEIVE_IT; test_num++ )
 	}
 
 free(tx_data_ptr);
+
 } /* test_gps_receive_IT */
 
 
@@ -382,8 +383,7 @@ free(tx_data_ptr);
 *       main			                                   			           *
 *                                                                              *
 * DESCRIPTION:                                                                 * 
-*       Set up the testing enviroment, call tests, tear down the testing       *
-*		environment															   *
+*       Declare the tests here and call the framework.						   *
 *                                                                              *
 *******************************************************************************/
 int main
@@ -394,14 +394,6 @@ int main
 /*------------------------------------------------------------------------------
 Test Cases
 ------------------------------------------------------------------------------*/
-/* Do not modify */
-typedef void (*test_callback)(void);
-typedef struct unit_test {
-	const char* test_name;
-	test_callback test_pointer;
-} unit_test;
-
-/* Define test cases here */
 unit_test tests[] =
 	{
 	{ "GPS_parse", test_GPS_parse },
@@ -411,19 +403,12 @@ unit_test tests[] =
 	{ "gps_receive_IT", test_gps_receive_IT }
 	};
 
-/* Do not modify */
-FILE* outfile = fopen( "results.txt", "w" );
-TEST_init( outfile, "gps.c" );
-for( int i = 0; i < ( sizeof(tests) / sizeof(unit_test) ); i++ )
-	{
-	TEST_begin_group( tests[i].test_name );
-	tests[i].test_pointer();
-	TEST_end_group( tests[i].test_name );
-	}
+/*------------------------------------------------------------------------------
+Call the framework
+------------------------------------------------------------------------------*/
+TEST_INITIALIZE_TEST( "gps.c", tests );
 
-exit( -1 * TEST_finalize() );
 } /* main */
-
 
 /*******************************************************************************
 * END OF FILE                                                                  * 
