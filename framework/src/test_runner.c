@@ -98,7 +98,7 @@ Write Header Output
 ------------------------------------------------------------------------------*/
 print_test_header();
 
-}
+} /* TEST_init */
 
 
 /*******************************************************************************
@@ -124,7 +124,7 @@ else
     {
     _test_error( "Tried to open test group before closing previous." );
     }
-}
+} /* TEST_begin_group */
 
 
 /*******************************************************************************
@@ -155,7 +155,7 @@ else
     {
     _test_error( "Tried to close test group while not in one." );
     }
-}
+} /* TEST_end_group */
 
 
 /*******************************************************************************
@@ -179,9 +179,10 @@ if( fail_counter == 0 )
     }
 else
     {
-    strcpy( status, "FAIL" );
+    strcpy( status, "FAIL" ); /* if even one case fails, the whole test fails */
     }
 
+/* formatted footer */
 fprintf( outfile_handle, "----------------------------------------\n" );
 fprintf( outfile_handle, "-------------Test Complete--------------\n" );
 fprintf( outfile_handle, "----------------------------------------\n" );
@@ -191,7 +192,7 @@ fprintf( outfile_handle, "Result: %s\n", status );
 fprintf( outfile_handle, "----------------------------------------\n" );
 
 return fail_counter;
-}
+} /* TEST_finalize */
 
 
 /*******************************************************************************
@@ -238,12 +239,13 @@ void _test_fail
     const char* err_msg
     )
 {
+/* log fails both to the results file and to console */
 fprintf( outfile_handle, "%s\n", msg );
 fprintf( outfile_handle, "FAIL: %s\n", err_msg );
 printf( "%s\n", msg );
 printf( "FAIL: %s\n\n", err_msg );
 fail_counter++;
-}
+} /* _test_fail */
 
 
 /*******************************************************************************
@@ -260,9 +262,10 @@ void _test_pass
     const char* msg
     )
 {
+/* log result, increment counter */
 fprintf( outfile_handle, "%s\n", msg );
 pass_counter++;
-}
+} /* _test_pass */
 
 
 /*******************************************************************************
@@ -286,6 +289,7 @@ char date[20];
 char time[20];
 bool repo_clean = true;
 
+/* Format strings to match C macros*/
 strftime( date, sizeof(date), "%b %d %Y", &tm );
 strftime( time, sizeof(time), "%H:%M:%S", &tm );
 
@@ -295,7 +299,7 @@ fprintf( outfile_handle, "-----------Sun Devil Rocketry-----------\n" );
 fprintf( outfile_handle, "-----------Unit Test Results------------\n" );
 fprintf( outfile_handle, "----------------------------------------\n\n" );
 
-/* Test Environment */
+/* Test Environment Information */
 fprintf( outfile_handle, "----------------------------------------\n" );
 fprintf( outfile_handle, "------------Test Environment------------\n" );
 fprintf( outfile_handle, "----------------------------------------\n\n" );
@@ -305,45 +309,39 @@ fprintf( outfile_handle, "Build Date:  %s\n", __DATE__ );
 fprintf( outfile_handle, "Build Time:  %s\n", __TIME__ );
 fprintf( outfile_handle, "Run Date:    %s\n", date );
 fprintf( outfile_handle, "Run Time:    %s\n", time );
+
+/* Is using ISO C compiler? */
 #if( defined( __STDC__ ) && __STDC__ )
 fprintf( outfile_handle, "ISO C?:      %d\n", __STDC__ );
 fprintf( outfile_handle, "C Standard:  %ld\n", __STDC_VERSION__ );
 #else
 fprintf( outfile_handle, "ISO C?:      %d\n", 0 );
 #endif
+
 /* GNU compilers*/
 #if( defined( __GNUC__ ) && __GNUC__ )
 fprintf( outfile_handle, "\n--GNU C Compiler (GCC) Info--\n" );
 fprintf( outfile_handle, "GCC Version: %d.%d.%d\n", __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__ );
 #endif
 
-fprintf( outfile_handle, "\n--Formal Test Run Info--\n" );
-#if( defined( TEST_FORMAL_RUN ) && TEST_FORMAL_RUN )
-fprintf( outfile_handle, "Run Type:    FORMAL\n" );
-#else
-fprintf( outfile_handle, "Run Type:    INFORMAL\n\n" );
-#endif
 
 /* Run test environment checks */
 fprintf( outfile_handle, "\n----------------------------------------\n" );
 fprintf( outfile_handle, "----------------Results-----------------\n" );
 fprintf( outfile_handle, "----------------------------------------\n\n" );
 
+/* Requires an ISO C compiler. We use features up to C17. */
 #if( defined( __STDC__ ) && __STDC__ )
 TEST_ASSERT_GE_UINT( "Test Environment: ISO C standard is C17 or greater", __STDC_VERSION__, 201700L );
 #else
 TEST_ASSERT_TRUE( "Test Environment: ISO C standard not defined", false );
 #endif
 
+/* Only GCC 12+ is supported at the moment. Future update could expand to clang if desired. */
 #if( defined( __GNUC__ ) && __GNUC__ )
 TEST_ASSERT_GE_UINT( "Test Environment: Compiler is supported GCC version", __GNUC__, TEST_MIN_SUPPORTED_GCC_VERSION );
 #else
 TEST_ASSERT_TRUE( "Test Environment: Unsupported Compiler", false );
 #endif
-
-#if( defined( TEST_FORMAL_RUN ) && TEST_FORMAL_RUN )
-TEST_ASSERT_TRUE( "Test Environment: Run is formal.", TEST_FORMAL_RUN );
-#endif
-
 
 }
