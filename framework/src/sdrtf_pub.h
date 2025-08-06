@@ -30,35 +30,35 @@ extern "C" {
 #define DFLT_FLOAT_TOLERANCE 0.0001f
 
 /* asserts */
-#define TEST_ASSERT_TRUE( msg, actual ) TEST_assert( ASSERT_TYPE_EQ, msg, actual, __LINE__, __FILE__ )
-#define TEST_ASSERT_FALSE( msg, actual ) TEST_assert( ASSERT_TYPE_NE, msg, actual, __LINE__, __FILE__ )
+#define TEST_ASSERT_TRUE( msg, actual ) _test_assert( ASSERT_TYPE_EQ, msg, actual, __LINE__, __FILE__ )
+#define TEST_ASSERT_FALSE( msg, actual ) _test_assert( ASSERT_TYPE_NE, msg, actual, __LINE__, __FILE__ )
 
-#define TEST_ASSERT_EQ_FLOAT( msg, actual, expected ) TEST_assert_float( ASSERT_TYPE_EQ, msg, actual, expected, DFLT_FLOAT_TOLERANCE, __LINE__, __FILE__ )
-#define TEST_ASSERT_NE_FLOAT( msg, actual, expected ) TEST_assert_float( ASSERT_TYPE_NE, msg, actual, expected, DFLT_FLOAT_TOLERANCE, __LINE__, __FILE__ )
-#define TEST_ASSERT_LT_FLOAT( msg, actual, expected ) TEST_assert_float( ASSERT_TYPE_LT, msg, actual, expected, DFLT_FLOAT_TOLERANCE, __LINE__, __FILE__ )
-#define TEST_ASSERT_GT_FLOAT( msg, actual, expected ) TEST_assert_float( ASSERT_TYPE_GT, msg, actual, expected, DFLT_FLOAT_TOLERANCE, __LINE__, __FILE__ )
-#define TEST_ASSERT_LE_FLOAT( msg, actual, expected ) TEST_assert_float( ASSERT_TYPE_LE, msg, actual, expected, DFLT_FLOAT_TOLERANCE, __LINE__, __FILE__ )
-#define TEST_ASSERT_GE_FLOAT( msg, actual, expected ) TEST_assert_float( ASSERT_TYPE_GE, msg, actual, expected, DFLT_FLOAT_TOLERANCE, __LINE__, __FILE__ )
+#define TEST_ASSERT_EQ_FLOAT( msg, actual, expected ) _test_assert_float( ASSERT_TYPE_EQ, msg, actual, expected, DFLT_FLOAT_TOLERANCE, __LINE__, __FILE__ )
+#define TEST_ASSERT_NE_FLOAT( msg, actual, expected ) _test_assert_float( ASSERT_TYPE_NE, msg, actual, expected, DFLT_FLOAT_TOLERANCE, __LINE__, __FILE__ )
+#define TEST_ASSERT_LT_FLOAT( msg, actual, expected ) _test_assert_float( ASSERT_TYPE_LT, msg, actual, expected, DFLT_FLOAT_TOLERANCE, __LINE__, __FILE__ )
+#define TEST_ASSERT_GT_FLOAT( msg, actual, expected ) _test_assert_float( ASSERT_TYPE_GT, msg, actual, expected, DFLT_FLOAT_TOLERANCE, __LINE__, __FILE__ )
+#define TEST_ASSERT_LE_FLOAT( msg, actual, expected ) _test_assert_float( ASSERT_TYPE_LE, msg, actual, expected, DFLT_FLOAT_TOLERANCE, __LINE__, __FILE__ )
+#define TEST_ASSERT_GE_FLOAT( msg, actual, expected ) _test_assert_float( ASSERT_TYPE_GE, msg, actual, expected, DFLT_FLOAT_TOLERANCE, __LINE__, __FILE__ )
 
-#define TEST_ASSERT_EQ_UINT( msg, actual, expected ) TEST_assert_uint( ASSERT_TYPE_EQ, msg, actual, expected, __LINE__, __FILE__ )
-#define TEST_ASSERT_NE_UINT( msg, actual, expected ) TEST_assert_uint( ASSERT_TYPE_NE, msg, actual, expected, __LINE__, __FILE__ )
-#define TEST_ASSERT_LT_UINT( msg, actual, expected ) TEST_assert_uint( ASSERT_TYPE_LT, msg, actual, expected, __LINE__, __FILE__ )
-#define TEST_ASSERT_GT_UINT( msg, actual, expected ) TEST_assert_uint( ASSERT_TYPE_GT, msg, actual, expected, __LINE__, __FILE__ )
-#define TEST_ASSERT_LE_UINT( msg, actual, expected ) TEST_assert_uint( ASSERT_TYPE_LE, msg, actual, expected, __LINE__, __FILE__ )
-#define TEST_ASSERT_GE_UINT( msg, actual, expected ) TEST_assert_uint( ASSERT_TYPE_GE, msg, actual, expected, __LINE__, __FILE__ )
+#define TEST_ASSERT_EQ_UINT( msg, actual, expected ) _test_assert_uint( ASSERT_TYPE_EQ, msg, actual, expected, __LINE__, __FILE__ )
+#define TEST_ASSERT_NE_UINT( msg, actual, expected ) _test_assert_uint( ASSERT_TYPE_NE, msg, actual, expected, __LINE__, __FILE__ )
+#define TEST_ASSERT_LT_UINT( msg, actual, expected ) _test_assert_uint( ASSERT_TYPE_LT, msg, actual, expected, __LINE__, __FILE__ )
+#define TEST_ASSERT_GT_UINT( msg, actual, expected ) _test_assert_uint( ASSERT_TYPE_GT, msg, actual, expected, __LINE__, __FILE__ )
+#define TEST_ASSERT_LE_UINT( msg, actual, expected ) _test_assert_uint( ASSERT_TYPE_LE, msg, actual, expected, __LINE__, __FILE__ )
+#define TEST_ASSERT_GE_UINT( msg, actual, expected ) _test_assert_uint( ASSERT_TYPE_GE, msg, actual, expected, __LINE__, __FILE__ )
 
-#define TEST_ASSERT_EQ_SINT( msg, actual, expected ) TEST_assert_sint( ASSERT_TYPE_EQ, msg, actual, expected, __LINE__, __FILE__ )
-#define TEST_ASSERT_NE_SINT( msg, actual, expected ) TEST_assert_sint( ASSERT_TYPE_NE, msg, actual, expected, __LINE__, __FILE__ )
-#define TEST_ASSERT_LT_SINT( msg, actual, expected ) TEST_assert_sint( ASSERT_TYPE_LT, msg, actual, expected, __LINE__, __FILE__ )
-#define TEST_ASSERT_GT_SINT( msg, actual, expected ) TEST_assert_sint( ASSERT_TYPE_GT, msg, actual, expected, __LINE__, __FILE__ )
-#define TEST_ASSERT_LE_SINT( msg, actual, expected ) TEST_assert_sint( ASSERT_TYPE_LE, msg, actual, expected, __LINE__, __FILE__ )
-#define TEST_ASSERT_GE_SINT( msg, actual, expected ) TEST_assert_sint( ASSERT_TYPE_GE, msg, actual, expected, __LINE__, __FILE__ )
+#define TEST_ASSERT_EQ_SINT( msg, actual, expected ) _test_assert_sint( ASSERT_TYPE_EQ, msg, actual, expected, __LINE__, __FILE__ )
+#define TEST_ASSERT_NE_SINT( msg, actual, expected ) _test_assert_sint( ASSERT_TYPE_NE, msg, actual, expected, __LINE__, __FILE__ )
+#define TEST_ASSERT_LT_SINT( msg, actual, expected ) _test_assert_sint( ASSERT_TYPE_LT, msg, actual, expected, __LINE__, __FILE__ )
+#define TEST_ASSERT_GT_SINT( msg, actual, expected ) _test_assert_sint( ASSERT_TYPE_GT, msg, actual, expected, __LINE__, __FILE__ )
+#define TEST_ASSERT_LE_SINT( msg, actual, expected ) _test_assert_sint( ASSERT_TYPE_LE, msg, actual, expected, __LINE__, __FILE__ )
+#define TEST_ASSERT_GE_SINT( msg, actual, expected ) _test_assert_sint( ASSERT_TYPE_GE, msg, actual, expected, __LINE__, __FILE__ )
 
-#define TEST_ASSERT_EQ_MEMORY( msg, actual, expected, size ) TEST_assert_memory( ASSERT_TYPE_EQ, msg, actual, expected, size, __LINE__, __FILE__ )
-#define TEST_ASSERT_NE_MEMORY( msg, actual, expected, size ) TEST_assert_memory( ASSERT_TYPE_NE, msg, actual, expected, size, __LINE__, __FILE__ )
+#define TEST_ASSERT_EQ_MEMORY( msg, actual, expected, size ) _test_assert_memory( ASSERT_TYPE_EQ, msg, actual, expected, size, __LINE__, __FILE__ )
+#define TEST_ASSERT_NE_MEMORY( msg, actual, expected, size ) _test_assert_memory( ASSERT_TYPE_NE, msg, actual, expected, size, __LINE__, __FILE__ )
 
-#define TEST_ASSERT_EQ_STRING( msg, actual, expected, size ) TEST_assert_string( ASSERT_TYPE_EQ, msg, actual, expected, size, __LINE__, __FILE__ )
-#define TEST_ASSERT_NE_STRING( msg, actual, expected, size ) TEST_assert_string( ASSERT_TYPE_NE, msg, actual, expected, size, __LINE__, __FILE__ )
+#define TEST_ASSERT_EQ_STRING( msg, actual, expected, size ) _test_assert_string( ASSERT_TYPE_EQ, msg, actual, expected, size, __LINE__, __FILE__ )
+#define TEST_ASSERT_NE_STRING( msg, actual, expected, size ) _test_assert_string( ASSERT_TYPE_NE, msg, actual, expected, size, __LINE__, __FILE__ )
 
 /*------------------------------------------------------------------------------
  Typdefs 
@@ -76,7 +76,7 @@ typedef enum {
  Function Prototypes 
 ------------------------------------------------------------------------------*/
 
-/* test_driver.c */
+/* test_runner.c */
 void TEST_init
     ( 
     FILE* outfile_handle_in,
@@ -99,7 +99,7 @@ uint32_t TEST_finalize
     );
 
 /* test_assert.c */
-void TEST_assert
+void _test_assert
     (
     ASSERT_TYPE assert_type,
     const char* msg,
@@ -108,7 +108,7 @@ void TEST_assert
     const char* file /* pass in __FILE__ from the caller */
     );
 
-void TEST_assert_float
+void _test_assert_float
     (
     ASSERT_TYPE assert_type,
     const char* msg,
@@ -119,7 +119,7 @@ void TEST_assert_float
     const char* file /* pass in __FILE__ from the caller */
     );
 
-void TEST_assert_uint
+void _test_assert_uint
     (
     ASSERT_TYPE assert_type,
     const char* msg,
@@ -129,7 +129,7 @@ void TEST_assert_uint
     const char* file /* pass in __FILE__ from the caller */
     );
 
-void TEST_assert_sint
+void _test_assert_sint
     (
     ASSERT_TYPE assert_type,
     const char* msg,
@@ -139,7 +139,7 @@ void TEST_assert_sint
     const char* file /* pass in __FILE__ from the caller */
     );
 
-void TEST_assert_memory
+void _test_assert_memory
     (
     ASSERT_TYPE assert_type,
     const char* msg,
@@ -150,7 +150,7 @@ void TEST_assert_memory
     const char* file /* pass in __FILE__ from the caller */
     );
 
-void TEST_assert_string
+void _test_assert_string
     (
     ASSERT_TYPE assert_type,
     const char* msg,

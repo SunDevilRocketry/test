@@ -40,13 +40,13 @@ Procedures
 /*******************************************************************************
 *                                                                              *
 * PROCEDURE:                                                                   * 
-* 		TEST_assert                                                            *
+* 		_test_assert                                                           *
 *                                                                              *
 * DESCRIPTION:                                                                 * 
 * 		Verify statement on a boolean or logical predicate.                    *
 *                                                                              *
 *******************************************************************************/
-void TEST_assert
+void _test_assert
     (
     ASSERT_TYPE assert_type,
     const char* msg,
@@ -71,7 +71,7 @@ switch( assert_type )
     case ASSERT_TYPE_EQ:
         if( actual )
             {
-            test_pass( msg );
+            _test_pass( msg );
             fprintf( outfile_handle, "Actual: TRUE | Expected: TRUE\n\n" );
             return;
             }
@@ -79,7 +79,7 @@ switch( assert_type )
             {
             char err_msg[128];
             sprintf( err_msg, "False at %s:%d", file, line );
-            test_fail( msg, err_msg );
+            _test_fail( msg, err_msg );
             fprintf( outfile_handle, "Actual: FALSE | Expected: TRUE\n\n" );
             return;
             }
@@ -87,7 +87,7 @@ switch( assert_type )
     case ASSERT_TYPE_NE:
         if( !actual )
             {
-            test_pass( msg );
+            _test_pass( msg );
             fprintf( outfile_handle, "Actual: FALSE | Expected: FALSE\n\n" );
             return;
             }
@@ -95,29 +95,29 @@ switch( assert_type )
             {
             char err_msg[128];
             sprintf( err_msg, "TRUE at %s:%d", file, line );
-            test_fail( msg, err_msg );
+            _test_fail( msg, err_msg );
             fprintf( outfile_handle, "Actual: TRUE | Expected: FALSE\n\n" );
             return;
             }
 
     default:
-        test_error( "Improper ASSERT_TYPE used for TEST_assert." );
+        _test_error( "Improper ASSERT_TYPE used for TEST_assert." );
         return;
     }
 
-} /* TEST_assert */
+} /* _test_assert */
 
 
 /*******************************************************************************
 *                                                                              *
 * PROCEDURE:                                                                   * 
-* 		TEST_assert_float                                                      *
+* 		_test_assert_float                                                      *
 *                                                                              *
 * DESCRIPTION:                                                                 * 
 * 		Verify statement on a float.                                           *
 *                                                                              *
 *******************************************************************************/
-void TEST_assert_float
+void _test_assert_float
     (
     ASSERT_TYPE assert_type,
     const char* msg,
@@ -145,7 +145,7 @@ switch( assert_type )
         if( ( expected + tolerance >= actual ) 
          && ( expected - tolerance <= actual ) )
             {
-            test_pass( msg );
+            _test_pass( msg );
             fprintf( outfile_handle, "Actual: %f | Expected: %f\n\n", actual, expected );
             return;
             }
@@ -153,7 +153,7 @@ switch( assert_type )
             {
             char err_msg[128];
             sprintf( err_msg, "Unequal float at %s:%d", file, line );
-            test_fail( msg, err_msg );
+            _test_fail( msg, err_msg );
             fprintf( outfile_handle, "Actual: %f | Expected: %f\n\n", actual, expected );
             return;
             }
@@ -162,7 +162,7 @@ switch( assert_type )
         if( ( expected + tolerance <= actual ) 
          && ( expected - tolerance >= actual ) )
             {
-            test_pass( msg );
+            _test_pass( msg );
             fprintf( outfile_handle, "Actual: %f | Expected: %f\n\n", actual, expected );
             return;
             }
@@ -170,7 +170,7 @@ switch( assert_type )
             {
             char err_msg[128];
             sprintf( err_msg, "Equal float at %s:%d", file, line );
-            test_fail( msg, err_msg );
+            _test_fail( msg, err_msg );
             fprintf( outfile_handle, "Actual: %f | Expected: %f\n\n", actual, expected );
             return;
             }
@@ -178,7 +178,7 @@ switch( assert_type )
     case ASSERT_TYPE_GT:
         if( actual > expected )
             {
-            test_pass( msg );
+            _test_pass( msg );
             fprintf( outfile_handle, "Actual: %f | Expected: %f\n\n", actual, expected );
             return;
             }
@@ -186,7 +186,7 @@ switch( assert_type )
             {
             char err_msg[128];
             sprintf( err_msg, "Less than or equal to float at %s:%d", file, line );
-            test_fail( msg, err_msg );
+            _test_fail( msg, err_msg );
             fprintf( outfile_handle, "Actual: %f | Expected: %f\n\n", actual, expected );
             return;
             }
@@ -194,7 +194,7 @@ switch( assert_type )
     case ASSERT_TYPE_LT:
         if( actual < expected )
             {
-            test_pass( msg );
+            _test_pass( msg );
             fprintf( outfile_handle, "Actual: %f | Expected: %f\n\n", actual, expected );
             return;
             }
@@ -202,7 +202,7 @@ switch( assert_type )
             {
             char err_msg[128];
             sprintf( err_msg, "Greater than or equal to float at %s:%d", file, line );
-            test_fail( msg, err_msg );
+            _test_fail( msg, err_msg );
             fprintf( outfile_handle, "Actual: %f | Expected: %f\n\n", actual, expected );
             return;
             }
@@ -210,7 +210,7 @@ switch( assert_type )
     case ASSERT_TYPE_GE:
         if( actual >= expected - tolerance )
             {
-            test_pass( msg );
+            _test_pass( msg );
             fprintf( outfile_handle, "Actual: %f | Expected: %f\n\n", actual, expected );
             return;
             }
@@ -218,7 +218,7 @@ switch( assert_type )
             {
             char err_msg[128];
             sprintf( err_msg, "Less than float at %s:%d", file, line );
-            test_fail( msg, err_msg );
+            _test_fail( msg, err_msg );
             fprintf( outfile_handle, "Actual: %f | Expected: %f\n\n", actual, expected );
             return;
             }
@@ -226,7 +226,7 @@ switch( assert_type )
     case ASSERT_TYPE_LE:
         if( actual <= expected + tolerance )
             {
-            test_pass( msg );
+            _test_pass( msg );
             fprintf( outfile_handle, "Actual: %f | Expected: %f\n\n", actual, expected );
             return;
             }
@@ -234,29 +234,29 @@ switch( assert_type )
             {
             char err_msg[128];
             sprintf( err_msg, "Greater than float at %s:%d", file, line );
-            test_fail( msg, err_msg );
+            _test_fail( msg, err_msg );
             fprintf( outfile_handle, "Actual: %f | Expected: %f\n\n", actual, expected );
             return;
             }
 
     default:
-        test_error( "Improper ASSERT_TYPE used for TEST_assert_float." );
+        _test_error( "Improper ASSERT_TYPE used for TEST_assert_float." );
         return;
     }
 
-} /* TEST_assert_float */
+} /* _test_assert_float */
 
 
 /*******************************************************************************
 *                                                                              *
 * PROCEDURE:                                                                   * 
-* 		TEST_assert_uint                                                       *
+* 		_test_assert_uint                                                       *
 *                                                                              *
 * DESCRIPTION:                                                                 * 
 * 		Verify statement on a uint.                                            *
 *                                                                              *
 *******************************************************************************/
-void TEST_assert_uint
+void _test_assert_uint
     (
     ASSERT_TYPE assert_type,
     const char* msg,
@@ -282,7 +282,7 @@ switch( assert_type )
     case ASSERT_TYPE_EQ:
         if( actual == expected )
             {
-            test_pass( msg );
+            _test_pass( msg );
             fprintf( outfile_handle, "Actual: %d | Expected: %d\n\n", actual, expected );
             return;
             }
@@ -290,7 +290,7 @@ switch( assert_type )
             {
             char err_msg[128];
             sprintf( err_msg, "Unequal uint at %s:%d", file, line );
-            test_fail( msg, err_msg );
+            _test_fail( msg, err_msg );
             fprintf( outfile_handle, "Actual: %d | Expected: %d\n\n", actual, expected );
             return;
             }
@@ -298,7 +298,7 @@ switch( assert_type )
     case ASSERT_TYPE_NE:
         if( actual != expected )
             {
-            test_pass( msg );
+            _test_pass( msg );
             fprintf( outfile_handle, "Actual: %d | Expected: %d\n\n", actual, expected );
             return;
             }
@@ -306,7 +306,7 @@ switch( assert_type )
             {
             char err_msg[128];
             sprintf( err_msg, "Equal uint at %s:%d", file, line );
-            test_fail( msg, err_msg );
+            _test_fail( msg, err_msg );
             fprintf( outfile_handle, "Actual: %d | Expected: %d\n\n", actual, expected );
             return;
             }
@@ -314,7 +314,7 @@ switch( assert_type )
     case ASSERT_TYPE_GT:
         if( actual > expected )
             {
-            test_pass( msg );
+            _test_pass( msg );
             fprintf( outfile_handle, "Actual: %d | Expected: %d\n\n", actual, expected );
             return;
             }
@@ -322,7 +322,7 @@ switch( assert_type )
             {
             char err_msg[128];
             sprintf( err_msg, "Less than or equal to uint at %s:%d", file, line );
-            test_fail( msg, err_msg );
+            _test_fail( msg, err_msg );
             fprintf( outfile_handle, "Actual: %d | Expected: %d\n\n", actual, expected );
             return;
             }
@@ -330,7 +330,7 @@ switch( assert_type )
     case ASSERT_TYPE_LT:
         if( actual < expected )
             {
-            test_pass( msg );
+            _test_pass( msg );
             fprintf( outfile_handle, "Actual: %d | Expected: %d\n\n", actual, expected );
             return;
             }
@@ -338,7 +338,7 @@ switch( assert_type )
             {
             char err_msg[128];
             sprintf( err_msg, "Greater than or equal to uint at %s:%d", file, line );
-            test_fail( msg, err_msg );
+            _test_fail( msg, err_msg );
             fprintf( outfile_handle, "Actual: %d | Expected: %d\n\n", actual, expected );
             return;
             }
@@ -346,7 +346,7 @@ switch( assert_type )
     case ASSERT_TYPE_GE:
         if( actual >= expected )
             {
-            test_pass( msg );
+            _test_pass( msg );
             fprintf( outfile_handle, "Actual: %d | Expected: %d\n\n", actual, expected );
             return;
             }
@@ -354,7 +354,7 @@ switch( assert_type )
             {
             char err_msg[128];
             sprintf( err_msg, "Less than uint at %s:%d", file, line );
-            test_fail( msg, err_msg );
+            _test_fail( msg, err_msg );
             fprintf( outfile_handle, "Actual: %d | Expected: %d\n\n", actual, expected );
             return;
             }
@@ -362,7 +362,7 @@ switch( assert_type )
     case ASSERT_TYPE_LE:
         if( actual <= expected )
             {
-            test_pass( msg );
+            _test_pass( msg );
             fprintf( outfile_handle, "Actual: %d | Expected: %d\n\n", actual, expected );
             return;
             }
@@ -370,29 +370,29 @@ switch( assert_type )
             {
             char err_msg[128];
             sprintf( err_msg, "Greater than uint at %s:%d", file, line );
-            test_fail( msg, err_msg );
+            _test_fail( msg, err_msg );
             fprintf( outfile_handle, "Actual: %d | Expected: %d\n\n", actual, expected );
             return;
             }
 
     default:
-        test_error( "Improper ASSERT_TYPE used for TEST_assert_uint." );
+        _test_error( "Improper ASSERT_TYPE used for TEST_assert_uint." );
         return;
     }
 
-} /* TEST_assert_uint */
+} /* _test_assert_uint */
 
 
 /*******************************************************************************
 *                                                                              *
 * PROCEDURE:                                                                   * 
-* 		TEST_assert_sint                                                       *
+* 		_test_assert_sint                                                       *
 *                                                                              *
 * DESCRIPTION:                                                                 * 
 * 		Verify statement on a sint.                                            *
 *                                                                              *
 *******************************************************************************/
-void TEST_assert_sint
+void _test_assert_sint
     (
     ASSERT_TYPE assert_type,
     const char* msg,
@@ -418,7 +418,7 @@ switch( assert_type )
     case ASSERT_TYPE_EQ:
         if( actual == expected )
             {
-            test_pass( msg );
+            _test_pass( msg );
             fprintf( outfile_handle, "Actual: %d | Expected: %d\n\n", actual, expected );
             return;
             }
@@ -426,7 +426,7 @@ switch( assert_type )
             {
             char err_msg[128];
             sprintf( err_msg, "Unequal sint at %s:%d", file, line );
-            test_fail( msg, err_msg );
+            _test_fail( msg, err_msg );
             fprintf( outfile_handle, "Actual: %d | Expected: %d\n\n", actual, expected );
             return;
             }
@@ -434,7 +434,7 @@ switch( assert_type )
     case ASSERT_TYPE_NE:
         if( actual != expected )
             {
-            test_pass( msg );
+            _test_pass( msg );
             fprintf( outfile_handle, "Actual: %d | Expected: %d\n\n", actual, expected );
             return;
             }
@@ -442,7 +442,7 @@ switch( assert_type )
             {
             char err_msg[128];
             sprintf( err_msg, "Equal sint at %s:%d", file, line );
-            test_fail( msg, err_msg );
+            _test_fail( msg, err_msg );
             fprintf( outfile_handle, "Actual: %d | Expected: %d\n\n", actual, expected );
             return;
             }
@@ -450,7 +450,7 @@ switch( assert_type )
     case ASSERT_TYPE_GT:
         if( actual > expected )
             {
-            test_pass( msg );
+            _test_pass( msg );
             fprintf( outfile_handle, "Actual: %d | Expected: %d\n\n", actual, expected );
             return;
             }
@@ -458,7 +458,7 @@ switch( assert_type )
             {
             char err_msg[128];
             sprintf( err_msg, "Less than or equal to sint at %s:%d", file, line );
-            test_fail( msg, err_msg );
+            _test_fail( msg, err_msg );
             fprintf( outfile_handle, "Actual: %d | Expected: %d\n\n", actual, expected );
             return;
             }
@@ -466,7 +466,7 @@ switch( assert_type )
     case ASSERT_TYPE_LT:
         if( actual < expected )
             {
-            test_pass( msg );
+            _test_pass( msg );
             fprintf( outfile_handle, "Actual: %d | Expected: %d\n\n", actual, expected );
             return;
             }
@@ -474,7 +474,7 @@ switch( assert_type )
             {
             char err_msg[128];
             sprintf( err_msg, "Greater than or equal to sint at %s:%d", file, line );
-            test_fail( msg, err_msg );
+            _test_fail( msg, err_msg );
             fprintf( outfile_handle, "Actual: %d | Expected: %d\n\n", actual, expected );
             return;
             }
@@ -482,7 +482,7 @@ switch( assert_type )
     case ASSERT_TYPE_GE:
         if( actual >= expected )
             {
-            test_pass( msg );
+            _test_pass( msg );
             fprintf( outfile_handle, "Actual: %d | Expected: %d\n\n", actual, expected );
             return;
             }
@@ -490,7 +490,7 @@ switch( assert_type )
             {
             char err_msg[128];
             sprintf( err_msg, "Less than sint at %s:%d", file, line );
-            test_fail( msg, err_msg );
+            _test_fail( msg, err_msg );
             fprintf( outfile_handle, "Actual: %d | Expected: %d\n\n", actual, expected );
             return;
             }
@@ -498,7 +498,7 @@ switch( assert_type )
     case ASSERT_TYPE_LE:
         if( actual <= expected )
             {
-            test_pass( msg );
+            _test_pass( msg );
             fprintf( outfile_handle, "Actual: %d | Expected: %d\n\n", actual, expected );
             return;
             }
@@ -506,29 +506,29 @@ switch( assert_type )
             {
             char err_msg[128];
             sprintf( err_msg, "Greater than sint at %s:%d", file, line );
-            test_fail( msg, err_msg );
+            _test_fail( msg, err_msg );
             fprintf( outfile_handle, "Actual: %d | Expected: %d\n\n", actual, expected );
             return;
             }
 
     default:
-        test_error( "Improper ASSERT_TYPE used for TEST_assert_sint." );
+        _test_error( "Improper ASSERT_TYPE used for TEST_assert_sint." );
         return;
     }
 
-} /* TEST_assert_sint */
+} /* _test_assert_sint */
 
 
 /*******************************************************************************
 *                                                                              *
 * PROCEDURE:                                                                   * 
-* 		TEST_assert_memory                                                     *
+* 		_test_assert_memory                                                     *
 *                                                                              *
 * DESCRIPTION:                                                                 * 
 * 		Verify statement on a region of memory.                                *
 *                                                                              *
 *******************************************************************************/
-void TEST_assert_memory
+void _test_assert_memory
     (
     ASSERT_TYPE assert_type,
     const char* msg,
@@ -544,7 +544,7 @@ Perform Validation
 ------------------------------------------------------------------------------*/
 if( actual == NULL || expected == NULL)
     {
-    test_error( "NULLPTR passed to TEST_assert_memory." );
+    _test_error( "NULLPTR passed to TEST_assert_memory." );
     }
 
 if( msg == NULL )
@@ -564,12 +564,12 @@ switch( assert_type )
                 {
                 char err_msg[128];
                 sprintf( err_msg, "Unequal memory at %s:%d", file, line );
-                test_fail( msg, err_msg );
+                _test_fail( msg, err_msg );
                 fprintf( outfile_handle, "Actual (address): 0x%08x | Expected (address): 0x%08x\n\n", (int)actual, (int)expected );
                 return; 
                 }
             }
-        test_pass( msg );
+        _test_pass( msg );
         fprintf( outfile_handle, "Actual (address): 0x%08x | Expected (address): 0x%08x\n\n", (int)actual, (int)expected );
         return;
 
@@ -578,7 +578,7 @@ switch( assert_type )
             {
             if( ((uint8_t*)actual)[i] != ((uint8_t*)expected)[i] )
                 {
-                test_pass( msg );
+                _test_pass( msg );
                 fprintf( outfile_handle, "Actual (address): 0x%08x | Expected (address): 0x%08x\n\n", (int)actual, (int)expected );
                 return;
                 }
@@ -586,28 +586,28 @@ switch( assert_type )
 
         char err_msg[128];
         sprintf( err_msg, "Equal memory at %s:%d", file, line );
-        test_fail( msg, err_msg );
+        _test_fail( msg, err_msg );
         fprintf( outfile_handle, "Actual (address): 0x%08x | Expected (address): 0x%08x\n\n", (int)actual, (int)expected );
         return;
 
     default:
-        test_error( "Improper ASSERT_TYPE used for TEST_assert_memory." );
+        _test_error( "Improper ASSERT_TYPE used for TEST_assert_memory." );
         return;
     }
 
-} /* TEST_assert_memory */
+} /* _test_assert_memory */
 
 
 /*******************************************************************************
 *                                                                              *
 * PROCEDURE:                                                                   * 
-* 		TEST_assert_string                                                     *
+* 		_test_assert_string                                                     *
 *                                                                              *
 * DESCRIPTION:                                                                 * 
 * 		Verify statement on a C-style string.                                  *
 *                                                                              *
 *******************************************************************************/
-void TEST_assert_string
+void _test_assert_string
     (
     ASSERT_TYPE assert_type,
     const char* msg,
@@ -623,7 +623,7 @@ Perform Validation
 ------------------------------------------------------------------------------*/
 if( actual == NULL || expected == NULL)
     {
-    test_error( "NULLPTR passed to TEST_assert_string." );
+    _test_error( "NULLPTR passed to TEST_assert_string." );
     }
 
 if( msg == NULL )
@@ -643,7 +643,7 @@ switch( assert_type )
                 {
                 char err_msg[128];
                 sprintf( err_msg, "Unequal string at %s:%d", file, line );
-                test_fail( msg, err_msg );
+                _test_fail( msg, err_msg );
                 fprintf( outfile_handle, "Actual (address): 0x%08x | Expected (address): 0x%08x\n\n", (int)actual, (int)expected );
                 return; 
                 }
@@ -651,12 +651,12 @@ switch( assert_type )
             if( ( ((uint8_t*)actual)[i] == ((uint8_t*)expected)[i] ) /* both chars equal */
              && ( ((char*)actual)[i] == '\0' || ((char*)expected)[i] == '\0' ) ) /* null terminator */
                 {
-                test_pass( msg );
+                _test_pass( msg );
                 fprintf( outfile_handle, "Actual (address): 0x%08x | Expected (address): 0x%08x\n\n", (int)actual, (int)expected );
                 return;
                 }
             }
-        test_pass( msg );
+        _test_pass( msg );
         fprintf( outfile_handle, "Actual (address): 0x%08x | Expected (address): 0x%08x\n\n", (int)actual, (int)expected );
         return;
 
@@ -665,7 +665,7 @@ switch( assert_type )
             {
             if( ((uint8_t*)actual)[i] != ((uint8_t*)expected)[i] )
                 {
-                test_pass( msg );
+                _test_pass( msg );
                 fprintf( outfile_handle, "Actual (address): 0x%08x | Expected (address): 0x0x%08x\n\n", (int)actual, (int)expected );
                 return;
                 }
@@ -675,7 +675,7 @@ switch( assert_type )
                 {
                 char err_msg[128];
                 sprintf( err_msg, "Equal string at %s:%d", file, line );
-                test_fail( msg, err_msg );
+                _test_fail( msg, err_msg );
                 fprintf( outfile_handle, "Actual (address): 0x%08x | Expected (address): 0x%08x\n\n", (int)actual, (int)expected );
                 return;
                 }
@@ -683,13 +683,13 @@ switch( assert_type )
 
         char err_msg[128];
         sprintf( err_msg, "Equal memory at %s:%d", file, line );
-        test_fail( msg, err_msg );
+        _test_fail( msg, err_msg );
         fprintf( outfile_handle, "Actual (address): 0x%08x | Expected (address): 0x%08x\n\n", (int)actual, (int)expected );
         return;
 
     default:
-        test_error( "Improper ASSERT_TYPE used for TEST_assert_string." );
+        _test_error( "Improper ASSERT_TYPE used for TEST_assert_string." );
         return;
     }
 
-} /* TEST_assert_string */
+} /* _test_assert_string */

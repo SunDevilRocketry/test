@@ -45,19 +45,19 @@ extern char test_name[32];
  Function Prototypes 
 ------------------------------------------------------------------------------*/
 
-/* test_driver.c */
-void test_error
+/* test_runner.c */
+void _test_error
     (
     const char* msg
     );
 
-void test_fail
+void _test_fail
     (
     const char* msg,
     const char* err_msg
     );
 
-void test_pass
+void _test_pass
     (
     const char* msg
     );

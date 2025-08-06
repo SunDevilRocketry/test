@@ -54,7 +54,7 @@ $(ROOT_DIR)/mod/gps/gps.c
 # Framework
 FRAMEWORK_SOURCES =												  \
 $(ROOT_DIR)/test/framework/src/test_assert.c          	  		  \
-$(ROOT_DIR)/test/framework/src/test_driver.c
+$(ROOT_DIR)/test/framework/src/test_runner.c
 
 C_SOURCES = $(TEST_SOURCES) $(COV_C_SOURCES) $(FRAMEWORK_SOURCES)
 

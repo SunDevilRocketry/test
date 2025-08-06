@@ -405,7 +405,7 @@ typedef struct unit_test {
 unit_test tests[] =
 	{
 	{ "GPS_parse", test_GPS_parse },
-	{ "gps_mesg_parse", test_gps_mesg_validate },
+	{ "gps_mesg_validate", test_gps_mesg_validate },
 	{ "gps_transmit", test_gps_transmit },
 	{ "gps_receive", test_gps_receive },
 	{ "gps_receive_IT", test_gps_receive_IT }

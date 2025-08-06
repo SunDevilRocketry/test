@@ -1,7 +1,7 @@
 /*******************************************************************************
 *
 * FILE: 
-*      test_driver.c
+*      test_runner.c
 *
 * DESCRIPTION: 
 *      A driver for unit tests on Sun Devil Rocketry embedded code.
@@ -79,7 +79,7 @@ Validate Inputs
 ------------------------------------------------------------------------------*/
 if( outfile_handle_in == NULL || test_name_in == NULL )
     {
-    test_error( "Null pointers given to test_init." );
+    _test_error( "Null pointers given to test_init." );
     }
 
 /*------------------------------------------------------------------------------
@@ -122,7 +122,7 @@ if( !in_test_group )
     }
 else
     {
-    test_error( "Tried to open test group before closing previous." );
+    _test_error( "Tried to open test group before closing previous." );
     }
 }
 
@@ -153,7 +153,7 @@ if( in_test_group )
     }
 else
     {
-    test_error( "Tried to close test group while not in one." );
+    _test_error( "Tried to close test group while not in one." );
     }
 }
 
@@ -197,13 +197,13 @@ return fail_counter;
 /*******************************************************************************
 *                                                                              *
 * PROCEDURE:                                                                   * 
-* 		test_error                                                             *
+* 		_test_error                                                             *
 *                                                                              *
 * DESCRIPTION:                                                                 * 
 * 		Abort the test immediately and report the error.                       *
 *                                                                              *
 *******************************************************************************/
-void test_error
+void _test_error
     (
     const char* msg
     )
@@ -226,13 +226,13 @@ exit(1);
 /*******************************************************************************
 *                                                                              *
 * PROCEDURE:                                                                   * 
-* 		test_fail                                                              *
+* 		_test_fail                                                              *
 *                                                                              *
 * DESCRIPTION:                                                                 * 
 * 		Fail a comparison and log the result.                                  *
 *                                                                              *
 *******************************************************************************/
-void test_fail
+void _test_fail
     (
     const char* msg,
     const char* err_msg
@@ -249,13 +249,13 @@ fail_counter++;
 /*******************************************************************************
 *                                                                              *
 * PROCEDURE:                                                                   * 
-* 		test_pass                                                              *
+* 		_test_pass                                                              *
 *                                                                              *
 * DESCRIPTION:                                                                 * 
 * 		Pass a comparison and log the result.                                  *
 *                                                                              *
 *******************************************************************************/
-void test_pass
+void _test_pass
     (
     const char* msg
     )
@@ -342,7 +342,7 @@ TEST_ASSERT_TRUE( "Test Environment: Unsupported Compiler", false );
 #endif
 
 #if( defined( TEST_FORMAL_RUN ) && TEST_FORMAL_RUN )
-TEST_ASSERT_TRUE( "Test Environment: Repository is clean.", repo_clean );
+TEST_ASSERT_TRUE( "Test Environment: Run is formal.", TEST_FORMAL_RUN );
 #endif
 
 
