@@ -96,7 +96,7 @@ C_DEFS =         \
 -DFLIGHT_COMPUTER \
 -DUNIT_TEST
 
-CFLAGS = $(C_INCLUDES) $(C_DEFS) $(OPT) -Wall -g
+CFLAGS = $(C_INCLUDES) $(C_DEFS) $(OPT) -Wall -g -lm
 
 # Disable some warnings
 CFLAGS += -Wno-pointer-to-int-cast
