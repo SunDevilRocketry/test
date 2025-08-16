@@ -79,13 +79,13 @@ C_INCLUDES =                                           \
 -I$(ROOT_DIR)/mod/imu/								   \
 -I$(ROOT_DIR)/mod/usb/								   \
 -I$(ROOT_DIR)/mod/led/								   \
--I$(ROOT_DIR)/init/appa/							   \
+-I$(ROOT_DIR)/init/dual-deploy/						   \
 -I$(LIB_DIR)                                           \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc          \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc/Legacy   \
 -I$(LIB_DIR)/Drivers/CMSIS/Device/ST/STM32H7xx/Include \
 -I$(LIB_DIR)/Drivers/CMSIS/Include                     \
--I$(ROOT_DIR)/init/appa/config/Inc				   	   \
+-I$(ROOT_DIR)/init/dual-deploy/config/Inc			   \
 -I$(ROOT_DIR)/test/framework/src                       \
 -I$(ROOT_DIR)/test/mod/servo/mock
 

@@ -46,8 +46,8 @@ Procedures: Test Helpers // Any misc functions that need to be called by tests
 /* not sure when I wrote this but this has a memory leak. minimal impact, but 
    should be fixed on next update. */
 void TIM_init() {
-	htim2.Instance = malloc(sizeof(TIM_TypeDef));
-	htim3.Instance = malloc(sizeof(TIM_TypeDef));
+	memset( htim2.Instance, 0, sizeof(TIM_TypeDef) );
+	memset( htim3.Instance, 0, sizeof(TIM_TypeDef) );
 }
 
 /*------------------------------------------------------------------------------
@@ -152,7 +152,6 @@ for ( int test_num = 0; test_num < NUM_CASES_RESET; test_num++ )
 	TEST_ASSERT_EQ_SINT( "Test that servo 2 received the right pulse.", htim3.Instance->CCR3, cases[test_num].servo2_pulse );
 	TEST_ASSERT_EQ_SINT( "Test that servo 3 received the right pulse.", htim3.Instance->CCR1, cases[test_num].servo3_pulse );
 	TEST_ASSERT_EQ_SINT( "Test that servo 4 received the right pulse.", htim2.Instance->CCR1, cases[test_num].servo4_pulse );
-	printf("\tservo_init #%d passed\n", test_num + 1); // prints a 1-indexed number instead of 0-indexed
 	}
 
 #undef NUM_CASES_RESET
@@ -221,7 +220,6 @@ for ( int test_num = 0; test_num < NUM_CASES_CMD; test_num++ )
 	TEST_ASSERT_EQ_SINT( "Test that the pulse matches the expected for servo 3.", htim3.Instance->CCR1, cases[test_num].servo3_pulse );
 	TEST_ASSERT_EQ_SINT( "Test that the pulse matches the expected for servo 4.", htim2.Instance->CCR1, cases[test_num].servo4_pulse );
 	TEST_ASSERT_EQ_SINT( "Test that servo_cmd_execute output returned the right status.", status, cases[test_num].status );
-	printf("\tservo_cmd_execute #%d passed\n", test_num + 1); // prints a 1-indexed number instead of 0-indexed
 	}
 
 #undef NUM_CASES_CMD
