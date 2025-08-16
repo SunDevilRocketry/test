@@ -12,7 +12,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <time.h>
-#include <unistd.h>
+#include <string.h>
 #include "main.h"
 #include "stm32h7xx_hal.h"
 
