@@ -96,7 +96,7 @@ C_DEFS =         \
 -DFLIGHT_COMPUTER \
 -DUNIT_TEST
 
-CFLAGS = $(C_INCLUDES) $(C_DEFS) $(OPT) -Wall -g -lm
+CFLAGS = $(C_INCLUDES) $(C_DEFS) $(OPT) -Wall -g
 
 # Disable some warnings
 CFLAGS += -Wno-pointer-to-int-cast
@@ -121,7 +121,7 @@ $(BUILD_DIR)/%.o: %.c $(BUILD_DIR)
 	$(CC) -c $(CFLAGS) $< -o $@
 
 $(BUILD_DIR)/$(TARGET): $(OBJECTS) 
-	$(CC) $(OBJECTS) -o $@ -lgcov
+	$(CC) $(OBJECTS) -o $@ -lgcov -lm
 
 $(BUILD_DIR):
 	mkdir $@		
