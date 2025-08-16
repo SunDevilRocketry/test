@@ -21,10 +21,10 @@ Standard Includes
 /*------------------------------------------------------------------------------
 Project Includes                                                                     
 ------------------------------------------------------------------------------*/
+#include "sdrtf_pub.h"
 #include "main.h"
 #include "sensor.h"
 #include "gps.h"
-#include "unity.h"
 
 
 /*------------------------------------------------------------------------------
@@ -117,45 +117,6 @@ void gpsStructToCSV(GPS_DATA* data, FILE* f) {
 
 
 /*------------------------------------------------------------------------------
-Procedures: Unity Functions
-------------------------------------------------------------------------------*/
-
-
-/*******************************************************************************
-*                                                                              *
-* PROCEDURE:                                                                   * 
-*       setUp                                                                  *
-*                                                                              *
-* DESCRIPTION:                                                                 * 
-*       Code to run prior to any test                                          *
-*                                                                              *
-*******************************************************************************/
-void setUp
-	(
-	void
-    )
-{
-} /* setUp */
-
-
-/*******************************************************************************
-*                                                                              *
-* PROCEDURE:                                                                   * 
-*       tearDown                                                               *
-*                                                                              *
-* DESCRIPTION:                                                                 * 
-*       Code to run after tests                                                *
-*                                                                              *
-*******************************************************************************/
-void tearDown 
-	(
-	void
-    )
-{
-} /* tearDown */
-
-
-/*------------------------------------------------------------------------------
 Procedures: Tests
 ------------------------------------------------------------------------------*/
 
@@ -181,8 +142,6 @@ int num_cases = 15;
 char buffer[200] = ""; // An NMEA message is 82 characters, but the way we parse may end up with more in order to represent the struct
 
 // Source: https://github.com/esutton/gps-nmea-log-files/blob/master/AMOD_AGL3080_20121104_134730.txt
-
-printf("\nUnit Tests: GPS_parse (and static helper functions)\n");
 
 /* Step: Load inputs and expected results */
 char* input_strings[] = 
@@ -211,11 +170,12 @@ fclose(f);
 FILE* actual = fopen("cases/gps_parse_actual.txt", "r");
 for ( int test_num = 0; test_num < num_cases; test_num++ )
 	{
+	char msg[80];
+	sprintf( msg, "Test parsing GPS message %d.", test_num );
 	fgets(buffer, sizeof(buffer), actual);
     /* Initialize input/output */
 	buffer[strcspn(buffer, "\n")] = 0;
-	TEST_ASSERT_EQUAL_STRING(expected[test_num], buffer); /* Test begins */
-	printf("\tGPS_Parse #%d passed\n", test_num + 1);
+	TEST_ASSERT_EQ_STRING( msg, buffer, expected[test_num], sizeof(buffer) ); /* Test begins */
 	}
 
 } /* test_GPS_parse */
@@ -237,12 +197,10 @@ void test_gps_mesg_validate
 /*------------------------------------------------------------------------------
 Initializations
 ------------------------------------------------------------------------------*/
-#define NUM_CASES_GPS_MESG_VALIDATE 5
+#define NUM_CASES_GPS_MESG_VALIDATE 6
 char buffer[200] = ""; // An NMEA message is 82 characters, but the way we parse may end up with more in order to represent the struct
 
 // Source: https://github.com/esutton/gps-nmea-log-files/blob/master/AMOD_AGL3080_20121104_134730.txt
-
-printf("\nUnit Tests: test_gps_mesg_validate\n");
 
 /* Step: Load inputs and expected results */
 char* input_strings[] = 
@@ -250,12 +208,13 @@ char* input_strings[] =
 #include "cases/gps_mesg_validate_inputs.txt"
 };
 
-int expected[NUM_CASES_GPS_MESG_VALIDATE] = {1,1,1,0,0};
+int expected[NUM_CASES_GPS_MESG_VALIDATE] = {1,1,1,0,0,0};
 
 for ( int test_num = 0; test_num < NUM_CASES_GPS_MESG_VALIDATE; test_num++ )
 	{
-	TEST_ASSERT_EQUAL_INT(expected[test_num], gps_mesg_validate(input_strings[test_num]));
-	printf("\tgps_mesg_validate #%d passed\n", test_num + 1);
+	char msg[80];
+	sprintf( msg, "Test that the NMEA message validator works as expected for case %d.", test_num );
+	TEST_ASSERT_EQ_UINT( msg, gps_mesg_validate(input_strings[test_num]), expected[test_num] );
 	}
 
 } /* test_GPS_mesg_validate */
@@ -282,9 +241,6 @@ Initializations
 ------------------------------------------------------------------------------*/
 #define NUM_CASES_GPS_TRANSMIT 4
 
-printf("\nUnit Tests: test_gps_transmit\n");
-printf("(NOTE: This tests exists for statement coverage in gps.c only. It does not verify lower functionalities.)\n");
-
 /* Step: Prepare mocked function returns */
 HAL_StatusTypeDef statuses[NUM_CASES_GPS_TRANSMIT] =
 {
@@ -301,9 +257,10 @@ uint16_t timeout = 10000;
 
 for ( int test_num = 0; test_num < NUM_CASES_GPS_TRANSMIT; test_num++ )
 	{
+	char msg[80];
 	MOCK_HAL_Status_Return(statuses[test_num]);
-	TEST_ASSERT_EQUAL_INT(statuses[test_num], gps_transmit(tx_data_ptr, size, timeout));
-	printf("\tgps_transmit #%d passed\n", test_num + 1);
+	sprintf( msg, "Check that the error return matches the expected for case %d.", test_num );
+	TEST_ASSERT_EQ_UINT( msg, gps_transmit(tx_data_ptr, size, timeout), statuses[test_num] );
 	}
 free(tx_data_ptr);
 } /* test_gps_transmit */
@@ -330,9 +287,6 @@ Initializations
 ------------------------------------------------------------------------------*/
 #define NUM_CASES_GPS_RECEIVE 4
 
-printf("\nUnit Tests: test_gps_receive\n");
-printf("(NOTE: This tests exists for statement coverage in gps.c only. It does not verify lower functionalities.)\n");
-
 /* Step: Prepare mocked function returns */
 HAL_StatusTypeDef statuses[NUM_CASES_GPS_RECEIVE] =
 {
@@ -358,9 +312,10 @@ uint16_t timeout = 10000;
 
 for ( int test_num = 0; test_num < NUM_CASES_GPS_RECEIVE; test_num++ )
 	{
+	char msg[80];
+	sprintf( msg, "Check that the error return matches the expected for case %d.", test_num );
 	MOCK_HAL_Status_Return(statuses[test_num]);
-	TEST_ASSERT_EQUAL_INT(expected[test_num], gps_receive(tx_data_ptr, size, timeout));
-	printf("\tgps_receive #%d passed\n", test_num + 1);
+	TEST_ASSERT_EQ_UINT( msg, gps_receive(tx_data_ptr, size, timeout), expected[test_num] );
 	}
 free(tx_data_ptr);
 } /* test_gps_receive */
@@ -387,9 +342,6 @@ Initializations
 ------------------------------------------------------------------------------*/
 #define NUM_CASES_GPS_RECEIVE_IT 4
 
-printf("\nUnit Tests: test_gps_receive_IT\n");
-printf("(NOTE: This tests exists for statement coverage in gps.c only. It does not verify lower functionalities.)\n");
-
 /* Step: Prepare mocked function returns */
 HAL_StatusTypeDef statuses[NUM_CASES_GPS_RECEIVE_IT] =
 {
@@ -414,12 +366,14 @@ void* tx_data_ptr = malloc(size);
 
 for ( int test_num = 0; test_num < NUM_CASES_GPS_RECEIVE_IT; test_num++ )
 	{
+	char msg[80];
+	sprintf( msg, "Check that the error return matches the expected for case %d.", test_num );
 	MOCK_HAL_Status_Return(statuses[test_num]);
-	TEST_ASSERT_EQUAL_INT(expected[test_num], gps_receive_IT(tx_data_ptr, size));
-	printf("\tgps_receive_IT #%d passed\n", test_num + 1);
+	TEST_ASSERT_EQ_UINT( msg, gps_receive_IT(tx_data_ptr, size), expected[test_num] );
 	}
 
 free(tx_data_ptr);
+
 } /* test_gps_receive_IT */
 
 
@@ -429,8 +383,7 @@ free(tx_data_ptr);
 *       main			                                   			           *
 *                                                                              *
 * DESCRIPTION:                                                                 * 
-*       Set up the testing enviroment, call tests, tear down the testing       *
-*		environment															   *
+*       Declare the tests here and call the framework.						   *
 *                                                                              *
 *******************************************************************************/
 int main
@@ -438,29 +391,24 @@ int main
 	void
 	)
 {
-UNITY_BEGIN();
-printf("-----------------------\n");
-printf("	GPS UNIT TESTING\n");
-printf("-----------------------\n");
-printf("\nNote: These unit tests exit on a failed assert. If the test fails, go to the case after the last pass.\n");
+/*------------------------------------------------------------------------------
+Test Cases
+------------------------------------------------------------------------------*/
+unit_test tests[] =
+	{
+	{ "GPS_parse", test_GPS_parse },
+	{ "gps_mesg_validate", test_gps_mesg_validate },
+	{ "gps_transmit", test_gps_transmit },
+	{ "gps_receive", test_gps_receive },
+	{ "gps_receive_IT", test_gps_receive_IT }
+	};
 
-// List test functions here.
-RUN_TEST( test_GPS_parse );
-RUN_TEST( test_gps_mesg_validate );
-RUN_TEST( test_gps_transmit );
-RUN_TEST( test_gps_receive );
-RUN_TEST( test_gps_receive_IT );
+/*------------------------------------------------------------------------------
+Call the framework
+------------------------------------------------------------------------------*/
+TEST_INITIALIZE_TEST( "gps.c", tests );
 
-if (EXPECTED_COVERAGE == 100) {
-	printf("\nThis test suite expects full coverage (100%%).\n");
-}
-else {
-	printf("\nThis test does not expect full coverage (> 100%%)\n");
-}
-
-return UNITY_END();
 } /* main */
-
 
 /*******************************************************************************
 * END OF FILE                                                                  * 
