@@ -14,6 +14,9 @@
 
 #include <stdint.h>
 
+// #define BARO_LAUNCH_DETECT_ENABLED 1 BARO CURRENTLY DISABLED
+#define ACCEL_LAUNCH_DETECT_ENABLED 1
+
 /* launch_detect.c */
 void launch_detection(uint8_t* acc_detect_flag);
 
