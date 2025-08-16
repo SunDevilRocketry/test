@@ -84,7 +84,6 @@ int expected[NUM_CASES_LAUNCH_DETECT][NUM_EXPECTED_SAMPLES] =
 /* Step: Execute tests */
 for ( int test_num = 0; test_num < NUM_CASES_LAUNCH_DETECT; test_num++ )
 	{
-	printf( "Case %d\n", test_num );
 	for ( int i = 0; i < NUM_EXPECTED_SAMPLES; i++ )
 		{
 			sensor_data.imu_data.imu_converted.accel_x = inputsAcc[test_num][i];
@@ -92,7 +91,6 @@ for ( int test_num = 0; test_num < NUM_CASES_LAUNCH_DETECT; test_num++ )
 			sensor_data.imu_data.imu_converted.accel_z = inputsAcc[test_num][i];
 			sensor_data.baro_pressure = inputsBaro[test_num][i];
 			launch_detection(&acc_detect_flag);
-			printf( "%d | %d\n", acc_detect_flag, expected[test_num][i] );
 			TEST_ASSERT_EQ_SINT( "Test that the accel flag is/isn't set.", acc_detect_flag, expected[test_num][i] );
 		}
 	/* reset test */
