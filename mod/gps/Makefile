@@ -103,13 +103,10 @@ CFLAGS += -Wno-unused-variable
 CFLAGS += -ftest-coverage
 CFLAGS += -fprofile-arcs
 
-# build all 
+################################################################
+# Build all
+################################################################
 all: clean $(BUILD_DIR)/$(TARGET)
-
-
-################################################################
-# Build the application 
-################################################################
 
 # Setup the path for c files
 OBJECTS = $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
@@ -124,6 +121,9 @@ $(BUILD_DIR)/$(TARGET): $(OBJECTS)
 $(BUILD_DIR):
 	mkdir $@		
 
+################################################################
+# Build test
+################################################################
 test:
 	@echo THIS TEST MUST BE EXECUTED IN A BASH TERMINAL. CMD/PS do not work.
 	-rm -fR $(BUILD_DIR)

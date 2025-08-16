@@ -24,7 +24,10 @@ void MOCK_usb_receive
     );
 
 /* For TIM_PWM_Start in servo init*/
-void MOCK_hal_init();
+void MOCK_hal_init
+    (
+    void
+    );
 
 void MOCK_HAL_Status_Return
     (

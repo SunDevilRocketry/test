@@ -26,84 +26,33 @@ Standard Includes
 /*------------------------------------------------------------------------------
 Project Includes                                                                     
 ------------------------------------------------------------------------------*/
-#include "unity.h"
+#include "sdrtf_pub.h"
 #include "main.h"
 #include "servo.h"
 #include "usb.h"
 
-/* unity.h is required for all unit tests. Other headers should be added if they
-   are relevant to the test. */
-
 /*------------------------------------------------------------------------------
 Global Variables 
 ------------------------------------------------------------------------------*/
-// UART_HandleTypeDef huart4;  /* GPS */
 SERVO_PRESET servo_preset;
 TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
 UART_HandleTypeDef huart6;
 
 /*------------------------------------------------------------------------------
-Macros
-------------------------------------------------------------------------------*/
-#define EXPECTED_COVERAGE 100 /* set this to 100 to specify full coverage */
-
-/*------------------------------------------------------------------------------
 Procedures: Test Helpers // Any misc functions that need to be called by tests
 ------------------------------------------------------------------------------*/
 
+/* not sure when I wrote this but this has a memory leak. minimal impact, but 
+   should be fixed on next update. */
 void TIM_init() {
 	htim2.Instance = malloc(sizeof(TIM_TypeDef));
 	htim3.Instance = malloc(sizeof(TIM_TypeDef));
 }
 
 /*------------------------------------------------------------------------------
-Procedures: Unity Functions // Even if they're empty, these have to be here
+Procedures: Tests
 ------------------------------------------------------------------------------*/
-
-
-/*******************************************************************************
-*                                                                              *
-* PROCEDURE:                                                                   * 
-*       setUp                                                                  *
-*                                                                              *
-* DESCRIPTION:                                                                 * 
-*       Code to run prior to any test                                          *
-*                                                                              *
-*******************************************************************************/
-void setUp
-	(
-	void
-    )
-{
-	htim2.Instance = malloc(sizeof(TIM_TypeDef));
-	htim3.Instance = malloc(sizeof(TIM_TypeDef));
-} /* setUp */
-
-
-/*******************************************************************************
-*                                                                              *
-* PROCEDURE:                                                                   * 
-*       tearDown                                                               *
-*                                                                              *
-* DESCRIPTION:                                                                 * 
-*       Code to run after tests                                                *
-*                                                                              *
-*******************************************************************************/
-void tearDown 
-	(
-	void
-    )
-{
-	free(htim2.Instance);
-	free(htim3.Instance);
-} /* tearDown */
-
-
-/*------------------------------------------------------------------------------
-Procedures: Tests // Define the tests used here
-------------------------------------------------------------------------------*/
-
 
 /*******************************************************************************
 *                                                                              *
@@ -121,7 +70,6 @@ void test_servo_init
 {
 /* Step: Set up test */
 #define NUM_CASES_INIT 3
-printf("\nUnit Tests: test_servo_init\n");
 MOCK_hal_init();
 
 /* Step: Set up test vectors (inputs, expected) */
@@ -147,8 +95,7 @@ for ( int test_num = 0; test_num < NUM_CASES_INIT; test_num++ )
 	MOCK_HAL_TIM_PWM_Start( (4*test_num + 1), cases[test_num].hal_status2_in );
 	MOCK_HAL_TIM_PWM_Start( (4*test_num + 2), cases[test_num].hal_status3_in );
 	MOCK_HAL_TIM_PWM_Start( (4*test_num + 3), cases[test_num].hal_status4_in );
-	TEST_ASSERT_EQUAL_INT(cases[test_num].status, servo_init());
-	printf("\tservo_init #%d passed\n", test_num + 1); // prints a 1-indexed number instead of 0-indexed
+	TEST_ASSERT_EQ_SINT( "Verify status return.", servo_init(), cases[test_num].status );
 	}
 
 #undef NUM_CASES_INIT
@@ -173,7 +120,6 @@ void test_servo_reset
 {
 /* Step: Set up test */
 #define NUM_CASES_RESET 2
-printf("\nUnit Tests: test_servo_reset\n");
 MOCK_hal_init();
 
 /* Step: Set up test vectors (inputs, expected) */
@@ -202,10 +148,10 @@ for ( int test_num = 0; test_num < NUM_CASES_RESET; test_num++ )
 	servo_preset.rp_servo3 = cases[test_num].servo3_offset;
 	servo_preset.rp_servo4 = cases[test_num].servo4_offset;
 	servo_reset();
-	TEST_ASSERT_EQUAL_INT(cases[test_num].servo1_pulse, htim3.Instance->CCR4);
-	TEST_ASSERT_EQUAL_INT(cases[test_num].servo2_pulse, htim3.Instance->CCR3);
-	TEST_ASSERT_EQUAL_INT(cases[test_num].servo3_pulse, htim3.Instance->CCR1);
-	TEST_ASSERT_EQUAL_INT(cases[test_num].servo4_pulse, htim2.Instance->CCR1);
+	TEST_ASSERT_EQ_SINT( "Test that servo 1 received the right pulse.", htim3.Instance->CCR4, cases[test_num].servo1_pulse );
+	TEST_ASSERT_EQ_SINT( "Test that servo 2 received the right pulse.", htim3.Instance->CCR3, cases[test_num].servo2_pulse );
+	TEST_ASSERT_EQ_SINT( "Test that servo 3 received the right pulse.", htim3.Instance->CCR1, cases[test_num].servo3_pulse );
+	TEST_ASSERT_EQ_SINT( "Test that servo 4 received the right pulse.", htim2.Instance->CCR1, cases[test_num].servo4_pulse );
 	printf("\tservo_init #%d passed\n", test_num + 1); // prints a 1-indexed number instead of 0-indexed
 	}
 
@@ -230,7 +176,6 @@ void test_servo_cmd_execute
 {
 /* Step: Set up test */
 #define NUM_CASES_CMD 5
-printf("\nUnit Tests: test_servo_cmd_execute\n");
 MOCK_hal_init();
 
 /* Step: Set up test vectors (inputs, expected) */
@@ -271,11 +216,11 @@ for ( int test_num = 0; test_num < NUM_CASES_CMD; test_num++ )
 	servo_preset.rp_servo4 = cases[test_num].servo4_offset;
 	MOCK_usb_receive(cases[test_num].usb_status, &cases[test_num].angle);
 	SERVO_STATUS status = servo_cmd_execute(cases[test_num].subcommand);
-	TEST_ASSERT_EQUAL_INT(cases[test_num].servo1_pulse, htim3.Instance->CCR4);
-	TEST_ASSERT_EQUAL_INT(cases[test_num].servo2_pulse, htim3.Instance->CCR3);
-	TEST_ASSERT_EQUAL_INT(cases[test_num].servo3_pulse, htim3.Instance->CCR1);
-	TEST_ASSERT_EQUAL_INT(cases[test_num].servo4_pulse, htim2.Instance->CCR1);
-	TEST_ASSERT_EQUAL_INT(cases[test_num].status, status);
+	TEST_ASSERT_EQ_SINT( "Test that the pulse matches the expected for servo 1.", htim3.Instance->CCR4, cases[test_num].servo1_pulse );
+	TEST_ASSERT_EQ_SINT( "Test that the pulse matches the expected for servo 2.", htim3.Instance->CCR3, cases[test_num].servo2_pulse );
+	TEST_ASSERT_EQ_SINT( "Test that the pulse matches the expected for servo 3.", htim3.Instance->CCR1, cases[test_num].servo3_pulse );
+	TEST_ASSERT_EQ_SINT( "Test that the pulse matches the expected for servo 4.", htim2.Instance->CCR1, cases[test_num].servo4_pulse );
+	TEST_ASSERT_EQ_SINT( "Test that servo_cmd_execute output returned the right status.", status, cases[test_num].status );
 	printf("\tservo_cmd_execute #%d passed\n", test_num + 1); // prints a 1-indexed number instead of 0-indexed
 	}
 
@@ -290,8 +235,7 @@ for ( int test_num = 0; test_num < NUM_CASES_CMD; test_num++ )
 *       main			                                   			           *
 *                                                                              *
 * DESCRIPTION:                                                                 * 
-*       Set up the testing enviroment, call tests, tear down the testing       *
-*		environment															   *
+*       Declare the tests here and call the framework.						   *												   *
 *                                                                              *
 *******************************************************************************/
 int main
@@ -299,25 +243,29 @@ int main
 	void
 	)
 {
-UNITY_BEGIN();
-printf("-----------------------\n");
-printf("	SERVO UNIT TESTING\n");
-printf("-----------------------\n");
-printf("\nNote: These unit tests exit on a failed assert. If the test fails, go to the case after the last pass.\n");
+/*------------------------------------------------------------------------------
+User-defined setup
+------------------------------------------------------------------------------*/
+TIM_TypeDef htim2inst;
+TIM_TypeDef htim3inst;
+htim2.Instance = &htim2inst;
+htim3.Instance = &htim3inst;
 
-// List test functions here.
-RUN_TEST( test_servo_init );
-RUN_TEST( test_servo_reset );
-RUN_TEST( test_servo_cmd_execute );
+/*------------------------------------------------------------------------------
+Test Cases
+------------------------------------------------------------------------------*/
+unit_test tests[] =
+	{
+	{ "servo_init", test_servo_init },
+	{ "servo_reset", test_servo_reset },
+	{ "servo_cmd_execute", test_servo_cmd_execute }
+	};
 
-if (EXPECTED_COVERAGE == 100) {
-	printf("\nThis test suite expects full coverage (100%%).\n");
-}
-else {
-	printf("\nThis test does not expect full coverage (> 100%%)\n");
-}
+/*------------------------------------------------------------------------------
+Call the framework
+------------------------------------------------------------------------------*/
+TEST_INITIALIZE_TEST( "servo.c", tests );
 
-return UNITY_END();
 } /* main */
 
 

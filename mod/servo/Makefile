@@ -37,28 +37,27 @@ LIB_DIR = $(ROOT_DIR)/lib
 MOD_DIR = $(ROOT_DIR)/mod
 INIT_DIR = $(ROOT_DIR)/init
 
-
 ################################################################
 # source 
 ################################################################
 
-# Always include $(ROOT_DIR)/Unity/src/unity.c
-# Example path to source: $(MOD_DIR)/gps/gps.c
-# Include the file being tested both in C_SOURCES and COV_C_SOURCES
-
 # C sources
-C_SOURCES =                                   						\
+TEST_SOURCES =                                   				  	\
 test_servo.c                       								  	\
 mock/MOCK_hal.c													  	\
 mock/MOCK_led.c													  	\
-mock/MOCK_usb.c													  	\
-$(ROOT_DIR)/mod/servo/servo.c           							\
-$(ROOT_DIR)/Unity/src/unity.c    										
+mock/MOCK_usb.c													  	
 
-# Coverage Tested Source Files
-# Whichever files are being unit tested should be listed here!
-COV_C_SOURCES =														\
+# Tested Source Files
+COV_C_SOURCES =													  \
 $(ROOT_DIR)/mod/servo/servo.c
+
+# Framework
+FRAMEWORK_SOURCES =												  \
+$(ROOT_DIR)/test/framework/src/test_assert.c          	  		  \
+$(ROOT_DIR)/test/framework/src/test_runner.c
+
+C_SOURCES = $(TEST_SOURCES) $(COV_C_SOURCES) $(FRAMEWORK_SOURCES)
 
 ################################################################
 # Compiler 
@@ -88,8 +87,8 @@ C_INCLUDES =                                           \
 -I$(LIB_DIR)/Drivers/CMSIS/Include                     \
 -I$(ROOT_DIR)/init/terminal/config/inc				   \
 -I$(INIT_DIR)/config/Inc                               \
--I$(ROOT_DIR)/Unity/src/                               \
--I$(ROOT_DIR)/test/mod/gps/mock/
+-I$(ROOT_DIR)/test/framework/src                       \
+-I$(ROOT_DIR)/test/mod/servo/mock
 
 # Preprocessor definitions
 # Don't worry about the defs and flags unless you know what you're doing
@@ -112,36 +111,40 @@ CFLAGS += -ftest-coverage
 CFLAGS += -fprofile-arcs
 
 ################################################################
-# Build the application 
+# Build all
 ################################################################
-
-# Build all 
-# This is invoked with "make". Compiles and builds the test.
 all: clean $(BUILD_DIR)/$(TARGET)
 
 # Setup the path for c files
 OBJECTS = $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
 vpath %.c $(sort $(dir $(C_SOURCES)))
 
+# Compile
 $(BUILD_DIR)/%.o: %.c $(BUILD_DIR)
 	$(CC) -c $(CFLAGS) $< -o $@
 
+# Link
 $(BUILD_DIR)/$(TARGET): $(OBJECTS) 
 	$(CC) $(OBJECTS) -o $@ -lgcov
 
 $(BUILD_DIR):
 	mkdir $@		
 
-# Run test
-# This runs the test and generates the coverage report.
-# Linux users may not need this
-# This set of bash commands is why windows users should use Git Bash
-test: $(BUILD_DIR)/$(TARGET)
+################################################################
+# Build test
+################################################################
+test:
 	@echo THIS TEST MUST BE EXECUTED IN A BASH TERMINAL. CMD/PS do not work.
-	"$(BUILD_DIR)/$(TARGET)" > "$(TEST)_results.txt"
-	tail -n 3 "$(TEST)_results.txt"
-	@echo -e "\nCOVERAGE SUMMARY:\n" >> "$(TEST)_results.txt"
-	gcov -o $(BUILD_DIR) $(COV_C_SOURCES) | tee -a "$(TEST)_results.txt"
+	-rm -fR $(BUILD_DIR)
+	$(MAKE) all
+	$(BUILD_DIR)/$(TARGET)
+	tail -n 7 "results.txt"
+	mkdir -p coverage
+	gcovr --filter $(COV_C_SOURCES) --html-details coverage/coverage.html
+
+################################################################
+# clean up 
+################################################################
 
 ################################################################
 # clean up 

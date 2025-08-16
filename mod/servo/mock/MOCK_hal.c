@@ -10,6 +10,7 @@
 *******************************************************************************/
 
 #include <stdint.h>
+#include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
 #include "main.h"
