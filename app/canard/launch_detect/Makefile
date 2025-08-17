@@ -72,6 +72,7 @@ CC = gcc
 C_INCLUDES =                                           \
 -I.                                                    \
 -I$(ROOT_DIR)/mod/gps/								   \
+-I$(ROOT_DIR)/mod/common/							   \
 -I$(ROOT_DIR)/mod/sensor/							   \
 -I$(ROOT_DIR)/mod/imu/								   \
 -I$(LIB_DIR)                                           \
