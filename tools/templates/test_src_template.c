@@ -1,15 +1,14 @@
 /*******************************************************************************
 *
 * FILE: 
-*      test_blank.c
+*      test_{{{FUT}}}.c
 *
 * DESCRIPTION: 
-*      Unit tests for functions in the xxxxxxxxxxxx module.
+*      Unit tests for functions in the {{{FUT}}} module.
 *
 * NOTE: 
-*	   This is pasted from a template that includes some functions used
-*	   in early GPS testing. Take a look at some other tests to find better
-*	   examples.
+*	   This is pasted from a template. Take a look at some other tests to find 
+*	   more examples.
 *
 *******************************************************************************/
 
@@ -26,26 +25,20 @@ Standard Includes
 /*------------------------------------------------------------------------------
 Project Includes                                                                     
 ------------------------------------------------------------------------------*/
-#include "unity.h"
+#include "sdrtf_pub.h"
 #include "main.h"
-
-/* unity.h is required for all unit tests. Other headers should be added if they
-   are relevant to the test. */
 
 /*------------------------------------------------------------------------------
 Global Variables 
 ------------------------------------------------------------------------------*/
-UART_HandleTypeDef huart4;  /* GPS */
 
 /*------------------------------------------------------------------------------
 Macros
 ------------------------------------------------------------------------------*/
-#define EXPECTED_COVERAGE 100 /* set this to 100 to specify full coverage */
 
 /*------------------------------------------------------------------------------
-Procedures: Test Helpers // Any misc functions that need to be called by tests
+Procedures: Test Helpers
 ------------------------------------------------------------------------------*/
-
 
 /*******************************************************************************
 *                                                                              *
@@ -56,48 +49,14 @@ Procedures: Test Helpers // Any misc functions that need to be called by tests
 *       Example helper function for test								       *
 *                                                                              *
 *******************************************************************************/
-int foo(int input) {
-	return input + 1;
+int foo
+	(
+	int input
+	) 
+{
+return input + 1;
+
 } /* foo */
-
-
-/*------------------------------------------------------------------------------
-Procedures: Unity Functions // Even if they're empty, these have to be here
-------------------------------------------------------------------------------*/
-
-
-/*******************************************************************************
-*                                                                              *
-* PROCEDURE:                                                                   * 
-*       setUp                                                                  *
-*                                                                              *
-* DESCRIPTION:                                                                 * 
-*       Code to run prior to any test                                          *
-*                                                                              *
-*******************************************************************************/
-void setUp
-	(
-	void
-    )
-{
-} /* setUp */
-
-
-/*******************************************************************************
-*                                                                              *
-* PROCEDURE:                                                                   * 
-*       tearDown                                                               *
-*                                                                              *
-* DESCRIPTION:                                                                 * 
-*       Code to run after tests                                                *
-*                                                                              *
-*******************************************************************************/
-void tearDown 
-	(
-	void
-    )
-{
-} /* tearDown */
 
 
 /*------------------------------------------------------------------------------
@@ -137,8 +96,10 @@ int expected[NUM_CASES_BAR] =
 /* Step: Execute tests */
 for ( int test_num = 0; test_num < NUM_CASES_BAR; test_num++ )
 	{
-	TEST_ASSERT_EQUAL_INT(expected[test_num], foo(inputs[test_num]));
-	printf("\tgps_mesg_validate #%d passed\n", test_num + 1); // prints a 1-indexed number instead of 0-indexed
+	/* Call function under test*/
+
+	/* Check result*/
+	TEST_ASSERT_EQ_INT( "Test that the result equals the expected", expected[test_num], foo(inputs[test_num]));
 	}
 
 } /* test_bar */
@@ -159,23 +120,19 @@ int main
 	void
 	)
 {
-UNITY_BEGIN();
-printf("-----------------------\n");
-printf("	XXXXXXX UNIT TESTING\n");
-printf("-----------------------\n");
-printf("\nNote: These unit tests exit on a failed assert. If the test fails, go to the case after the last pass.\n");
+/*------------------------------------------------------------------------------
+Test Cases
+------------------------------------------------------------------------------*/
+unit_test tests[] =
+	{
+	{ "bar", test_bar } /* Callback to function. All you need to do is write a message in a string and the function name! */
+	};
 
-// List test functions here.
-RUN_TEST( test_bar );
+/*------------------------------------------------------------------------------
+Call the framework
+------------------------------------------------------------------------------*/
+TEST_INITIALIZE_TEST( "{{{FUT}}}", tests );
 
-if (EXPECTED_COVERAGE == 100) {
-	printf("\nThis test suite expects full coverage (100%%).\n");
-}
-else {
-	printf("\nThis test does not expect full coverage (> 100%%)\n");
-}
-
-return UNITY_END();
 } /* main */
 
 

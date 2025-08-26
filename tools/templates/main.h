@@ -5,7 +5,7 @@
 *
 * DESCRIPTION: 
 *      Header file to trick the test into compiling. Also contains mock function
-*      definitions.
+*      definitions. For application-specific tests, use that app's main.h.
 *
 *******************************************************************************/
 
