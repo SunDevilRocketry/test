@@ -73,6 +73,7 @@ CC = gcc
 # This should include a path to all of the headers used in your test
 C_INCLUDES =                                           \
 -I.                                                    \
+-I./mock                                               \
 -I$(ROOT_DIR)/mod/gps/								   \
 -I$(ROOT_DIR)/mod/buzzer/							   \
 -I$(ROOT_DIR)/mod/common/							   \

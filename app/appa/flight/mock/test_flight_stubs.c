@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stddef.h>
+#include <string.h>
 #include "buzzer.h"
 #include "common.h"
 #include "main.h"
@@ -10,6 +11,52 @@
 #include "ignition.h"
 #include "gps.h"
 #include "flash.h"
+
+/* globals */
+bool was_gps_enabled = false;
+IGN_STATUS ign_main_status[3] = { IGN_OK, IGN_OK, IGN_OK };
+uint8_t ign_main_call_num = 0;
+IGN_STATUS ign_drogue_status[3] = { IGN_OK, IGN_OK, IGN_OK };
+uint8_t ign_drogue_call_num = 0;
+
+/* internal use */
+
+void stubs_reset
+	(
+	void
+	)
+{
+was_gps_enabled = false;
+memset( ign_main_status, IGN_OK, 3 * sizeof( IGN_STATUS ) );
+ign_main_call_num = 0;
+ign_drogue_call_num = 0;
+}
+
+void set_return_ign_deploy_main
+	(
+	IGN_STATUS new_status[3]
+	)
+{
+memcpy( ign_main_status, new_status, 3 * sizeof( IGN_STATUS ) );
+}
+
+void set_return_ign_deploy_drogue
+	(
+	IGN_STATUS new_status[3]
+	)
+{
+memcpy( ign_drogue_status, new_status, 3 * sizeof( IGN_STATUS ) );
+}
+
+unsigned int get_num_calls_ign_deploy_main()
+	{
+	return ign_main_call_num;
+	}
+
+unsigned int get_num_calls_ign_deploy_drogue()
+	{
+	return ign_drogue_call_num;
+	}
 
 void error_fail_fast
     (
@@ -48,6 +95,7 @@ GPS_STATUS gps_receive_IT
 	size_t   rx_data_size /* Size of the data to be received */
 	)
 {
+was_gps_enabled = true;
 return GPS_OK;
 }
 
@@ -105,7 +153,8 @@ IGN_STATUS ign_deploy_main
 	void
     )
 {
-return IGN_OK;
+ign_main_call_num++;
+return ign_main_status[ign_main_call_num - 1 < 3 ? ign_main_call_num - 1 : 0];
 }
 
 
@@ -116,7 +165,8 @@ IGN_STATUS ign_deploy_drogue
 	void
     )
 {
-return IGN_OK;
+ign_drogue_call_num++;
+return ign_drogue_status[ign_drogue_call_num - 1 < 3 ? ign_drogue_call_num - 1 : 0];
 }
 
 

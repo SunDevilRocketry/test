@@ -29,6 +29,9 @@ Project Includes
 #include "main.h"
 #include "sensor.h"
 #include "servo.h"
+#include "ignition.h"
+#include "flash.h"
+#include "test_flight_stubs.h"
 
 /*------------------------------------------------------------------------------
 Global Variables 
@@ -41,6 +44,9 @@ PRESET_DATA preset_data;
 FLIGHT_COMP_STATE_TYPE flight_computer_state;
 PID_DATA pid_data;
 
+/* Test-only globals */
+extern bool was_gps_enabled;
+
 /*------------------------------------------------------------------------------
 Macros
 ------------------------------------------------------------------------------*/
@@ -49,58 +55,113 @@ Macros
 Procedures: Test Helpers
 ------------------------------------------------------------------------------*/
 
-/*******************************************************************************
-*                                                                              *
-* PROCEDURE:                                                                   * 
-*       foo	          	                                                       *
-*                                                                              *
-* DESCRIPTION:                                                                 * 
-*       Example helper function for test								       *
-*                                                                              *
-*******************************************************************************/
-int foo
-	(
-	int input
-	) 
-{
-return input + 1;
-
-} /* foo */
-
 
 /*------------------------------------------------------------------------------
 Procedures: Tests // Define the tests used here
 ------------------------------------------------------------------------------*/
 
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
+*       test_flight_calib		  				                           	   *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Test calibration state												   *
+*                                                                              *
+*******************************************************************************/
+void test_flight_calib
+	(
+	void
+	)
+{
+/*------------------------------------------------------------------------------
+Set up mocks/stubs
+------------------------------------------------------------------------------*/
+stubs_reset();
+uint8_t gps_mesg_byte[1];
+HFLASH_BUFFER flash_handle[1];
+uint32_t flash_address_ptr[1];
+preset_data.config_settings.enabled_features = 255u;
+
+/*------------------------------------------------------------------------------
+Call FUT
+------------------------------------------------------------------------------*/
+flight_calib
+	(
+	gps_mesg_byte,
+    flash_handle,
+    flash_address_ptr
+	);
+
+/*------------------------------------------------------------------------------
+Verify results
+------------------------------------------------------------------------------*/
+/* The only critical parts of this are GPS enablement based on feature flags. All
+   others can be proven by analysis. */
+TEST_ASSERT_EQ_UINT("Test that GPS was enabled.", was_gps_enabled, true);
+
+} /* test_flight_calib */
+
 
 /*******************************************************************************
 *                                                                              *
 * PROCEDURE:                                                                   * 
-*       test_bar		  				                                       *
+*       test_flight_deploy		  				                           	   *
 *                                                                              *
 * DESCRIPTION:                                                                 * 
-*       Basic example test													   *
+*       Test deployment state												   *
 *                                                                              *
 *******************************************************************************/
-void test_bar 
+void test_flight_deploy
 	(
 	void
-    )
+	)
 {
-/* Step: Set up test */
-#define NUM_CASES_BAR 3
-printf("\nUnit Tests: test_bar\n");
-
-/* Step: Execute tests */
-for ( int test_num = 0; test_num < NUM_CASES_BAR; test_num++ )
+/*------------------------------------------------------------------------------
+Cases
+------------------------------------------------------------------------------*/
+struct test_case
 	{
-	/* Call function under test*/
+	const char* description;
+	IGN_STATUS drogue_status_returns[3];
+	IGN_STATUS main_status_returns[3];
+	uint8_t exp_num_attempts_needed_main;
+	uint8_t exp_num_attempts_needed_drogue;
+	};
+struct test_case cases[] =
+	{
+		{ "Immediate Success", { IGN_SUCCESS, IGN_SUCCESS, IGN_SUCCESS }, { IGN_SUCCESS, IGN_SUCCESS, IGN_SUCCESS }, 1, 1 },
+		{ "First Fail", { IGN_SUCCESS, IGN_SUCCESS, IGN_SUCCESS }, { IGN_MAIN_FAIL, IGN_SUCCESS, IGN_SUCCESS }, 2, 2 },
+		{ "Two Fails", { IGN_DROGUE_FAIL, IGN_DROGUE_FAIL, IGN_SUCCESS }, { IGN_MAIN_FAIL, IGN_SUCCESS, IGN_SUCCESS }, 3, 3 }
+	};
+for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); test_num++ )
+	{
+	TEST_begin_nested_case( cases[test_num].description );
 
-	/* Check result*/
-	TEST_ASSERT_EQ_UINT( "Test that the result equals the expected", foo(test_num), test_num + 1);
+	/*------------------------------------------------------------------------------
+	Set up mocks/stubs
+	------------------------------------------------------------------------------*/
+	stubs_reset();
+	set_return_ign_deploy_drogue(cases[test_num].drogue_status_returns);
+	set_return_ign_deploy_main(cases[test_num].main_status_returns);
+
+	/*------------------------------------------------------------------------------
+	Call FUT
+	------------------------------------------------------------------------------*/
+	flight_deploy();
+
+	/*------------------------------------------------------------------------------
+	Verify results
+	------------------------------------------------------------------------------*/
+	/* The only critical parts of this are GPS enablement based on feature flags. All
+	others can be proven by analysis. */
+	TEST_ASSERT_EQ_UINT("Test that main chute deployment was called the right number of times.", get_num_calls_ign_deploy_main(), cases[test_num].exp_num_attempts_needed_main);
+	TEST_ASSERT_EQ_UINT("Test that drogue chute deployment was called the right number of times.", get_num_calls_ign_deploy_drogue(), cases[test_num].exp_num_attempts_needed_drogue);
+
+	TEST_end_nested_case();
 	}
 
-} /* test_bar */
+} /* test_flight_deploy */
 
 
 /*******************************************************************************
@@ -123,7 +184,8 @@ Test Cases
 ------------------------------------------------------------------------------*/
 unit_test tests[] =
 	{
-	{ "bar", test_bar } /* Callback to function. All you need to do is write a message in a string and the function name! */
+	{ "Sensor Calibration", test_flight_calib },
+	{ "Chute Deployment", test_flight_deploy }
 	};
 
 /*------------------------------------------------------------------------------
