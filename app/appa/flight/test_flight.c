@@ -27,10 +27,19 @@ Project Includes
 ------------------------------------------------------------------------------*/
 #include "sdrtf_pub.h"
 #include "main.h"
+#include "sensor.h"
+#include "servo.h"
 
 /*------------------------------------------------------------------------------
 Global Variables 
 ------------------------------------------------------------------------------*/
+uint8_t sensor_frame_size;
+uint32_t tdelta;
+SENSOR_DATA sensor_data;
+SERVO_PRESET servo_preset;
+PRESET_DATA preset_data;
+FLIGHT_COMP_STATE_TYPE flight_computer_state;
+PID_DATA pid_data;
 
 /*------------------------------------------------------------------------------
 Macros
@@ -82,24 +91,13 @@ void test_bar
 #define NUM_CASES_BAR 3
 printf("\nUnit Tests: test_bar\n");
 
-/* Step: Set up test vectors (inputs, expected) */
-int inputs[NUM_CASES_BAR] = 
-{
-// #include "cases/blank_inputs.txt"
-};
-
-int expected[NUM_CASES_BAR] = 
-{
-// #include "cases/blank_expected.txt"
-};
-
 /* Step: Execute tests */
 for ( int test_num = 0; test_num < NUM_CASES_BAR; test_num++ )
 	{
 	/* Call function under test*/
 
 	/* Check result*/
-	TEST_ASSERT_EQ_UINT( "Test that the result equals the expected", expected[test_num], foo(inputs[test_num]));
+	TEST_ASSERT_EQ_UINT( "Test that the result equals the expected", foo(test_num), test_num + 1);
 	}
 
 } /* test_bar */

@@ -8,7 +8,7 @@
 ################################################################
 # target
 ################################################################
-TARGET = flight.c
+TARGET = flight
 
 ################################################################
 # build variables 
@@ -74,7 +74,7 @@ CC = gcc
 C_INCLUDES =                                           \
 -I.                                                    \
 -I$(ROOT_DIR)/mod/gps/								   \
--I$(ROOT_DIR)/mod/buzzer/								   \
+-I$(ROOT_DIR)/mod/buzzer/							   \
 -I$(ROOT_DIR)/mod/common/							   \
 -I$(ROOT_DIR)/mod/sensor/							   \
 -I$(ROOT_DIR)/mod/ignition/							   \
@@ -91,7 +91,7 @@ C_INCLUDES =                                           \
 -I$(ROOT_DIR)/init/terminal/config/inc				   \
 -I$(INIT_DIR)/config/Inc                               \
 -I$(ROOT_DIR)/test/framework/src/                      \
--I$(ROOT_DIR)/test/mod/gps/mock/
+-I$(ROOT_DIR)/app/flight/appa/rev2/
 
 # Preprocessor definitions
 # Don't worry about the defs and flags unless you know what you're doing
