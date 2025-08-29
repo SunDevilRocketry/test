@@ -14,4 +14,7 @@ void set_return_ign_deploy_drogue
 	);
 unsigned int get_num_calls_ign_deploy_main();
 unsigned int get_num_calls_ign_deploy_drogue();
+void set_return_HAL_GetTick(uint32_t ret);
+unsigned int get_num_calls_HAL_GetTick();
+SERVO_PRESET get_servo_angles_struct();
 #endif

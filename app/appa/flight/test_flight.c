@@ -21,7 +21,6 @@ Standard Includes
 #include <string.h>
 #include <stdio.h>
 
-
 /*------------------------------------------------------------------------------
 Project Includes                                                                     
 ------------------------------------------------------------------------------*/
@@ -46,6 +45,12 @@ PID_DATA pid_data;
 
 /* Test-only globals */
 extern bool was_gps_enabled;
+
+/* hijacked globals */
+extern uint32_t pid_previous;
+extern uint32_t launch_detect_time;
+extern float prevErr;
+extern float iVal;
 
 /*------------------------------------------------------------------------------
 Macros
@@ -123,16 +128,18 @@ Cases
 struct test_case
 	{
 	const char* description;
-	IGN_STATUS drogue_status_returns[3];
+	FEATURE_FLAGS enabled_features;
 	IGN_STATUS main_status_returns[3];
+	IGN_STATUS drogue_status_returns[3];
 	uint8_t exp_num_attempts_needed_main;
 	uint8_t exp_num_attempts_needed_drogue;
 	};
 struct test_case cases[] =
 	{
-		{ "Immediate Success", { IGN_SUCCESS, IGN_SUCCESS, IGN_SUCCESS }, { IGN_SUCCESS, IGN_SUCCESS, IGN_SUCCESS }, 1, 1 },
-		{ "First Fail", { IGN_SUCCESS, IGN_SUCCESS, IGN_SUCCESS }, { IGN_MAIN_FAIL, IGN_SUCCESS, IGN_SUCCESS }, 2, 2 },
-		{ "Two Fails", { IGN_DROGUE_FAIL, IGN_DROGUE_FAIL, IGN_SUCCESS }, { IGN_MAIN_FAIL, IGN_SUCCESS, IGN_SUCCESS }, 3, 3 }
+		{ "Immediate Success", DUAL_DEPLOY_ENABLED, { IGN_SUCCESS, IGN_SUCCESS, IGN_SUCCESS }, { IGN_SUCCESS, IGN_SUCCESS, IGN_SUCCESS }, 1, 1 },
+		{ "First Fail", DUAL_DEPLOY_ENABLED, { IGN_SUCCESS, IGN_SUCCESS, IGN_SUCCESS }, { IGN_DROGUE_FAIL, IGN_SUCCESS, IGN_SUCCESS }, 1, 2 },
+		{ "Two Fails", DUAL_DEPLOY_ENABLED, { IGN_MAIN_FAIL, IGN_MAIN_FAIL, IGN_SUCCESS }, { IGN_DROGUE_FAIL, IGN_SUCCESS, IGN_SUCCESS }, 3, 2 },
+		{ "Dual Deploy Disabled", 0, { IGN_MAIN_FAIL, IGN_MAIN_FAIL, IGN_SUCCESS }, { IGN_DROGUE_FAIL, IGN_SUCCESS, IGN_SUCCESS }, 0, 0 },
 	};
 for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); test_num++ )
 	{
@@ -144,6 +151,8 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 	stubs_reset();
 	set_return_ign_deploy_drogue(cases[test_num].drogue_status_returns);
 	set_return_ign_deploy_main(cases[test_num].main_status_returns);
+	preset_data.config_settings.enabled_features = cases[test_num].enabled_features;
+	flight_computer_state = FC_STATE_POST_APOGEE;
 
 	/*------------------------------------------------------------------------------
 	Call FUT
@@ -157,11 +166,107 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 	others can be proven by analysis. */
 	TEST_ASSERT_EQ_UINT("Test that main chute deployment was called the right number of times.", get_num_calls_ign_deploy_main(), cases[test_num].exp_num_attempts_needed_main);
 	TEST_ASSERT_EQ_UINT("Test that drogue chute deployment was called the right number of times.", get_num_calls_ign_deploy_drogue(), cases[test_num].exp_num_attempts_needed_drogue);
+	TEST_ASSERT_EQ_UINT("Test that the state was updated.", flight_computer_state, FC_STATE_DEPLOYED);
 
 	TEST_end_nested_case();
 	}
 
 } /* test_flight_deploy */
+
+
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
+*       test_pid_run			  				                           	   *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Test active control													   *
+*                                                                              *
+*******************************************************************************/
+void test_pid_run
+	(
+	void
+	)
+{
+/*------------------------------------------------------------------------------
+Cases
+------------------------------------------------------------------------------*/
+struct test_case
+	{
+	const char* description;
+	uint32_t delay_after_launch_configuration;
+	uint32_t time_since_launch;
+	bool early_return_expected;
+	SERVO_PRESET reference_points;
+	uint8_t max_deflection_angle;
+	float p_constant;
+	float i_constant;
+	float d_constant;
+	float roll_rate;
+	SERVO_PRESET actual_angles;
+	};
+struct test_case cases[] =
+	{
+		{ "Early return condition.", 5000, 100, true, { 45, 45, 45, 45 }, 10, 2.0f, 0.0f, 0.0f, 0.0f, { 45, 45, 45, 45 } },
+		{ "No roll, no control.", 0, 1000, false, { 45, 45, 45, 45 }, 10, 2.0f, 2.0f, 2.0f, 0.0f, { 45, 45, 45, 45 } },
+		{ "Upper Bound.", 0, 1000, false, { 45, 45, 45, 45 }, 10, 2.0f, 0.0f, 0.0f, 100.0f, { 55, 55, 55, 55 } },
+		{ "Lower Bound.", 0, 1000, false, { 45, 45, 45, 45 }, 10, 2.0f, 0.0f, 0.0f, -100.0f, { 35, 35, 35, 35 } },
+		{ "Roll is 1, 2s elapsed. Test feedback on P value", 0, 2000, false, { 45, 45, 45, 45 }, 10, 1.0f, 0.0f, 0.0f, 1.0f, { 44, 44, 44, 44 } },
+		{ "Roll is -1, 2s elapsed. Test feedback on P value", 0, 2000, false, { 45, 45, 45, 45 }, 10, 1.0f, 0.0f, 0.0f, -1.0f, { 46, 46, 46, 46 } },
+		{ "Roll is 1, 2s elapsed. Test feedback on I value", 0, 2000, false, { 45, 45, 45, 45 }, 10, 0.0f, 1.0f, 0.0f, 1.0f, { 43, 43, 43, 43 } },
+		{ "Roll is -1, 2s elapsed. Test feedback on I value", 0, 2000, false, { 45, 45, 45, 45 }, 10, 0.0f, 1.0f, 0.0f, -1.0f, { 47, 47, 47, 47 } },
+		{ "Roll is 1, .5s elapsed. Test feedback on D value", 0, 500, false, { 45, 45, 45, 45 }, 10, 0.0f, 1.0f, 0.0f, 1.0f, { 44, 44, 44, 44 } },
+		{ "Roll is -1, .5s elapsed. Test feedback on D value", 0, 500, false, { 45, 45, 45, 45 }, 10, 0.0f, 1.0f, 0.0f, -1.0f, { 46, 46, 46, 46 } }
+	};
+for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); test_num++ )
+	{
+	TEST_begin_nested_case( cases[test_num].description );
+
+	/*------------------------------------------------------------------------------
+	Set up mocks/stubs
+	------------------------------------------------------------------------------*/
+	stubs_reset();
+	pid_previous = 0;
+	launch_detect_time = 0;
+	sensor_data.imu_data.state_estimate.velocity = 0.0f; /* not important yet */
+	sensor_data.imu_data.imu_converted.gyro_x = cases[test_num].roll_rate;
+	set_return_HAL_GetTick( cases[test_num].time_since_launch );
+	preset_data.config_settings.control_delay_after_launch = cases[test_num].delay_after_launch_configuration;
+	preset_data.config_settings.control_max_deflection_angle = cases[test_num].max_deflection_angle;
+	preset_data.config_settings.roll_control_constant_p = cases[test_num].p_constant;
+	preset_data.config_settings.roll_control_constant_i = cases[test_num].i_constant;
+	preset_data.config_settings.roll_control_constant_d = cases[test_num].d_constant;
+	preset_data.servo_preset = cases[test_num].reference_points;
+	prevErr = 0.0f;
+	iVal = 0.0f;
+
+	/*------------------------------------------------------------------------------
+	Call FUT
+	------------------------------------------------------------------------------*/
+	pid_loop();
+
+	/*------------------------------------------------------------------------------
+	Verify results
+	------------------------------------------------------------------------------*/
+	if( cases[test_num].early_return_expected )
+		{
+		TEST_ASSERT_EQ_UINT( "Test that the systick function was only called once (early return).", get_num_calls_HAL_GetTick(), 1 );
+		}
+	else
+		{
+		TEST_ASSERT_GT_UINT( "Test that the systick function was called more than once (no early return).", get_num_calls_HAL_GetTick(), 1 );
+		SERVO_PRESET angles = get_servo_angles_struct();
+
+		TEST_ASSERT_EQ_UINT( "Test that the angles equal the expected value (servo 1).", angles.rp_servo1, cases[test_num].actual_angles.rp_servo1 );
+		TEST_ASSERT_EQ_UINT( "Test that the angles equal the expected value (servo 2).", angles.rp_servo2, cases[test_num].actual_angles.rp_servo2 );
+		TEST_ASSERT_EQ_UINT( "Test that the angles equal the expected value (servo 3).", angles.rp_servo3, cases[test_num].actual_angles.rp_servo3 );
+		TEST_ASSERT_EQ_UINT( "Test that the angles equal the expected value (servo 4).", angles.rp_servo4, cases[test_num].actual_angles.rp_servo4 );
+		}
+
+	TEST_end_nested_case();
+	}
+
+} /* test_pid_run */
 
 
 /*******************************************************************************
@@ -185,7 +290,8 @@ Test Cases
 unit_test tests[] =
 	{
 	{ "Sensor Calibration", test_flight_calib },
-	{ "Chute Deployment", test_flight_deploy }
+	{ "Chute Deployment", test_flight_deploy },
+	{ "Roll Control", test_pid_run }
 	};
 
 /*------------------------------------------------------------------------------

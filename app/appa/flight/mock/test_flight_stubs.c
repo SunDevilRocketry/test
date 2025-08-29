@@ -18,6 +18,9 @@ IGN_STATUS ign_main_status[3] = { IGN_OK, IGN_OK, IGN_OK };
 uint8_t ign_main_call_num = 0;
 IGN_STATUS ign_drogue_status[3] = { IGN_OK, IGN_OK, IGN_OK };
 uint8_t ign_drogue_call_num = 0;
+uint32_t systick = 0;
+uint32_t systick_calls = 0;
+SERVO_PRESET servo_angles = { 0, 0, 0, 0 };
 
 /* internal use */
 
@@ -30,6 +33,9 @@ was_gps_enabled = false;
 memset( ign_main_status, IGN_OK, 3 * sizeof( IGN_STATUS ) );
 ign_main_call_num = 0;
 ign_drogue_call_num = 0;
+systick = 0;
+systick_calls = 0;
+memset( &servo_angles, 0, sizeof( SERVO_PRESET ) );
 }
 
 void set_return_ign_deploy_main
@@ -58,6 +64,23 @@ unsigned int get_num_calls_ign_deploy_drogue()
 	return ign_drogue_call_num;
 	}
 
+void set_return_HAL_GetTick(uint32_t ret)
+	{
+	systick = ret;
+	}
+
+unsigned int get_num_calls_HAL_GetTick()
+	{
+	return systick_calls;
+	}
+
+SERVO_PRESET get_servo_angles_struct()
+	{
+	return servo_angles;
+	}
+
+/* STUBS*/
+
 void error_fail_fast
     (
     volatile ERROR_CODE error_code
@@ -76,17 +99,44 @@ void led_set_color
 
 void motor_drive(SERVO_ID servo, uint8_t angle)
 {
-
+switch( servo ) 
+	{
+	case SERVO_1:
+		servo_angles.rp_servo1 = angle;
+		break;
+	case SERVO_2:
+		servo_angles.rp_servo2 = angle;
+		break;
+	case SERVO_3:
+		servo_angles.rp_servo3 = angle;
+		break;
+	case SERVO_4:
+		servo_angles.rp_servo4 = angle;
+		break;
+	}
 }
 
+/* function is pasted in. teehee. */
 uint8_t motor_snap_to_bound(uint8_t angle, uint8_t upper, uint8_t lower)
 {
-return angle;
+if (angle >= lower && angle <= upper) 
+    {
+    return angle;
+    } 
+else if ( angle > upper && angle <= ( upper + ( ( 255 - upper ) / 2 ) ) ) 
+    {
+    return upper;
+    } 
+else 
+    {
+    return lower;
+    }
 }
 
 uint32_t HAL_GetTick(void)
 {
-return 0;
+systick_calls++;
+return systick;
 }
 
 GPS_STATUS gps_receive_IT
