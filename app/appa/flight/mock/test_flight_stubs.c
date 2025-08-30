@@ -13,6 +13,8 @@
 #include "flash.h"
 
 /* globals */
+extern FLIGHT_COMP_STATE_TYPE flight_computer_state;
+bool ld_expected = false;
 bool was_gps_enabled = false;
 IGN_STATUS ign_main_status[3] = { IGN_OK, IGN_OK, IGN_OK };
 uint8_t ign_main_call_num = 0;
@@ -21,8 +23,14 @@ uint8_t ign_drogue_call_num = 0;
 uint32_t systick = 0;
 uint32_t systick_calls = 0;
 SERVO_PRESET servo_angles = { 0, 0, 0, 0 };
+SENSOR_STATUS sensor_status_return = SENSOR_OK;
+uint16_t preset_preserving_flash_erase_calls = 0;
+uint16_t flash_busy_calls = 0;
+uint16_t flash_busy_counts = 0;
 
 /* internal use */
+
+void ( *error_callback )( ERROR_CODE ) = NULL; /* error callback */
 
 void stubs_reset
 	(
@@ -36,6 +44,12 @@ ign_drogue_call_num = 0;
 systick = 0;
 systick_calls = 0;
 memset( &servo_angles, 0, sizeof( SERVO_PRESET ) );
+error_callback = NULL;
+sensor_status_return = SENSOR_OK;
+ld_expected = false;
+preset_preserving_flash_erase_calls = 0;
+flash_busy_calls = 0;
+flash_busy_counts = 0;
 }
 
 void set_return_ign_deploy_main
@@ -79,6 +93,21 @@ SERVO_PRESET get_servo_angles_struct()
 	return servo_angles;
 	}
 
+void set_error_callback( void ( *input_callback )( ERROR_CODE ) )
+	{
+	error_callback = input_callback;
+	}
+
+void set_return_sensor_dump( SENSOR_STATUS return_val )
+	{
+	sensor_status_return = return_val;
+	}
+
+void set_return_launch_detection( bool expected )
+	{
+	ld_expected = expected;
+	}
+
 /* STUBS*/
 
 void error_fail_fast
@@ -86,7 +115,10 @@ void error_fail_fast
     volatile ERROR_CODE error_code
     )
 {
-
+if( error_callback != NULL )
+	{
+	error_callback( error_code );
+	}
 }
 
 void led_set_color
@@ -184,7 +216,7 @@ SENSOR_STATUS sensor_dump
     SENSOR_DATA* sensor_data_ptr 
     )
 {
-return SENSOR_OK;
+return sensor_status_return;
 }
 
 /* Check if the flash chip is ready for write operations */
@@ -193,7 +225,16 @@ bool flash_is_flash_busy
 	void
 	)
 {
-return false;
+if( flash_busy_counts == 0 || flash_busy_calls % (flash_busy_counts + 1) == flash_busy_counts )
+	{
+	flash_busy_calls++;
+	return false;
+	}
+else
+	{
+	flash_busy_calls++;
+	return true;
+	}
 }
 
 /* Asserts the ignition signal to ignite the main parachute deployment ematch. 
@@ -310,6 +351,7 @@ FLASH_STATUS flash_erase_preserve_preset
 	uint32_t* address
 	)
 {
+preset_preserving_flash_erase_calls++;
 return FLASH_OK;
 }
 
@@ -334,7 +376,14 @@ void sensor_frame_size_init
 /* launch_detect.c */
 void launch_detection()
 {
-
+if( ld_expected )
+	{
+	flight_computer_state = FC_STATE_FLIGHT;
+	}
+else
+	{
+	flight_computer_state = FC_STATE_LAUNCH_DETECT;
+	}
 }
 
 /* flight.c */

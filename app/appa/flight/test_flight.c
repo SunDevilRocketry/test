@@ -20,12 +20,15 @@ Standard Includes
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <setjmp.h> /* NEVER do this in production code. This is used to circumvent
+					   infinite loops. */
 
 /*------------------------------------------------------------------------------
 Project Includes                                                                     
 ------------------------------------------------------------------------------*/
 #include "sdrtf_pub.h"
 #include "main.h"
+#include "common.h"
 #include "sensor.h"
 #include "servo.h"
 #include "ignition.h"
@@ -45,6 +48,9 @@ PID_DATA pid_data;
 
 /* Test-only globals */
 extern bool was_gps_enabled;
+extern uint16_t preset_preserving_flash_erase_calls;
+extern uint16_t flash_busy_calls;
+extern uint16_t flash_busy_counts;
 
 /* hijacked globals */
 extern uint32_t pid_previous;
@@ -53,12 +59,33 @@ extern float prevErr;
 extern float iVal;
 
 /*------------------------------------------------------------------------------
+Local Variables
+------------------------------------------------------------------------------*/
+static ERROR_CODE reported_error;
+static bool intercept_jmp_back;
+
+/* breaking control flow */
+static int jmp_val;
+static jmp_buf env_buffer;
+
+/*------------------------------------------------------------------------------
 Macros
 ------------------------------------------------------------------------------*/
+#define MAX_UINT_32 4294967295
 
 /*------------------------------------------------------------------------------
 Procedures: Test Helpers
 ------------------------------------------------------------------------------*/
+void TEST_CALLBACK_error_fail_fast
+	(
+	ERROR_CODE error_code
+	)
+{
+/* Break standard control flow. Jump to the target. */
+reported_error = error_code;
+longjmp( env_buffer, jmp_val );
+
+} /* TEST_CALLBACK_error_fail_fast */
 
 
 /*------------------------------------------------------------------------------
@@ -177,6 +204,128 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 /*******************************************************************************
 *                                                                              *
 * PROCEDURE:                                                                   * 
+*       test_launch_detect			  				                           *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Test launch detect phase of flight.									   *
+*                                                                              *
+*******************************************************************************/
+void test_launch_detect
+	(
+	void
+	)
+{
+/*------------------------------------------------------------------------------
+Cases
+------------------------------------------------------------------------------*/
+struct test_case
+	{
+	const char* description;
+	uint32_t timeout_configuration;
+	uint32_t ld_start_time;
+	uint32_t curr_tick;
+	bool launch_detected;
+	uint8_t flash_busy_counts; /* will be the same for both calls; busy busy free busy busy free when val is 2 */
+	SENSOR_STATUS sensor_status_return;
+	ERROR_CODE expected_error_code;
+	};
+struct test_case cases[] =
+	{
+		{ "Normal: Typical operation, launch not detected.", 5000, 200, 300, false, 0, SENSOR_OK, MAX_UINT_32 },
+		{ "Normal: Typical operation, launch detected.", 5000, 200, 300, true, 0, SENSOR_OK, MAX_UINT_32 },
+		{ "Normal: Timeout, launch not detected.", 5000, 0, 5001, false, 0, SENSOR_OK, MAX_UINT_32 },
+		{ "Robustness: Flash busy 2x, launch not detected.", 5000, 200, 300, false, 2, SENSOR_OK, MAX_UINT_32 },
+		{ "Robustness: Timeout + Flash busy 2x, launch not detected.", 5000, 0, 5001, false, 2, SENSOR_OK, MAX_UINT_32 },
+		{ "Robustness: Sensor fail", 5000, 200, 300, false, 0, SENSOR_FAIL, ERROR_SENSOR_CMD_ERROR },
+	};
+for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); test_num++ )
+	{
+	TEST_begin_nested_case( cases[test_num].description );
+
+	/*------------------------------------------------------------------------------
+	Local variables
+	------------------------------------------------------------------------------*/
+	SENSOR_STATUS sensor_status_param = SENSOR_OK;
+	FLASH_STATUS flash_status_param = FLASH_OK;
+	HFLASH_BUFFER flash_buffer;
+	uint32_t flash_address = 100;
+	uint32_t ld_start_time = cases[test_num].ld_start_time;
+
+	/*------------------------------------------------------------------------------
+	Set up mocks/stubs
+	------------------------------------------------------------------------------*/
+	stubs_reset();
+	flight_computer_state = FC_STATE_LAUNCH_DETECT;
+	reported_error = MAX_UINT_32;
+	set_return_HAL_GetTick( cases[test_num].curr_tick );
+	set_return_sensor_dump( cases[test_num].sensor_status_return );
+	preset_data.config_settings.launch_detect_timeout = cases[test_num].timeout_configuration;
+	set_error_callback( TEST_CALLBACK_error_fail_fast );
+	set_return_launch_detection( cases[test_num].launch_detected );
+	intercept_jmp_back = false;
+	flash_busy_counts = cases[test_num].flash_busy_counts;
+
+	/*------------------------------------------------------------------------------
+	Call FUT
+	------------------------------------------------------------------------------*/
+	jmp_val = setjmp( env_buffer ); /* used to intercept errors */
+	if( !intercept_jmp_back )
+		{
+		intercept_jmp_back = true;
+		flight_launch_detect
+			(
+			&ld_start_time,
+			&sensor_status_param,
+			&flash_status_param,
+			&flash_buffer,
+			&flash_address
+			);
+		}
+
+	/*------------------------------------------------------------------------------
+	Verify results
+	------------------------------------------------------------------------------*/
+	/* Error handling */
+	if( cases[test_num].expected_error_code != MAX_UINT_32 )
+		{
+		TEST_ASSERT_EQ_UINT( "Test that the sensor command error was handled correctly.", reported_error, cases[test_num].expected_error_code );
+		}
+	else
+		{
+		/* State transition logic */
+		if( cases[test_num].launch_detected )
+			{
+			TEST_ASSERT_EQ_UINT( "Test that the state has been advanced.", flight_computer_state, FC_STATE_FLIGHT );
+			}
+		else
+			{
+			TEST_ASSERT_EQ_UINT( "Test that the state has remained constant.", flight_computer_state, FC_STATE_LAUNCH_DETECT );
+			}
+
+		/* Timeout */
+		if( cases[test_num].curr_tick - cases[test_num].ld_start_time >= cases[test_num].timeout_configuration )
+			{
+			TEST_ASSERT_EQ_UINT( "Test that flash was erased (preserving presets).", preset_preserving_flash_erase_calls, 1 );
+			TEST_ASSERT_EQ_UINT( "Test that the timer was reset.", ld_start_time, cases[test_num].curr_tick );
+			TEST_ASSERT_EQ_UINT( "Test that control was stuck in the flash busy loop correctly.", flash_busy_calls, 2 + ( 2 * cases[test_num].flash_busy_counts ) );
+			}
+		else
+			{
+			TEST_ASSERT_EQ_UINT( "Test that flash was not erased (preserving presets).", preset_preserving_flash_erase_calls, 0 );
+			TEST_ASSERT_EQ_UINT( "Test that the timer was not reset.", ld_start_time, cases[test_num].ld_start_time );
+			TEST_ASSERT_EQ_UINT( "Test that control was stuck in the flash busy loop correctly.", flash_busy_calls, 1 + ( cases[test_num].flash_busy_counts ) );
+			}
+		}
+
+	TEST_end_nested_case();
+	}
+
+} /* test_launch_detect */
+
+
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
 *       test_pid_run			  				                           	   *
 *                                                                              *
 * DESCRIPTION:                                                                 * 
@@ -289,8 +438,9 @@ Test Cases
 ------------------------------------------------------------------------------*/
 unit_test tests[] =
 	{
-	{ "Sensor Calibration", test_flight_calib },
-	{ "Chute Deployment", test_flight_deploy },
+	{ "Flight Loop: Sensor Calibration", test_flight_calib },
+	{ "Flight Loop: Launch Detect", test_launch_detect },
+	{ "Flight Loop: Chute Deployment", test_flight_deploy },
 	{ "Roll Control", test_pid_run }
 	};
 
