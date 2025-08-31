@@ -48,6 +48,7 @@ PID_DATA pid_data;
 
 /* Test-only globals */
 extern bool was_gps_enabled;
+extern bool is_apogee_detected;
 extern uint16_t preset_preserving_flash_erase_calls;
 extern uint16_t flash_busy_calls;
 extern uint16_t flash_busy_counts;
@@ -138,72 +139,6 @@ TEST_ASSERT_EQ_UINT("Test that GPS was enabled.", was_gps_enabled, true);
 /*******************************************************************************
 *                                                                              *
 * PROCEDURE:                                                                   * 
-*       test_flight_deploy		  				                           	   *
-*                                                                              *
-* DESCRIPTION:                                                                 * 
-*       Test deployment state												   *
-*                                                                              *
-*******************************************************************************/
-void test_flight_deploy
-	(
-	void
-	)
-{
-/*------------------------------------------------------------------------------
-Cases
-------------------------------------------------------------------------------*/
-struct test_case
-	{
-	const char* description;
-	FEATURE_FLAGS enabled_features;
-	IGN_STATUS main_status_returns[3];
-	IGN_STATUS drogue_status_returns[3];
-	uint8_t exp_num_attempts_needed_main;
-	uint8_t exp_num_attempts_needed_drogue;
-	};
-struct test_case cases[] =
-	{
-		{ "Immediate Success", DUAL_DEPLOY_ENABLED, { IGN_SUCCESS, IGN_SUCCESS, IGN_SUCCESS }, { IGN_SUCCESS, IGN_SUCCESS, IGN_SUCCESS }, 1, 1 },
-		{ "First Fail", DUAL_DEPLOY_ENABLED, { IGN_SUCCESS, IGN_SUCCESS, IGN_SUCCESS }, { IGN_DROGUE_FAIL, IGN_SUCCESS, IGN_SUCCESS }, 1, 2 },
-		{ "Two Fails", DUAL_DEPLOY_ENABLED, { IGN_MAIN_FAIL, IGN_MAIN_FAIL, IGN_SUCCESS }, { IGN_DROGUE_FAIL, IGN_SUCCESS, IGN_SUCCESS }, 3, 2 },
-		{ "Dual Deploy Disabled", 0, { IGN_MAIN_FAIL, IGN_MAIN_FAIL, IGN_SUCCESS }, { IGN_DROGUE_FAIL, IGN_SUCCESS, IGN_SUCCESS }, 0, 0 },
-	};
-for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); test_num++ )
-	{
-	TEST_begin_nested_case( cases[test_num].description );
-
-	/*------------------------------------------------------------------------------
-	Set up mocks/stubs
-	------------------------------------------------------------------------------*/
-	stubs_reset();
-	set_return_ign_deploy_drogue(cases[test_num].drogue_status_returns);
-	set_return_ign_deploy_main(cases[test_num].main_status_returns);
-	preset_data.config_settings.enabled_features = cases[test_num].enabled_features;
-	flight_computer_state = FC_STATE_POST_APOGEE;
-
-	/*------------------------------------------------------------------------------
-	Call FUT
-	------------------------------------------------------------------------------*/
-	flight_deploy();
-
-	/*------------------------------------------------------------------------------
-	Verify results
-	------------------------------------------------------------------------------*/
-	/* The only critical parts of this are GPS enablement based on feature flags. All
-	others can be proven by analysis. */
-	TEST_ASSERT_EQ_UINT("Test that main chute deployment was called the right number of times.", get_num_calls_ign_deploy_main(), cases[test_num].exp_num_attempts_needed_main);
-	TEST_ASSERT_EQ_UINT("Test that drogue chute deployment was called the right number of times.", get_num_calls_ign_deploy_drogue(), cases[test_num].exp_num_attempts_needed_drogue);
-	TEST_ASSERT_EQ_UINT("Test that the state was updated.", flight_computer_state, FC_STATE_DEPLOYED);
-
-	TEST_end_nested_case();
-	}
-
-} /* test_flight_deploy */
-
-
-/*******************************************************************************
-*                                                                              *
-* PROCEDURE:                                                                   * 
 *       test_launch_detect			  				                           *
 *                                                                              *
 * DESCRIPTION:                                                                 * 
@@ -234,9 +169,9 @@ struct test_case cases[] =
 		{ "Normal: Typical operation, launch not detected.", 5000, 200, 300, false, 0, SENSOR_OK, MAX_UINT_32 },
 		{ "Normal: Typical operation, launch detected.", 5000, 200, 300, true, 0, SENSOR_OK, MAX_UINT_32 },
 		{ "Normal: Timeout, launch not detected.", 5000, 0, 5001, false, 0, SENSOR_OK, MAX_UINT_32 },
-		{ "Robustness: Flash busy 2x, launch not detected.", 5000, 200, 300, false, 2, SENSOR_OK, MAX_UINT_32 },
-		{ "Robustness: Timeout + Flash busy 2x, launch not detected.", 5000, 0, 5001, false, 2, SENSOR_OK, MAX_UINT_32 },
-		{ "Robustness: Sensor fail", 5000, 200, 300, false, 0, SENSOR_FAIL, ERROR_SENSOR_CMD_ERROR },
+		{ "Robust: Flash busy 2x, launch not detected.", 5000, 200, 300, false, 2, SENSOR_OK, MAX_UINT_32 },
+		{ "Robust: Timeout + Flash busy 2x, launch not detected.", 5000, 0, 5001, false, 2, SENSOR_OK, MAX_UINT_32 },
+		{ "Robust: Sensor fail", 5000, 200, 300, false, 0, SENSOR_FAIL, ERROR_SENSOR_CMD_ERROR },
 	};
 for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); test_num++ )
 	{
@@ -321,6 +256,239 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 	}
 
 } /* test_launch_detect */
+
+
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
+*       test_flight_in_flight			  				                       *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Test ascent phase of flight.									   	   *
+*                                                                              *
+*******************************************************************************/
+void test_flight_in_flight
+	(
+	void
+	)
+{
+/*------------------------------------------------------------------------------
+Cases
+------------------------------------------------------------------------------*/
+struct test_case
+	{
+	const char* description;
+	uint32_t timeout_configuration;
+	uint32_t ld_start_time;
+	uint32_t curr_tick;
+	bool apogee_detected;
+	bool active_roll_configured;
+	bool flash_full;
+	uint8_t flash_busy_counts; /* will be the same for both calls; busy busy free busy busy free when val is 2 */
+	SENSOR_STATUS sensor_status_return;
+	ERROR_CODE expected_error_code;
+	};
+struct test_case cases[] =
+	{
+		{ "Normal: Typical operation, apogee not detected.", 5000, 200, 300, false, true, false, 0, SENSOR_OK, MAX_UINT_32 },
+		{ "Normal: Typical operation, apogee detected.", 5000, 200, 300, true, true, false, 0, SENSOR_OK, MAX_UINT_32 },
+		{ "Normal: Active roll not configured, apogee not detected.", 5000, 200, 300, false, false, false, 0, SENSOR_OK, MAX_UINT_32 },
+		{ "Normal: Flash full, apogee not detected.", 5000, 200, 300, false, true, true, 0, SENSOR_OK, MAX_UINT_32 },
+		{ "Robust: Flash is busy.", 5000, 200, 300, false, true, false, 2, SENSOR_OK, MAX_UINT_32 },
+		{ "Robust: Sensor error.", 5000, 200, 300, false, true, false, 0, SENSOR_FAIL, ERROR_SENSOR_CMD_ERROR },
+	};
+for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); test_num++ )
+	{
+	TEST_begin_nested_case( cases[test_num].description );
+
+	/*------------------------------------------------------------------------------
+	Local variables
+	------------------------------------------------------------------------------*/
+	SENSOR_STATUS sensor_status_param = SENSOR_OK;
+	FLASH_STATUS flash_status_param = FLASH_OK;
+	HFLASH_BUFFER flash_buffer;
+	uint32_t flash_address = 100;
+	uint32_t ld_start_time = cases[test_num].ld_start_time;
+
+	/*------------------------------------------------------------------------------
+	Set up mocks/stubs
+	------------------------------------------------------------------------------*/
+	stubs_reset();
+	flight_computer_state = FC_STATE_FLIGHT;
+	reported_error = MAX_UINT_32;
+	set_return_HAL_GetTick( cases[test_num].curr_tick );
+	set_return_sensor_dump( cases[test_num].sensor_status_return );
+	preset_data.config_settings.launch_detect_timeout = cases[test_num].timeout_configuration;
+	set_error_callback( TEST_CALLBACK_error_fail_fast );
+	is_apogee_detected = cases[test_num].apogee_detected;
+	intercept_jmp_back = false;
+	flash_busy_counts = cases[test_num].flash_busy_counts;
+
+	/* active roll setup. values are not important, we just need to check control flow. */
+	pid_previous = 0;
+	launch_detect_time = 0;
+	sensor_data.imu_data.state_estimate.velocity = 0.0f; /* not important yet */
+	sensor_data.imu_data.imu_converted.gyro_x = 100.0f; /* crazy val to check NE assert */
+	preset_data.config_settings.control_delay_after_launch = 0;
+	preset_data.config_settings.control_max_deflection_angle = 25;
+	preset_data.config_settings.roll_control_constant_p = 2.0f;
+	preset_data.config_settings.roll_control_constant_i = 0.0f;
+	preset_data.config_settings.roll_control_constant_d = 0.0f;
+	preset_data.servo_preset.rp_servo1 = 45;
+	preset_data.servo_preset.rp_servo2 = 45;
+	preset_data.servo_preset.rp_servo3 = 45;
+	preset_data.servo_preset.rp_servo4 = 45;
+	prevErr = 0.0f;
+	iVal = 0.0f;
+
+	if( cases[test_num].active_roll_configured )
+		{
+		preset_data.config_settings.enabled_features |= ACTIVE_ROLL_CONTROL_ENABLED;
+		}
+	else
+		{
+		preset_data.config_settings.enabled_features = 0;	
+		}
+
+	if( cases[test_num].flash_full )
+		{
+		flash_buffer.address = FLASH_MAX_ADDR;
+		}
+	else
+		{
+		flash_buffer.address = FLASH_MAX_ADDR / 3;
+		}
+
+	/*------------------------------------------------------------------------------
+	Call FUT
+	------------------------------------------------------------------------------*/
+	jmp_val = setjmp( env_buffer ); /* used to intercept errors */
+	if( !intercept_jmp_back )
+		{
+		intercept_jmp_back = true;
+		flight_in_flight
+			(
+			&ld_start_time,
+			&sensor_status_param,
+			&flash_status_param,
+			&flash_buffer,
+			&flash_address
+			);
+		}
+
+	/*------------------------------------------------------------------------------
+	Verify results
+	------------------------------------------------------------------------------*/
+	/* Error handling */
+	if( cases[test_num].expected_error_code != MAX_UINT_32 )
+		{
+		TEST_ASSERT_EQ_UINT( "Test that the sensor command error was handled correctly.", reported_error, cases[test_num].expected_error_code );
+		}
+	else
+		{
+		/* State transition logic */
+		if( cases[test_num].apogee_detected )
+			{
+			TEST_ASSERT_EQ_UINT( "Test that the state has been advanced.", flight_computer_state, FC_STATE_POST_APOGEE );
+			}
+		else
+			{
+			TEST_ASSERT_EQ_UINT( "Test that the state has remained constant.", flight_computer_state, FC_STATE_FLIGHT );
+			}
+
+		/* Timeout */
+		if( cases[test_num].flash_full )
+			{
+			TEST_ASSERT_EQ_UINT( "Test that control never hits flash busy.", flash_busy_calls, 0 );
+			}
+		else
+			{
+			TEST_ASSERT_EQ_UINT( "Test that control was stuck in the flash busy loop correctly.", flash_busy_calls, 1 + ( cases[test_num].flash_busy_counts ) );
+			}
+
+		/* Active control */
+		if( cases[test_num].active_roll_configured )
+			{
+			SERVO_PRESET servo_angles = get_servo_angles_struct();
+			TEST_ASSERT_NE_MEMORY( "Test that active control was entered", &servo_angles, &(preset_data.servo_preset), sizeof( SERVO_PRESET ) );
+			}
+		else
+			{
+			SERVO_PRESET servo_angles = get_servo_angles_struct();
+			TEST_ASSERT_EQ_MEMORY( "Test that active control wasn't entered", &servo_angles, &(preset_data.servo_preset), sizeof( SERVO_PRESET ) );	
+			}
+		}
+
+	TEST_end_nested_case();
+	}
+
+} /* test_flight_in_flight */
+
+
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
+*       test_flight_deploy		  				                           	   *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Test deployment state												   *
+*                                                                              *
+*******************************************************************************/
+void test_flight_deploy
+	(
+	void
+	)
+{
+/*------------------------------------------------------------------------------
+Cases
+------------------------------------------------------------------------------*/
+struct test_case
+	{
+	const char* description;
+	FEATURE_FLAGS enabled_features;
+	IGN_STATUS main_status_returns[3];
+	IGN_STATUS drogue_status_returns[3];
+	uint8_t exp_num_attempts_needed_main;
+	uint8_t exp_num_attempts_needed_drogue;
+	};
+struct test_case cases[] =
+	{
+		{ "Immediate Success", DUAL_DEPLOY_ENABLED, { IGN_SUCCESS, IGN_SUCCESS, IGN_SUCCESS }, { IGN_SUCCESS, IGN_SUCCESS, IGN_SUCCESS }, 1, 1 },
+		{ "First Fail", DUAL_DEPLOY_ENABLED, { IGN_SUCCESS, IGN_SUCCESS, IGN_SUCCESS }, { IGN_DROGUE_FAIL, IGN_SUCCESS, IGN_SUCCESS }, 1, 2 },
+		{ "Two Fails", DUAL_DEPLOY_ENABLED, { IGN_MAIN_FAIL, IGN_MAIN_FAIL, IGN_SUCCESS }, { IGN_DROGUE_FAIL, IGN_SUCCESS, IGN_SUCCESS }, 3, 2 },
+		{ "Dual Deploy Disabled", 0, { IGN_MAIN_FAIL, IGN_MAIN_FAIL, IGN_SUCCESS }, { IGN_DROGUE_FAIL, IGN_SUCCESS, IGN_SUCCESS }, 0, 0 },
+	};
+for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); test_num++ )
+	{
+	TEST_begin_nested_case( cases[test_num].description );
+
+	/*------------------------------------------------------------------------------
+	Set up mocks/stubs
+	------------------------------------------------------------------------------*/
+	stubs_reset();
+	set_return_ign_deploy_drogue(cases[test_num].drogue_status_returns);
+	set_return_ign_deploy_main(cases[test_num].main_status_returns);
+	preset_data.config_settings.enabled_features = cases[test_num].enabled_features;
+	flight_computer_state = FC_STATE_POST_APOGEE;
+
+	/*------------------------------------------------------------------------------
+	Call FUT
+	------------------------------------------------------------------------------*/
+	flight_deploy();
+
+	/*------------------------------------------------------------------------------
+	Verify results
+	------------------------------------------------------------------------------*/
+	/* The only critical parts of this are GPS enablement based on feature flags. All
+	others can be proven by analysis. */
+	TEST_ASSERT_EQ_UINT("Test that main chute deployment was called the right number of times.", get_num_calls_ign_deploy_main(), cases[test_num].exp_num_attempts_needed_main);
+	TEST_ASSERT_EQ_UINT("Test that drogue chute deployment was called the right number of times.", get_num_calls_ign_deploy_drogue(), cases[test_num].exp_num_attempts_needed_drogue);
+	TEST_ASSERT_EQ_UINT("Test that the state was updated.", flight_computer_state, FC_STATE_DEPLOYED);
+
+	TEST_end_nested_case();
+	}
+
+} /* test_flight_deploy */
 
 
 /*******************************************************************************
@@ -440,6 +608,7 @@ unit_test tests[] =
 	{
 	{ "Flight Loop: Sensor Calibration", test_flight_calib },
 	{ "Flight Loop: Launch Detect", test_launch_detect },
+	{ "Flight Loop: Ascent (in_flight)", test_flight_in_flight },
 	{ "Flight Loop: Chute Deployment", test_flight_deploy },
 	{ "Roll Control", test_pid_run }
 	};

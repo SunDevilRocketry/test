@@ -1,6 +1,7 @@
 #ifndef STUBS /* recursive inclusion guard */
 /* globals */
 extern bool was_gps_enabled;
+extern bool is_apogee_detected;
 extern uint16_t preset_preserving_flash_erase_calls;
 extern uint16_t flash_busy_calls;
 extern uint16_t flash_busy_counts;

@@ -22,11 +22,12 @@ IGN_STATUS ign_drogue_status[3] = { IGN_OK, IGN_OK, IGN_OK };
 uint8_t ign_drogue_call_num = 0;
 uint32_t systick = 0;
 uint32_t systick_calls = 0;
-SERVO_PRESET servo_angles = { 0, 0, 0, 0 };
+SERVO_PRESET servo_angles = { 45, 45, 45, 45 };
 SENSOR_STATUS sensor_status_return = SENSOR_OK;
 uint16_t preset_preserving_flash_erase_calls = 0;
 uint16_t flash_busy_calls = 0;
 uint16_t flash_busy_counts = 0;
+bool is_apogee_detected = false;
 
 /* internal use */
 
@@ -43,13 +44,14 @@ ign_main_call_num = 0;
 ign_drogue_call_num = 0;
 systick = 0;
 systick_calls = 0;
-memset( &servo_angles, 0, sizeof( SERVO_PRESET ) );
+memset( &servo_angles, 45, sizeof( SERVO_PRESET ) );
 error_callback = NULL;
 sensor_status_return = SENSOR_OK;
 ld_expected = false;
 preset_preserving_flash_erase_calls = 0;
 flash_busy_calls = 0;
 flash_busy_counts = 0;
+is_apogee_detected = false;
 }
 
 void set_return_ign_deploy_main
@@ -301,7 +303,7 @@ bool apogee_detect
 	void
 	)
 {
-return true;
+return is_apogee_detected;
 }
 
 /* fin_calib.c */
