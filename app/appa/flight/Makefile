@@ -90,7 +90,6 @@ C_INCLUDES =                                           \
 -I$(LIB_DIR)/Drivers/CMSIS/Device/ST/STM32H7xx/Include \
 -I$(LIB_DIR)/Drivers/CMSIS/Include                     \
 -I$(ROOT_DIR)/init/terminal/config/inc				   \
--I$(INIT_DIR)/config/Inc                               \
 -I$(ROOT_DIR)/test/framework/src/                      \
 -I$(ROOT_DIR)/app/flight/appa/rev2/
 
