@@ -20,8 +20,10 @@ Standard Includes
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <wait.h>
 #include <setjmp.h> /* NEVER do this in production code. This is used to circumvent
 					   infinite loops. */
+#include <threads.h> /* Never do this in *our* embedded code. It won't work how you expect, there's no OS. */
 
 /*------------------------------------------------------------------------------
 Project Includes                                                                     
@@ -77,6 +79,16 @@ Macros
 /*------------------------------------------------------------------------------
 Procedures: Test Helpers
 ------------------------------------------------------------------------------*/
+
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
+*       TEST_CALLBACK_error_fail_fast		  				                   *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Interrupts execution of the FUT and jumps back to the "setjmp" point.  *
+*                                                                              *
+*******************************************************************************/
 void TEST_CALLBACK_error_fail_fast
 	(
 	ERROR_CODE error_code
@@ -92,6 +104,68 @@ longjmp( env_buffer, jmp_val );
 /*------------------------------------------------------------------------------
 Procedures: Tests // Define the tests used here
 ------------------------------------------------------------------------------*/
+
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
+*       test_flight_loop		  				                           	   *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Test flight loop.													   *
+*                                                                              *
+*******************************************************************************/
+void test_flight_loop
+	(
+	void
+	)
+{
+/*------------------------------------------------------------------------------
+Set up mocks/stubs
+------------------------------------------------------------------------------*/
+stubs_reset();
+uint8_t gps_mesg_byte[1];
+HFLASH_BUFFER flash_handle;
+uint32_t flash_address;
+SENSOR_STATUS sensor_status = SENSOR_OK;
+FLASH_STATUS flash_status;
+preset_data.config_settings.enabled_features = 255u;
+flight_computer_state = FC_STATE_IDLE;
+
+/* Make every state advance immediately */
+set_return_launch_detection( true );
+is_apogee_detected = true;
+intercept_jmp_back = false;
+IGN_STATUS ign_ok_arr[3] = { IGN_SUCCESS, IGN_SUCCESS, IGN_SUCCESS };
+set_return_ign_deploy_drogue( ign_ok_arr );
+set_return_ign_deploy_main( ign_ok_arr );
+set_return_sensor_dump( SENSOR_OK );
+set_error_callback( TEST_CALLBACK_error_fail_fast );
+
+/*------------------------------------------------------------------------------
+Call FUT
+------------------------------------------------------------------------------*/
+jmp_val = setjmp( env_buffer ); /* used to intercept errors */
+	if( !intercept_jmp_back )
+		{
+		intercept_jmp_back = true;
+		flight_loop
+			(
+			gps_mesg_byte,
+			&flash_status,
+			&flash_handle,
+			&flash_address,
+			&sensor_status
+			);
+		}
+
+/*------------------------------------------------------------------------------
+Verify results
+------------------------------------------------------------------------------*/
+/* For testing purposes, led_set_color overrides the FC state once it's clear there's an infinite loop */
+TEST_ASSERT_EQ_UINT( "Test that the system remained in the state machine until there was external intervention.", flight_computer_state, FC_STATE_IDLE );
+
+} /* test_flight_loop */
+
 
 /*******************************************************************************
 *                                                                              *
@@ -722,6 +796,7 @@ Test Cases
 ------------------------------------------------------------------------------*/
 unit_test tests[] =
 	{
+	{ "Flight Loop: Transition Logic", test_flight_loop },
 	{ "Flight Loop: Sensor Calibration", test_flight_calib },
 	{ "Flight Loop: Launch Detect", test_launch_detect },
 	{ "Flight Loop: Ascent (in_flight)", test_flight_in_flight },

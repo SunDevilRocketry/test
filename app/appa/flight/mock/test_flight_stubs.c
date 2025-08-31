@@ -28,6 +28,7 @@ uint16_t preset_preserving_flash_erase_calls = 0;
 uint16_t flash_busy_calls = 0;
 uint16_t flash_busy_counts = 0;
 bool is_apogee_detected = false;
+uint16_t sensor_dump_calls = 0;
 
 /* internal use */
 
@@ -51,6 +52,7 @@ ld_expected = false;
 preset_preserving_flash_erase_calls = 0;
 flash_busy_calls = 0;
 flash_busy_counts = 0;
+sensor_dump_calls = 0;
 is_apogee_detected = false;
 }
 
@@ -218,6 +220,13 @@ SENSOR_STATUS sensor_dump
     SENSOR_DATA* sensor_data_ptr 
     )
 {
+sensor_dump_calls++;
+if( sensor_dump_calls > 20 )
+	{
+	//return ERROR_SENSOR_CMD_ERROR;
+	flight_computer_state = FC_STATE_IDLE;
+	}
+
 return sensor_status_return;
 }
 
