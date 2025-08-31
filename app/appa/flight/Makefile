@@ -74,6 +74,7 @@ CC = gcc
 C_INCLUDES =                                           \
 -I.                                                    \
 -I./mock                                               \
+-I$(ROOT_DIR)/app/flight/appa/rev2/					   \
 -I$(ROOT_DIR)/mod/gps/								   \
 -I$(ROOT_DIR)/mod/buzzer/							   \
 -I$(ROOT_DIR)/mod/common/							   \
@@ -85,13 +86,13 @@ C_INCLUDES =                                           \
 -I$(ROOT_DIR)/mod/led/							   		\
 -I$(ROOT_DIR)/mod/imu/								   \
 -I$(LIB_DIR)                                           \
+-I$(ROOT_DIR)/lib/util								   \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc          \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc/Legacy   \
 -I$(LIB_DIR)/Drivers/CMSIS/Device/ST/STM32H7xx/Include \
 -I$(LIB_DIR)/Drivers/CMSIS/Include                     \
--I$(ROOT_DIR)/init/terminal/config/inc				   \
--I$(ROOT_DIR)/test/framework/src/                      \
--I$(ROOT_DIR)/app/flight/appa/rev2/
+-I$(ROOT_DIR)/init/appa/config/Inc				   	   \
+-I$(ROOT_DIR)/test/framework/src/                      
 
 # Preprocessor definitions
 # Don't worry about the defs and flags unless you know what you're doing

@@ -71,10 +71,15 @@ CC = gcc
 # This should include a path to all of the headers used in your test
 C_INCLUDES =                                           \
 -I.                                                    \
+-I.   	   											\
 -I$(ROOT_DIR)/app/flight/appa/rev2/					   \
 -I$(ROOT_DIR)/mod/gps/								   \
 -I$(ROOT_DIR)/mod/sensor/							   \
 -I$(ROOT_DIR)/mod/imu/								   \
+-I$(ROOT_DIR)/mod/common							   \
+-I$(ROOT_DIR)/mod/servo								   \
+-I$(ROOT_DIR)/mod/usb								   \
+-I$(ROOT_DIR)/mod/flash								   \
 -I$(LIB_DIR)                                           \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc          \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc/Legacy   \
@@ -82,13 +87,6 @@ C_INCLUDES =                                           \
 -I$(LIB_DIR)/Drivers/CMSIS/Include                     \
 -I$(ROOT_DIR)/init/terminal/config/Inc				   \
 -I$(ROOT_DIR)/test/framework/src                       \
--I$(ROOT_DIR)/test/app/appa/launch_detect/mock	   	   \
--I$(ROOT_DIR)/mod/common							   \
--I$(ROOT_DIR)/mod/servo								   \
--I$(ROOT_DIR)/mod/usb								   \
--I$(ROOT_DIR)/mod/flash								   \
--I$(ROOT_DIR)/mod/sensor							   \
--I$(ROOT_DIR)/mod/imu								   \
 -I$(ROOT_DIR)/lib/util
 
 # Preprocessor definitions
