@@ -410,6 +410,8 @@ fprintf( outfile_handle, "\n----------------------------------------\n" );
 fprintf( outfile_handle, "----------------Results-----------------\n" );
 fprintf( outfile_handle, "----------------------------------------\n\n" );
 
+_test_begin_group( "Check test environment" );
+
 /* Requires an ISO C compiler. We use features up to C17. */
 #if( defined( __STDC__ ) && __STDC__ )
 TEST_ASSERT_GE_UINT( "Test Environment: ISO C standard is C17 or greater", __STDC_VERSION__, 201700L );
@@ -423,5 +425,7 @@ TEST_ASSERT_GE_UINT( "Test Environment: Compiler is supported GCC version", __GN
 #else
 TEST_ASSERT_TRUE( "Test Environment: Unsupported Compiler", false );
 #endif
+
+_test_end_group( "Check test environment" );
 
 }
