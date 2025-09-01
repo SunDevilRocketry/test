@@ -1,6 +1,6 @@
 ################################################################
 #
-# flight.c unit tests (based on gcc)
+# flash_appa.c unit tests (based on gcc)
 #
 ################################################################
 
@@ -49,7 +49,7 @@ mock/test_flight_stubs.c
 
 # Tested Source Files (anything that is being tested for coverage)
 COV_C_SOURCES =													  \
-$(ROOT_DIR)/app/flight/appa/rev2/flight.c
+$(ROOT_DIR)/app/flight/appa/rev2/flash_appa.c
 
 # Framework (just these files. do not modify.)
 FRAMEWORK_SOURCES =												  \
@@ -84,11 +84,13 @@ C_INCLUDES =                                           \
 -I$(ROOT_DIR)/mod/usb/							   		\
 -I$(ROOT_DIR)/mod/led/							   		\
 -I$(ROOT_DIR)/mod/imu/								   \
+-I$(ROOT_DIR)/mod/common/								   \
 -I$(LIB_DIR)                                           \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc          \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc/Legacy   \
 -I$(LIB_DIR)/Drivers/CMSIS/Device/ST/STM32H7xx/Include \
 -I$(LIB_DIR)/Drivers/CMSIS/Include                     \
+-I$(LIB_DIR)/util/                                     \
 -I$(ROOT_DIR)/init/terminal/config/inc				   \
 -I$(INIT_DIR)/config/Inc                               \
 -I$(ROOT_DIR)/test/framework/src/                      \

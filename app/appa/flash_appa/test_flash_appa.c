@@ -21,12 +21,24 @@ Standard Includes
 Project Includes                                                                     
 ------------------------------------------------------------------------------*/
 #include "main.h"
-#include "sdrtf_pub.h"
+#include "usb.h"
+#include "string.h"
+#include "led.h"
+#include "imu.h"
+#include "sdr_error.h"
+#include "buzzer.h"
 #include "test_flight_stubs.h"
 
 /*------------------------------------------------------------------------------
 Global Variables 
 ------------------------------------------------------------------------------*/
+IMU_OFFSET imu_offset;
+BARO_PRESET baro_preset;
+SENSOR_DATA sensor_data;
+PRESET_DATA preset_data;
+CONFIG_SETTINGS_TYPE config_settings;
+FLIGHT_COMP_STATE_TYPE flight_computer_state;
+float feedback;
 
 /*------------------------------------------------------------------------------
 Macros
@@ -59,15 +71,15 @@ int main
 /*------------------------------------------------------------------------------
 Test Cases
 ------------------------------------------------------------------------------*/
-unit_test tests[] =
-	{
+// unit_test tests[] =
+// 	{
 
-	};
+// 	};
 
 /*------------------------------------------------------------------------------
 Call the framework
 ------------------------------------------------------------------------------*/
-TEST_INITIALIZE_TEST( "flash_appa", tests );
+// TEST_INITIALIZE_TEST( "flash_appa", tests );
 
 } /* main */
 
