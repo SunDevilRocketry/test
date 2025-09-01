@@ -28,6 +28,7 @@ Project Includes
 #include "sdr_error.h"
 #include "buzzer.h"
 #include "test_flight_stubs.h"
+#include "sdrtf_pub.h"
 
 /*------------------------------------------------------------------------------
 Global Variables 
@@ -56,6 +57,25 @@ Procedures: Tests // Define the tests used here
 /*******************************************************************************
 *                                                                              *
 * PROCEDURE:                                                                   * 
+*       test_example	                                   			           *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       An example test.													   *
+*                                                                              *
+*******************************************************************************/
+void test_example
+	(
+	void
+	)
+{
+TEST_ASSERT_EQ_UINT( "Test that 1 equals 1.", 1, 1 );
+
+} /* test_example */
+
+
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
 *       main			                                   			           *
 *                                                                              *
 * DESCRIPTION:                                                                 * 
@@ -71,15 +91,15 @@ int main
 /*------------------------------------------------------------------------------
 Test Cases
 ------------------------------------------------------------------------------*/
-// unit_test tests[] =
-// 	{
-
-// 	};
+unit_test tests[] =
+	{
+	{ "Example Test", test_example }
+	};
 
 /*------------------------------------------------------------------------------
 Call the framework
 ------------------------------------------------------------------------------*/
-// TEST_INITIALIZE_TEST( "flash_appa", tests );
+TEST_INITIALIZE_TEST( "flash_appa", tests );
 
 } /* main */
 
