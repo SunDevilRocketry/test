@@ -269,9 +269,6 @@ fprintf( outfile_handle, "Fails:  %d\n", fail_counter );
 fprintf( outfile_handle, "Result: %s\n", status );
 fprintf( outfile_handle, "----------------------------------------\n" );
 
-/* will be zero with no fails. Else, returns a negative error code indicating num fails */
-exit( -1 * fail_counter );
-
 } /* _test_finalize */
 
 
@@ -419,7 +416,7 @@ TEST_ASSERT_GE_UINT( "Test Environment: ISO C standard is C17 or greater", __STD
 TEST_ASSERT_TRUE( "Test Environment: ISO C standard not defined", false );
 #endif
 
-/* Only GCC 12+ is supported at the moment. Future update could expand to clang if desired. */
+/* Only GCC 8+ is supported at the moment. Future update could expand to clang if desired. */
 #if( defined( __GNUC__ ) && __GNUC__ )
 TEST_ASSERT_GE_UINT( "Test Environment: Compiler is supported GCC version", __GNUC__, TEST_MIN_SUPPORTED_GCC_VERSION );
 #else
