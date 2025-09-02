@@ -85,7 +85,7 @@ C_INCLUDES =                                           \
 -I$(LIB_DIR)/Drivers/CMSIS/Include                     \
 -I$(ROOT_DIR)/init/terminal/config/Inc				   \
 -I$(ROOT_DIR)/test/framework/src                       \
--I$(ROOT_DIR)/test/app/appa/launch_detect/mock	   	   \
+-I$(ROOT_DIR)/test/app/appa/fin_calib/mock	   	       \
 -I$(ROOT_DIR)/mod/common							   \
 -I$(ROOT_DIR)/mod/servo								   \
 -I$(ROOT_DIR)/mod/usb								   \
@@ -101,7 +101,8 @@ C_DEFS =         \
 -DUSE_HAL_DRIVER \
 -DSTM32H750xx    \
 -DFLIGHT_COMPUTER \
--DUNIT_TEST
+-DUNIT_TEST       \
+-DA0002_REV2 
 
 CFLAGS = $(C_INCLUDES) $(C_DEFS) $(OPT) -Wall -g
 
