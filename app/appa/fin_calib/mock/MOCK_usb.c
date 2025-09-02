@@ -10,8 +10,10 @@
 *******************************************************************************/
 
 #include "main.h"
+#include "usb.h"
 
 #include <stdbool.h>
+#include <stdint.h>
 
 bool usb_detect
 	(
@@ -19,4 +21,14 @@ bool usb_detect
 	)
 {
     return true;
+}
+
+USB_STATUS usb_receive 
+	(
+	void*    rx_data_ptr ,
+	size_t   rx_data_size,
+	uint32_t timeout
+	)
+{
+	return USB_OK;
 }

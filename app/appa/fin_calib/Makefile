@@ -47,6 +47,8 @@ TEST_SOURCES =                                   				  \
 test_fin_calib.c                       					          \
 mock/MOCK_hal.c													  \
 mock/MOCK_usb.c                                                   \
+mock/MOCK_led.c 												  \
+mock/MOCK_servo.c                                                 \
 
 # Tested Source Files (anything that is being tested for coverage)
 COV_C_SOURCES =													  \
