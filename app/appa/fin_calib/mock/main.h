@@ -1,0 +1,21 @@
+/*******************************************************************************
+*
+* FILE: 
+*      main.h (MOCK)
+*
+* DESCRIPTION: 
+*      Header file to trick the test into compiling. Also contains mock function
+*      definitions. For application-specific tests, use that app's main.h.
+*
+*******************************************************************************/
+
+#include <stdbool.h>
+
+#include "sdr_pin_defines_A0002.h"
+#include "stm32h7xx_hal_uart.h"
+#include "usb.h"
+
+void MOCK_HAL_Status_Return
+    (
+    HAL_StatusTypeDef statusToReturn
+    );
