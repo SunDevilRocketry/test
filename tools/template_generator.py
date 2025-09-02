@@ -51,11 +51,11 @@ def replace_in_file( filepath: str ):
 # otherwise big evil unreadable block of text
 def make_function_stubs( names: list[str] ) -> str:
     dir = os.getcwd()
-    json_path = dir + "test/tools/templates/generator_config.json"
 
+    json_path = dir + "test/tools/templates/generator_config.json"
     config = get_json_data(json_path)
 
-    # This stub is modifable, but looks like this by default:
+    # This stub is modifable, but looks like this by default when pasted in:
     # void test_case_{}()
     #     {
     #     TEST_assert_eq( "STUB: Test not written", FALSE );
@@ -65,6 +65,8 @@ def make_function_stubs( names: list[str] ) -> str:
     text_block = ""
     for name in names:
         text_block += stub.format(name)
+
+    return text_block
 
 
 def get_json_data( filepath: str ) -> dict:
