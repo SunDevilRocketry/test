@@ -26,7 +26,6 @@ Project Includes
 #include "sensor.h"
 #include "imu.h"
 #include "test.h"
-#include "usb.h"
 
 /*------------------------------------------------------------------------------
 Global Variables 
