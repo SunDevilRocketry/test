@@ -30,13 +30,13 @@ Project Includes
 /*------------------------------------------------------------------------------
 Global Variables 
 ------------------------------------------------------------------------------*/
-
-PRESET_DATA preset_data;
+PRESET_DATA preset_data; /* Preset data struct */
 
 uint8_t usb_test_vals[] = { EXIT };
+uint8_t* usb_queue = usb_test_vals; /* Simulated USB queue */
+uint8_t  usb_pos   = 0; /* Simulated USB queue position, at start */
 
-uint8_t* usb_queue = usb_test_vals;
-uint8_t  usb_pos   = 0;
+bool usb_detect_value = true; /* Simulated USB detect value */
 
 /*------------------------------------------------------------------------------
 Macros
@@ -87,8 +87,7 @@ void test_usb
     )
 {
 /* Step: Set up test */
-#define NUM_CASES_USB 8
-printf("\nUnit Tests: test_usb\n");
+#define NUM_CASES_USB 9
 
 /* Step: Set up test vectors (inputs, expected) */
 uint8_t inputs[NUM_CASES_USB][2] = 
@@ -102,26 +101,118 @@ uint8_t expected[NUM_CASES_USB][4] =
 };
 
 /* Step: Execute tests */
+/* Cases for different USB commands */
 for ( int test_num = 0; test_num < NUM_CASES_USB; test_num++ )
 	{
+	TEST_begin_nested_case( "" );
+
+	/* Set USB queue to start of current input vector */
 	usb_queue = inputs[ test_num ];
 	usb_pos = 0;
 
-	uint8_t signalIn;
+	/* Make sure USB detect exhibit expected behavior */
+	usb_detect_value = true;
 
+	/* Run function */
+	uint8_t signalIn;
 	finCalibration( &signalIn );
 
-	/* Check result*/
+	/* Turn servo preset to checkable arraw */
 	uint8_t* result = _preset_to_array( preset_data );
 
-	/* TODO make this more readable */
-	for( int i = 0; i < 4; i++ ) {
-		TEST_ASSERT_EQ_SINT( "Test that servo preset equals expected", expected[test_num][i], result[i] );
+	/* Check rpservo preset data results*/
+	for( int rpservo = 0; rpservo < 4; rpservo++ ) {
+		TEST_ASSERT_EQ_SINT( "Test that servo preset equals expected", expected[test_num][rpservo], result[rpservo] );
 	}
-	//TEST_ASSERT_EQ_SINT( "Test that the result equals the expected", expected[ test_num ] , ( uint8_t[] )  );
+	
+	TEST_end_nested_case();
 	}
+
+/* For if usb_detect is false */
+
+/* It's just one special case, so I don't have case files for this */
+preset_data.servo_preset.rp_servo1 = 0;
+preset_data.servo_preset.rp_servo2 = 0;
+preset_data.servo_preset.rp_servo3 = 0;
+preset_data.servo_preset.rp_servo4 = 0;
+
+/* Set usb_detect return to false */
+usb_detect_value = false;
+
+uint8_t signalIn;
+
+finCalibration( &signalIn );
+
+uint8_t* result = _preset_to_array( preset_data );
+
+/* The preset data should be unchanged (all 0) if usb_detect is false*/
+for( int rpservo = 0; rpservo < 4; rpservo++ ) {
+	TEST_ASSERT_EQ_SINT( "Test that servo preset equals expected", 0, result[rpservo] );
+}
+
 } /* test_usb */
 
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
+*       test_boundary		  				                                   *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Test angle boundary code paths.					            		   *
+*                                                                              *
+*******************************************************************************/
+void test_boundary
+	(
+	void
+    )
+{
+/* Step: Set up test */
+#define NUM_CASES_BOUND 6
+printf("\nUnit Tests: test_boundary\n");
+
+/* Step: Set up test vectors (inputs, expected) */
+uint8_t inputs[NUM_CASES_BOUND][4] = 
+{
+#include "cases/preset_data_input.txt"
+};
+
+uint8_t expected[NUM_CASES_BOUND][4] = 
+{
+#include "cases/preset_data_expected.txt"
+};
+
+/* Step: Execute tests */
+for ( int test_num = 0; test_num < NUM_CASES_BOUND; test_num++ )
+	{
+	TEST_begin_nested_case( "" );
+
+	usb_queue = usb_test_vals; // Reset usb_queue to exit command
+	usb_pos = 0;
+
+	/* Make sure usb_detect exbihits expected behavior */
+	usb_detect_value = true;
+
+	/* Set presets to test input */
+	preset_data.servo_preset.rp_servo1 = inputs[ test_num ][ 0 ];
+	preset_data.servo_preset.rp_servo2 = inputs[ test_num ][ 1 ];
+	preset_data.servo_preset.rp_servo3 = inputs[ test_num ][ 2 ];
+	preset_data.servo_preset.rp_servo4 = inputs[ test_num ][ 3 ];
+
+	/* Run function */
+	uint8_t signalIn;
+	finCalibration( &signalIn );
+
+	/* Create result vector*/
+	uint8_t* result = _preset_to_array( preset_data );
+
+	/* Check result vector */
+	for( int rpservo = 0; rpservo < 4; rpservo++ ) {
+		TEST_ASSERT_EQ_SINT( "Test that servo preset equals expected", expected[test_num][rpservo], result[rpservo] );
+	}
+
+	TEST_end_nested_case();
+	}
+} /* test_boundary */
 
 /*******************************************************************************
 *                                                                              *
@@ -138,14 +229,6 @@ int main
 	void
 	)
 {
-/*
-List of things to fix or fake:
-[x] preset_data
-[x] led_set_color
-[x] motor_drive
-[~] usb_receive
-*/
-
 /*------------------------------------------------------------------------------
 Set up global variables
 ------------------------------------------------------------------------------*/
@@ -162,7 +245,8 @@ Test Cases
 ------------------------------------------------------------------------------*/
 unit_test tests[] =
 	{
-	{ "bar", test_usb } /* Callback to function. All you need to do is write a message in a string and the function name! */
+	{ "USB", test_usb },
+	{ "Boundary", test_boundary }
 	};
 
 /*------------------------------------------------------------------------------

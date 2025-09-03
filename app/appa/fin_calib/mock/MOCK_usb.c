@@ -30,6 +30,9 @@ Global Variables
 extern uint8_t* usb_queue;
 extern int  usb_pos;
 
+/* Value for usb_detect to return */
+extern bool usb_detect_value;
+
 /*------------------------------------------------------------------------------
 Mock Functions
 ------------------------------------------------------------------------------*/
@@ -38,7 +41,7 @@ bool usb_detect
 	void
 	)
 {
-    return true;
+    return usb_detect_value;
 }
 
 USB_STATUS usb_receive 
