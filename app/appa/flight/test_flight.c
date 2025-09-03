@@ -23,7 +23,6 @@ Standard Includes
 #include <wait.h>
 #include <setjmp.h> /* NEVER do this in production code. This is used to circumvent
 					   infinite loops. */
-#include <threads.h> /* Never do this in *our* embedded code. It won't work how you expect, there's no OS. */
 
 /*------------------------------------------------------------------------------
 Project Includes                                                                     
