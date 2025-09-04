@@ -55,13 +55,16 @@ Procedures: Test Helpers
 *       Convert preset servo values to convenient array for testing			   *
 *                                                                              *
 *******************************************************************************/
-uint8_t* _preset_to_array( PRESET_DATA in_preset ) {
+uint8_t* _preset_to_array(
+	void
+	)
+{
 	static uint8_t values[4];
 
-	values[0] = in_preset.servo_preset.rp_servo1;
-	values[1] = in_preset.servo_preset.rp_servo2;
-	values[2] = in_preset.servo_preset.rp_servo3;
-	values[3] = in_preset.servo_preset.rp_servo4;
+	values[0] = preset_data.servo_preset.rp_servo1;
+	values[1] = preset_data.servo_preset.rp_servo2;
+	values[2] = preset_data.servo_preset.rp_servo3;
+	values[3] = preset_data.servo_preset.rp_servo4;
 
 	return values;
 }
@@ -118,7 +121,7 @@ for ( int test_num = 0; test_num < NUM_CASES_USB; test_num++ )
 	finCalibration( &signalIn );
 
 	/* Turn servo preset to checkable arraw */
-	uint8_t* result = _preset_to_array( preset_data );
+	uint8_t* result = _preset_to_array();
 
 	/* Check rpservo preset data results*/
 	for( int rpservo = 0; rpservo < 4; rpservo++ ) {
@@ -143,7 +146,7 @@ uint8_t signalIn;
 
 finCalibration( &signalIn );
 
-uint8_t* result = _preset_to_array( preset_data );
+uint8_t* result = _preset_to_array();
 
 /* The preset data should be unchanged (all 0) if usb_detect is false*/
 for( int rpservo = 0; rpservo < 4; rpservo++ ) {
@@ -203,7 +206,7 @@ for ( int test_num = 0; test_num < NUM_CASES_BOUND; test_num++ )
 	finCalibration( &signalIn );
 
 	/* Create result vector*/
-	uint8_t* result = _preset_to_array( preset_data );
+	uint8_t* result = _preset_to_array();
 
 	/* Check result vector */
 	for( int rpservo = 0; rpservo < 4; rpservo++ ) {
