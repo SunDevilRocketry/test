@@ -131,7 +131,9 @@ for ( int test_num = 0; test_num < NUM_CASES_USB; test_num++ )
 	TEST_end_nested_case();
 	}
 
-/* For if usb_detect is false */
+/*-------------------------
+For if usb_detect is false
+-------------------------*/
 
 /* It's just one special case, so I don't have case files for this */
 preset_data.servo_preset.rp_servo1 = 0;
