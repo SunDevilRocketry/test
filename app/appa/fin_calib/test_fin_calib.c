@@ -55,7 +55,7 @@ Procedures: Test Helpers
 *       Convert preset servo values to convenient array for testing			   *
 *                                                                              *
 *******************************************************************************/
-uint8_t* _preset_to_array(
+static uint8_t* _preset_to_array(
 	void
 	)
 {
