@@ -24,6 +24,10 @@ void MOCK_HAL_Status_Return
 mocked_return = statusToReturn;
 }
 
+void HAL_Delay(uint32_t Delay) {
+
+}
+
 HAL_StatusTypeDef HAL_UART_Receive_IT 
     (
     UART_HandleTypeDef *huart, 

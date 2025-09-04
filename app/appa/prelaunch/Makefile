@@ -1,13 +1,13 @@
 ################################################################
 #
-# launch_detect unit tests (based on gcc)
+# prelaunch unit tests (based on gcc)
 #
 ################################################################
 
 ################################################################
 # target
 ################################################################
-TARGET = launch_detect
+TARGET = prelaunch
 
 
 ################################################################
@@ -42,12 +42,16 @@ MOD_DIR = $(ROOT_DIR)/mod
 
 # C sources
 TEST_SOURCES =                                   				  \
-test_launch_detect.c                       					      \
 mock/MOCK_hal.c													  \
+mock/usb.c													      \
+mock/preset.c													\
+mock/sensor.c													\
+mock/MOCK_flight.c													\
+test_prelaunch.c												\
 
 # Tested Source Files
 COV_C_SOURCES =													  \
-$(ROOT_DIR)/app/canard/rev2/launch_detect.c 
+$(ROOT_DIR)/app/flight/appa/rev2/prelaunch.c 
 
 # Framework
 FRAMEWORK_SOURCES =												  \
@@ -71,8 +75,8 @@ CC = gcc
 # This should include a path to all of the headers used in your test
 C_INCLUDES =                                           \
 -I.                                                    \
+-I$(ROOT_DIR)/app/flight/appa/rev2/					   \
 -I$(ROOT_DIR)/mod/gps/								   \
--I$(ROOT_DIR)/mod/common/							   \
 -I$(ROOT_DIR)/mod/sensor/							   \
 -I$(ROOT_DIR)/mod/imu/								   \
 -I$(LIB_DIR)                                           \
@@ -82,8 +86,10 @@ C_INCLUDES =                                           \
 -I$(LIB_DIR)/Drivers/CMSIS/Include                     \
 -I$(ROOT_DIR)/init/terminal/config/Inc				   \
 -I$(ROOT_DIR)/test/framework/src                       \
--I$(ROOT_DIR)/test/app/canard/launch_detect/mock	   \
+-I$(ROOT_DIR)/test/app/appa/prelaunch/mock	   	   \
+-I$(ROOT_DIR)/mod/common							   \
 -I$(ROOT_DIR)/mod/servo								   \
+-I$(ROOT_DIR)/mod/usb								   \
 -I$(ROOT_DIR)/mod/flash								   \
 -I$(ROOT_DIR)/mod/sensor							   \
 -I$(ROOT_DIR)/mod/imu								   \
