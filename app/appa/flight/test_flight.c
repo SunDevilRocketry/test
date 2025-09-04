@@ -181,7 +181,7 @@ void test_flight_calib
 	)
 {
 /*------------------------------------------------------------------------------
-Set up mocks/stubs
+Case 1: GPS Enabled
 ------------------------------------------------------------------------------*/
 stubs_reset();
 uint8_t gps_mesg_byte[1];
@@ -205,6 +205,29 @@ Verify results
 /* The only critical parts of this are GPS enablement based on feature flags. All
    others can be proven by analysis. */
 TEST_ASSERT_EQ_UINT("Test that GPS was enabled.", was_gps_enabled, true);
+
+/*------------------------------------------------------------------------------
+Case 1: GPS Disabled
+------------------------------------------------------------------------------*/
+stubs_reset();
+preset_data.config_settings.enabled_features = 0u;
+
+/*------------------------------------------------------------------------------
+Call FUT
+------------------------------------------------------------------------------*/
+flight_calib
+	(
+	gps_mesg_byte,
+    flash_handle,
+    flash_address_ptr
+	);
+
+/*------------------------------------------------------------------------------
+Verify results
+------------------------------------------------------------------------------*/
+/* The only critical parts of this are GPS enablement based on feature flags. All
+   others can be proven by analysis. */
+TEST_ASSERT_EQ_UINT("Test that GPS was disabled.", was_gps_enabled, false);
 
 } /* test_flight_calib */
 
