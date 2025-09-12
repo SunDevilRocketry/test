@@ -1,15 +1,14 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include "test_flash_appa_stubs.h"
 #include "flash.h"
 #include "buzzer.h"
 #include "led.h"
 
-/* globals */
-//HFLASH_BUFFER* pflash_buffer;
-
 /* Test-only globals */
-extern uint8_t* mock_flash_memory;
+uint8_t mock_flash_memory[FLASH_MEMORY_SIZE];
+uint16_t flash_busy_calls;
 
 /* functions */
 void reset_stubs
@@ -17,7 +16,8 @@ void reset_stubs
 		void
 	)
 {
-// this still needs to be set up
+memset( &mock_flash_memory, 0, FLASH_MEMORY_SIZE );
+flash_busy_calls = 0;
 }
 
 /* Sets the LED to a color from the LED_COLOR_CODES enum */
@@ -40,7 +40,17 @@ bool flash_is_flash_busy
 	void
 	)
 {
-return FLASH_READY;
+if ( flash_busy_calls == 0 )
+	{
+	flash_busy_calls++;
+	return FLASH_BUSY;
+	}
+else
+	{
+	flash_busy_calls++;
+	return FLASH_READY;
+	}
+
 }
 
 /* Write bytes from a flash buffer to the external flash */
@@ -49,10 +59,9 @@ FLASH_STATUS flash_write
 	HFLASH_BUFFER* pflash_handle
     )
 {
-/* Trying to copy the flash buffer into the mock flash memory */
-/* seg fault */
-// uint8_t address = mock_flash_memory + pflash_handle->address;
-// memcpy(address, pflash_handle->pbuffer, pflash_handle->num_bytes);
+/* Copy the flash buffer into the mock flash memory */
+uint8_t* address = &mock_flash_memory[0] + pflash_handle->address;
+memcpy(address, pflash_handle->pbuffer, pflash_handle->num_bytes);
 
 return FLASH_OK;
 }
@@ -64,6 +73,13 @@ FLASH_STATUS flash_read
     uint32_t       num_bytes
     )
 {
+/* Local variables*/
+uint8_t* pbuffer = ( pflash_handle -> pbuffer );
+uint8_t* address = &mock_flash_memory[0] + pflash_handle->address;
+
+/* Recieve output into buffer*/
+memcpy(pbuffer, address, num_bytes);
+
 return FLASH_OK;
 }
 
@@ -73,6 +89,7 @@ FLASH_STATUS flash_erase
     HFLASH_BUFFER* pflash_handle	
     )
 {
+memset(&mock_flash_memory, 0, FLASH_MEMORY_SIZE);
 return FLASH_OK;
 }
 
@@ -83,9 +100,8 @@ FLASH_STATUS flash_block_erase
 	FLASH_BLOCK_SIZE size
 	)
 {
-/* Do something with the mock flash memory */
-uint8_t* flash_addr = &mock_flash_memory; /* Address of block to erase */
-size_t block_size;
+uint8_t* flash_addr = &mock_flash_memory[0]; /* Address of block to erase */
+size_t block_size = 0;
 
 switch( size )
 	{
@@ -117,8 +133,7 @@ switch( size )
 		break;
 	}
 
-// this doesn't work
-// memset(flash_addr, 0, block_size);
+memset(flash_addr, 0, block_size);
 
 return FLASH_OK;
 

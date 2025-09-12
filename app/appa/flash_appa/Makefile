@@ -45,7 +45,7 @@ INIT_DIR = $(ROOT_DIR)/init
 # C sources (for test. driver, stubs, and others should go here)
 TEST_SOURCES =                                   				  \
 test_flash_appa.c                       					      	\
-mock/test_flight_stubs.c
+mock/test_flash_appa_stubs.c
 
 # Tested Source Files (anything that is being tested for coverage)
 COV_C_SOURCES =													  \

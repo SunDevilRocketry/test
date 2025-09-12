@@ -29,7 +29,7 @@ Project Includes
 #include "buzzer.h"
 #include "flash.h"
 #include "sensor.h"
-#include "test_flight_stubs.h"
+#include "test_flash_appa_stubs.h"
 #include "sdrtf_pub.h"
 
 /*------------------------------------------------------------------------------
@@ -46,7 +46,8 @@ float feedback;
 extern uint8_t sensor_frame_size;
 
 /* Test-only globals */
-uint8_t* mock_flash_memory;
+extern uint8_t mock_flash_memory[FLASH_MEMORY_SIZE];
+extern uint16_t flash_busy_calls;
 
 /*------------------------------------------------------------------------------
 Macros
@@ -60,24 +61,25 @@ static void make_default_configs
 	PRESET_DATA* preset_data_ptr
 	) 
 {
-preset_data_ptr.config_settings.enabled_features = 0b11100001; /* launch detect, dual deploy, data logging */
-preset_data_ptr.config_settings.enabled_data = 0b11111111; 	   /* all data enabled */
-preset_data_ptr.config_settings.sensor_calibration_samples = 1000;		/* unitless */
-preset_data_ptr.config_settings.launch_detect_timeout 	   = 30000; 		/* unit: ms */
-preset_data_ptr.config_settings.launch_detect_accel_threshold = 2;		/* unit: g	*/
-preset_data_ptr.config_settings.launch_detect_accel_samples	  = 5;		/* unitless */
-preset_data_ptr.config_settings.launch_detect_baro_threshold  = 300;	/* unit: Pa */
-preset_data_ptr.config_settings.launch_detect_baro_samples	  = 5;		/* unitless */
-preset_data_ptr.config_settings.control_delay_after_launch	  = 4000;	/* unit: ms */
-preset_data_ptr.config_settings.roll_control_constant_p = 0.0f; /* active control disabled */
-preset_data_ptr.config_settings.roll_control_constant_i = 0.0f; /* active control disabled */
-preset_data_ptr.config_settings.roll_control_constant_d = 0.0f; /* active control disabled */
-preset_data_ptr.config_settings.pitch_yaw_control_constant_p = 0.0f; /* active control disabled */
-preset_data_ptr.config_settings.pitch_yaw_control_constant_i = 0.0f; /* active control disabled */
-preset_data_ptr.config_settings.pitch_yaw_control_constant_d = 0.0f; /* active control disabled */
-preset_data_ptr.config_settings.control_max_deflection_angle = 0;	/* active control disabled */
-preset_data_ptr.config_settings.minimum_time_for_frame = 0;			/* unit: ms */
+preset_data_ptr->config_settings.enabled_features = 0b11100001; /* launch detect, dual deploy, data logging */
+preset_data_ptr->config_settings.enabled_data = 0b11111111; 	   /* all data enabled */
+preset_data_ptr->config_settings.sensor_calibration_samples = 1000;		/* unitless */
+preset_data_ptr->config_settings.launch_detect_timeout 	   = 30000; 		/* unit: ms */
+preset_data_ptr->config_settings.launch_detect_accel_threshold = 2;		/* unit: g	*/
+preset_data_ptr->config_settings.launch_detect_accel_samples	  = 5;		/* unitless */
+preset_data_ptr->config_settings.launch_detect_baro_threshold  = 300;	/* unit: Pa */
+preset_data_ptr->config_settings.launch_detect_baro_samples	  = 5;		/* unitless */
+preset_data_ptr->config_settings.control_delay_after_launch	  = 4000;	/* unit: ms */
+preset_data_ptr->config_settings.roll_control_constant_p = 0.0f; /* active control disabled */
+preset_data_ptr->config_settings.roll_control_constant_i = 0.0f; /* active control disabled */
+preset_data_ptr->config_settings.roll_control_constant_d = 0.0f; /* active control disabled */
+preset_data_ptr->config_settings.pitch_yaw_control_constant_p = 0.0f; /* active control disabled */
+preset_data_ptr->config_settings.pitch_yaw_control_constant_i = 0.0f; /* active control disabled */
+preset_data_ptr->config_settings.pitch_yaw_control_constant_d = 0.0f; /* active control disabled */
+preset_data_ptr->config_settings.control_max_deflection_angle = 0;	/* active control disabled */
+preset_data_ptr->config_settings.minimum_time_for_frame = 0;			/* unit: ms */
 }
+
 
 /*------------------------------------------------------------------------------
 Procedures: Tests // Define the tests used here
@@ -102,20 +104,13 @@ void test_store_frame
 /*------------------------------------------------------------------------------
 Cases
 ------------------------------------------------------------------------------*/
-HFLASH_BUFFER* pflash_handle = malloc(sizeof(HFLASH_BUFFER));
-pflash_handle->num_bytes = 8;
-pflash_handle->address = 0;
-pflash_handle->pbuffer = malloc(sizeof(uint8_t)); // ??
-pflash_handle->write_protected = 0;
-pflash_handle->bpl_bits = FLASH_BPL_NONE;
-pflash_handle->bpl_write_protect = FLASH_BPL_READ_WRITE;
-pflash_handle->status_register = 0;
 
 /*------------------------------------------------------------------------------
 Local variables
 ------------------------------------------------------------------------------*/
+HFLASH_BUFFER flash_handle;
 uint32_t time = 0;
-uint32_t* address = malloc(sizeof(uint32_t));	
+uint32_t address;
 
 reset_stubs();
 
@@ -124,10 +119,10 @@ Call FUT
 ------------------------------------------------------------------------------*/
 store_frame 
 	(
-	pflash_handle,
+	&flash_handle,
 	&sensor_data,
 	time,
-	address
+	&address
 	);
 
 
@@ -159,8 +154,8 @@ Cases
 /*------------------------------------------------------------------------------
 Local variables
 ------------------------------------------------------------------------------*/
-HFLASH_BUFFER* pflash_handle = malloc(sizeof(HFLASH_BUFFER));
-uint32_t* address = malloc(sizeof(uint32_t));
+HFLASH_BUFFER flash_handle;
+uint32_t address;
 
 reset_stubs();
 
@@ -169,15 +164,16 @@ Call FUT
 ------------------------------------------------------------------------------*/
 read_preset
 	(
-	pflash_handle,
+	&flash_handle,
 	&preset_data,
-	address
+	&address
 	);
 
 
 /*------------------------------------------------------------------------------
 Verify results
 ------------------------------------------------------------------------------*/
+TEST_ASSERT_EQ_MEMORY( "Read preset correctly places the preset into the flash handle", &mock_flash_memory, flash_handle.pbuffer, sizeof( PRESET_DATA ) );
 
 } /* test_read_preset */
 
@@ -203,8 +199,8 @@ Cases
 /*------------------------------------------------------------------------------
 Local variables
 ------------------------------------------------------------------------------*/
-HFLASH_BUFFER* pflash_handle = malloc(sizeof(HFLASH_BUFFER));
-uint32_t* address = malloc(sizeof(uint32_t));
+HFLASH_BUFFER flash_handle;
+uint32_t address;
 
 
 /*------------------------------------------------------------------------------
@@ -217,9 +213,9 @@ Call FUT
 ------------------------------------------------------------------------------*/
 write_preset
 	(
-	pflash_handle,
+	&flash_handle,
 	&preset_data,
-	address
+	&address
 	);
 
 
@@ -252,8 +248,8 @@ Cases
 /*------------------------------------------------------------------------------
 Local variables
 ------------------------------------------------------------------------------*/
-HFLASH_BUFFER* pflash_handle = malloc(sizeof(HFLASH_BUFFER));
-uint32_t* address = malloc(sizeof(uint32_t));
+HFLASH_BUFFER flash_handle;
+uint32_t address;
 
 reset_stubs();
 
@@ -262,8 +258,8 @@ Call FUT
 ------------------------------------------------------------------------------*/
 flash_erase_preserve_preset
 	(
-	pflash_handle,
-	address
+	&flash_handle,
+	&address
 	);
 
 
@@ -289,8 +285,8 @@ int main
 	void
 	)
 {
+memset( &mock_flash_memory, 0, FLASH_MEMORY_SIZE );
 
-mock_flash_memory = calloc( 32768, sizeof(uint8_t) );
 /*------------------------------------------------------------------------------
 Test Cases
 ------------------------------------------------------------------------------*/
