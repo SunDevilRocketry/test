@@ -6,9 +6,13 @@
 #include "buzzer.h"
 #include "led.h"
 
+/* globals */
+extern uint8_t sensor_frame_size;
+
 /* Test-only globals */
 uint8_t mock_flash_memory[FLASH_MEMORY_SIZE];
 uint16_t flash_busy_calls;
+FLASH_STATUS flash_read_return;
 
 /* functions */
 void reset_stubs
@@ -16,8 +20,17 @@ void reset_stubs
 		void
 	)
 {
-memset( &mock_flash_memory, 0, FLASH_MEMORY_SIZE );
+sensor_frame_size = 0;
 flash_busy_calls = 0;
+flash_read_return = FLASH_OK;
+}
+
+void reset_mock_flash
+	(
+	void
+	)
+{
+memset( &mock_flash_memory, FLASH_ERASE_VALUE, FLASH_MEMORY_SIZE );
 }
 
 /* Sets the LED to a color from the LED_COLOR_CODES enum */
@@ -80,7 +93,7 @@ uint8_t* address = &mock_flash_memory[0] + pflash_handle->address;
 /* Recieve output into buffer*/
 memcpy(pbuffer, address, num_bytes);
 
-return FLASH_OK;
+return flash_read_return;
 }
 
 /* Erase the entire flash chip */
@@ -89,7 +102,7 @@ FLASH_STATUS flash_erase
     HFLASH_BUFFER* pflash_handle	
     )
 {
-memset(&mock_flash_memory, 0, FLASH_MEMORY_SIZE);
+memset(&mock_flash_memory, FLASH_ERASE_VALUE, FLASH_MEMORY_SIZE);
 return FLASH_OK;
 }
 
@@ -133,7 +146,7 @@ switch( size )
 		break;
 	}
 
-memset(flash_addr, 0, block_size);
+memset(flash_addr, FLASH_ERASE_VALUE, block_size);
 
 return FLASH_OK;
 
