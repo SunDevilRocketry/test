@@ -260,15 +260,17 @@ struct test_case
 	SENSOR_STATUS sensor_status_return;
 	ERROR_CODE expected_error_code;
 	};
-struct test_case cases[] =
-	{
-		{ "Normal: Typical operation, launch not detected.", 5000, 200, 300, false, 0, SENSOR_OK, MAX_UINT_32 },
-		{ "Normal: Typical operation, launch detected.", 5000, 200, 300, true, 0, SENSOR_OK, MAX_UINT_32 },
-		{ "Normal: Timeout, launch not detected.", 5000, 0, 5001, false, 0, SENSOR_OK, MAX_UINT_32 },
-		{ "Robust: Flash busy 2x, launch not detected.", 5000, 200, 300, false, 2, SENSOR_OK, MAX_UINT_32 },
-		{ "Robust: Timeout + Flash busy 2x, launch not detected.", 5000, 0, 5001, false, 2, SENSOR_OK, MAX_UINT_32 },
-		{ "Robust: Sensor fail", 5000, 200, 300, false, 0, SENSOR_FAIL, ERROR_SENSOR_CMD_ERROR },
-	};
+	struct test_case cases[] =
+		{
+			{ "Normal: Typical operation, launch not detected.", 5000, 200, 300, false, 0, SENSOR_OK, MAX_UINT_32 },
+			{ "Normal: Typical operation, launch detected.", 5000, 200, 300, true, 0, SENSOR_OK, MAX_UINT_32 },
+			{ "Normal: Timeout, launch not detected.", 5000, 0, 5001, false, 0, SENSOR_OK, MAX_UINT_32 },
+			{ "Robust: Flash busy 2x, launch not detected.", 5000, 200, 300, false, 2, SENSOR_OK, MAX_UINT_32 },
+			{ "Robust: Timeout + Flash busy 2x, launch not detected.", 5000, 0, 5001, false, 2, SENSOR_OK, MAX_UINT_32 },
+			{ "Robust: Sensor fail", 5000, 200, 300, false, 0, SENSOR_FAIL, ERROR_SENSOR_CMD_ERROR },
+			{"Flash address below limit", 5000, 0, 5001, false, 0, SENSOR_OK, MAX_UINT_32 },
+			{"Flash address above limit", 5000, 0, 5001, false, 0, SENSOR_OK, MAX_UINT_32 },
+		};
 for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); test_num++ )
 	{
 	TEST_begin_nested_case( cases[test_num].description );
@@ -295,6 +297,19 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 	set_return_launch_detection( cases[test_num].launch_detected );
 	intercept_jmp_back = false;
 	flash_busy_counts = cases[test_num].flash_busy_counts;
+
+	switch(test_num)
+{
+    case 6: // Flash address below limit
+        flash_buffer.address = FLASH_MAX_ADDR / 2;
+        break;
+    case 7: // Flash address above limit
+        flash_buffer.address = FLASH_MAX_ADDR - sensor_frame_size + 1;
+        break;
+    default:
+        flash_buffer.address = FLASH_MAX_ADDR / 3; // default for other tests
+        break;
+}
 
 	/*------------------------------------------------------------------------------
 	Call FUT
@@ -333,6 +348,13 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 			TEST_ASSERT_EQ_UINT( "Test that the state has remained constant.", flight_computer_state, FC_STATE_LAUNCH_DETECT );
 			}
 
+		if(test_num == 7){
+			TEST_ASSERT_EQ_UINT( "Test that flash was not erased due to overrun safeguard.", preset_preserving_flash_erase_calls, 0 );
+        	TEST_ASSERT_EQ_UINT( "Test that the timer was not reset due to overrun safeguard.", ld_start_time, cases[test_num].ld_start_time );
+
+		}
+		else
+		{
 		/* Timeout */
 		if( cases[test_num].curr_tick - cases[test_num].ld_start_time >= cases[test_num].timeout_configuration )
 			{
@@ -347,7 +369,7 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 			TEST_ASSERT_EQ_UINT( "Test that control was stuck in the flash busy loop correctly.", flash_busy_calls, 1 + ( cases[test_num].flash_busy_counts ) );
 			}
 		}
-
+	}
 	TEST_end_nested_case();
 	}
 
