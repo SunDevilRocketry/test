@@ -103,6 +103,7 @@ FLASH_STATUS flash_erase
     )
 {
 memset(&mock_flash_memory, FLASH_ERASE_VALUE, FLASH_MEMORY_SIZE);
+
 return FLASH_OK;
 }
 

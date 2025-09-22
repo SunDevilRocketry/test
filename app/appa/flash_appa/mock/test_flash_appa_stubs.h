@@ -1,6 +1,5 @@
 #ifndef STUBS /* recursive inclusion guard */
-
-/* Macros */
+#define STUBS
 
 /* 512kB flash memory */
 #define FLASH_MEMORY_SIZE 0x80000

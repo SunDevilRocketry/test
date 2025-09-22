@@ -15,7 +15,6 @@ Standard Includes
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 
 /*------------------------------------------------------------------------------
 Project Includes                                                                     
@@ -51,10 +50,6 @@ extern uint16_t flash_busy_calls;
 extern FLASH_STATUS flash_read_return;
 
 /*------------------------------------------------------------------------------
-Macros
-------------------------------------------------------------------------------*/
-
-/*------------------------------------------------------------------------------
 Procedures: Test Helpers
 ------------------------------------------------------------------------------*/
 static PRESET_DATA get_default_configs
@@ -70,7 +65,7 @@ to_return.config_settings.sensor_calibration_samples = 1000;		/* unitless */
 to_return.config_settings.launch_detect_timeout 	   = 30000; 		/* unit: ms */
 to_return.config_settings.launch_detect_accel_threshold = 2;		/* unit: g	*/
 to_return.config_settings.launch_detect_accel_samples	  = 5;		/* unitless */
-to_return.config_settings.launch_detect_baro_threshold  = 300;	/* unit: Pa */
+to_return.config_settings.launch_detect_baro_threshold    = 300;	/* unit: Pa */
 to_return.config_settings.launch_detect_baro_samples	  = 5;		/* unitless */
 to_return.config_settings.control_delay_after_launch	  = 4000;	/* unit: ms */
 to_return.config_settings.roll_control_constant_p = 0.0f; /* active control disabled */
@@ -103,8 +98,6 @@ void test_store_frame
 	void
 	)
 {
-/* This is full coverage, but doesn't test anything yet */
-/* Almost full drive-by coverage of sensor_frame_size_init and get_sensor_frame */
 /*------------------------------------------------------------------------------
 Cases
 ------------------------------------------------------------------------------*/
@@ -113,10 +106,17 @@ Cases
 Local variables
 ------------------------------------------------------------------------------*/
 HFLASH_BUFFER flash_handle;
-uint32_t time = 0;
+uint32_t time = 123; /* arbitrary value */
 uint32_t address;
 
 reset_stubs();
+reset_mock_flash();
+
+sensor_data.imu_data.accel_x = 77;
+
+mock_flash_memory[0] = 1;
+mock_flash_memory[1] = 0;
+memcpy( &mock_flash_memory[2], &preset_data, sizeof (PRESET_DATA) );
 
 /*------------------------------------------------------------------------------
 Call FUT
@@ -133,6 +133,9 @@ store_frame
 /*------------------------------------------------------------------------------
 Verify results
 ------------------------------------------------------------------------------*/
+uint8_t imu_data_index = 6;
+TEST_ASSERT_EQ_UINT( "Test that the time was placed into flash memory", time, mock_flash_memory[sensor_frame_size + 2] );
+TEST_ASSERT_EQ_MEMORY( "Test that IMU data was stored", &mock_flash_memory[sensor_frame_size + imu_data_index], &(sensor_data.imu_data), 10 * sizeof(uint16_t) );
 
 } /* test_store_frame */
 
@@ -172,15 +175,25 @@ struct test_case cases[] =
 for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); test_num++ )
 	{
 	TEST_begin_nested_case( cases[test_num].description );
+
 	/*------------------------------------------------------------------------------
 	Local variables
 	------------------------------------------------------------------------------*/
 	reset_stubs();
 	reset_mock_flash();
 
-	flash_read_return = cases[test_num].flash_read_return;
 	HFLASH_BUFFER flash_handle;
 	uint32_t address;
+	
+	flash_read_return = cases[test_num].flash_read_return;
+	preset_data = get_default_configs();
+
+	if ( cases[test_num].is_preset_stored )
+		{
+		mock_flash_memory[0] = 1;
+		mock_flash_memory[1] = 0;
+		memcpy( &mock_flash_memory[2], &preset_data, sizeof ( PRESET_DATA ) );
+		}
 
 	/*------------------------------------------------------------------------------
 	Call FUT
@@ -196,11 +209,12 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 	/*------------------------------------------------------------------------------
 	Verify results
 	------------------------------------------------------------------------------*/
-	// TEST_ASSERT_EQ_MEMORY( "Read preset correctly loads the config preset", &mock_flash_memory[0], flash_handle.pbuffer, sizeof( PRESET_DATA ) );
-	// TEST_ASSERT_EQ_UINT("Test for expected return value", result, cases[test_num].expected_return);
+	TEST_ASSERT_EQ_MEMORY( "Test that read preset correctly loads the config preset", &mock_flash_memory[2], flash_handle.pbuffer + 2, sizeof( PRESET_DATA ) );
+	TEST_ASSERT_EQ_UINT( "Test for expected return value", result, cases[test_num].expected_return );
 
 	TEST_end_nested_case();
 	}
+
 } /* test_read_preset */
 
 
@@ -219,20 +233,19 @@ void test_write_preset
 	)
 {
 /*------------------------------------------------------------------------------
-Cases
-------------------------------------------------------------------------------*/
-
-/*------------------------------------------------------------------------------
 Local variables
 ------------------------------------------------------------------------------*/
 HFLASH_BUFFER flash_handle;
 uint32_t address;
 
-
 /*------------------------------------------------------------------------------
 Set up mocks/stubs
 ------------------------------------------------------------------------------*/
 reset_stubs();
+reset_mock_flash();
+
+/* store random junk in first block of memory */
+memset( &mock_flash_memory[0], 1, sizeof( PRESET_DATA ) + 2 );
 
 /*------------------------------------------------------------------------------
 Call FUT
@@ -244,11 +257,12 @@ FLASH_STATUS result = write_preset
 	&address
 	);
 
-
 /*------------------------------------------------------------------------------
 Verify results
 ------------------------------------------------------------------------------*/
-TEST_ASSERT_EQ_UINT("Test that write_preset returns FLASH_OK", result, FLASH_OK);
+TEST_ASSERT_EQ_UINT( "Test that write_preset returns FLASH_OK", result, FLASH_OK );
+TEST_ASSERT_EQ_UINT( "Test that save bit was stored at the beginning of flash", mock_flash_memory[0], 1 );
+TEST_ASSERT_EQ_MEMORY( "Test that preset data was written to flash", &mock_flash_memory[2], &preset_data, sizeof( PRESET_DATA ) );
 
 } /* test_write_preset */
 
@@ -268,11 +282,6 @@ void test_flash_erase_preserve_preset
 	)
 {
 /*------------------------------------------------------------------------------
-Cases
-------------------------------------------------------------------------------*/
-
-
-/*------------------------------------------------------------------------------
 Local variables
 ------------------------------------------------------------------------------*/
 reset_stubs();
@@ -281,27 +290,15 @@ reset_mock_flash();
 HFLASH_BUFFER flash_handle;
 uint32_t address;
 
-/* Load some stuff into flash memory */
 preset_data = get_default_configs();
 
-/* Save bit */
+/* Save bit and preset data */
 mock_flash_memory[0] = 1;
 mock_flash_memory[1] = 0;
 memcpy( &mock_flash_memory[2], &preset_data, sizeof( PRESET_DATA ));
+
 /* Set another random part of memory to something */
 memset( &mock_flash_memory[300], 1, 1 );
-
-//bool memory_nonzero = false; // rename
-for ( uint32_t i = sizeof( PRESET_DATA ) + 2; i < FLASH_MEMORY_SIZE; i++ )
-	{
-	if ( mock_flash_memory[i] != FLASH_ERASE_VALUE )
-		{
-		//memory_nonzero = true;
-		printf("Unequal at %d: %d\n", i, mock_flash_memory[i]);
-		}
-	}
-
-printf("\n--------------");
 
 /*------------------------------------------------------------------------------
 Call FUT
@@ -312,24 +309,102 @@ FLASH_STATUS result = flash_erase_preserve_preset
 	&address
 	);
 
-
 /*------------------------------------------------------------------------------
 Verify results
 ------------------------------------------------------------------------------*/
-bool memory_nonzero = false; // rename
+bool memory_cleared = true;
 for ( uint32_t i = sizeof( PRESET_DATA ) + 2; i < FLASH_MEMORY_SIZE; i++ )
 	{
 	if ( mock_flash_memory[i] != FLASH_ERASE_VALUE )
 		{
-		memory_nonzero = true;
-		printf("Unequal at %d: %d\n", i, mock_flash_memory[i]);
+		memory_cleared = false;
+		break;
 		}
 	}
 
-printf("Return: %d\n", result);
-// TEST_ASSERT_EQ_UINT( "Test that the rest of the memory was cleared", memory_nonzero, false);
+TEST_ASSERT_EQ_MEMORY( "Test that preset data was preserved", &mock_flash_memory[2], &preset_data, sizeof( PRESET_DATA ) );
+TEST_ASSERT_EQ_UINT( "Test that the rest of the memory was cleared", memory_cleared, true );
+TEST_ASSERT_EQ_UINT( "Test for expected return", result, FLASH_OK );
 
 } /* test_flash_erase_preserve_preset */
+
+
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
+*       test_get_sensor_frame                              			           *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Test get sensor frame      											   *
+*                                                                              *
+*******************************************************************************/
+void test_get_sensor_frame
+	(
+	void
+	)
+{
+/*------------------------------------------------------------------------------
+Cases
+------------------------------------------------------------------------------*/
+struct test_case
+	{
+	const char* description;
+	bool sensor_frame_size_initialized;
+	FLASH_STATUS expected_return;
+	};
+
+struct test_case cases[] =
+	{
+		{ "Sensor frame size initialized", true, FLASH_OK },
+		{ "Incorrect/uninitialized sensor frame size", false, FLASH_SENSOR_RETRIEVE_ERROR },
+	};
+
+for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); test_num++ )
+	{
+	TEST_begin_nested_case( cases[test_num].description );
+
+	/*------------------------------------------------------------------------------
+	Local variables
+	------------------------------------------------------------------------------*/
+	HFLASH_BUFFER flash_handle;
+	uint8_t max_sensor_frame_size = 70 + sizeof( IMU_CONVERTED ) + sizeof( STATE_ESTIMATION );
+	uint8_t buffer[max_sensor_frame_size];
+	uint32_t time = 123; 
+
+	/*------------------------------------------------------------------------------
+	Set up mocks/stubs
+	------------------------------------------------------------------------------*/
+	reset_stubs();
+	reset_mock_flash();
+	preset_data = get_default_configs();
+	if ( cases[test_num].sensor_frame_size_initialized )
+		{
+		sensor_frame_size_init();
+		}
+	else
+		{
+		sensor_frame_size = 0; /* default uninitialized value */
+		}
+
+	/*------------------------------------------------------------------------------
+	Call FUT
+	------------------------------------------------------------------------------*/
+	FLASH_STATUS result = get_sensor_frame
+		(
+		&sensor_data,
+		buffer,
+		time
+		);
+
+	/*------------------------------------------------------------------------------
+	Verify results
+	------------------------------------------------------------------------------*/
+	TEST_ASSERT_EQ_UINT( "Test for expected get_sensor_frame return", result, cases[test_num].expected_return );
+
+	TEST_end_nested_case();
+	}
+
+} /* test_get_sensor_frame */
 
 
 /*******************************************************************************
@@ -358,6 +433,7 @@ unit_test tests[] =
 	{ "Read Preset Test", test_read_preset },
 	{ "Store Frame Test", test_store_frame },
 	{ "Flash Erase Preserve Preset Test", test_flash_erase_preserve_preset },
+	{ "Get Sensor Frame Test", test_get_sensor_frame },
 	};
 
 /*------------------------------------------------------------------------------
