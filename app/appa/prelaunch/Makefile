@@ -41,24 +41,34 @@ MOD_DIR = $(ROOT_DIR)/mod
 ################################################################
 
 # C sources
-TEST_SOURCES =                                   				  \
-mock/MOCK_hal.c													  \
-mock/usb.c													      \
-mock/preset.c													\
+TEST_SOURCES =   												\
+mock/led.c														\
+test_prelaunch.c												\
 mock/sensor.c													\
 mock/MOCK_flight.c													\
-test_prelaunch.c												\
+mock/MOCK_hal.c													\
+mock/usb.c														\
+mock/fin_calib.c												\
+mock/ignition.c													\
+mock/servo.c													\
+mock/common.c													\
+mock/MOCK_flash.c													\
+mock/sdr_error.c												\
+mock/mock_huart.c												\
 
 # Tested Source Files
 COV_C_SOURCES =													  \
 $(ROOT_DIR)/app/flight/appa/rev2/prelaunch.c 
+
+EXCLUDED_SOURCES=												  \
+$(ROOT_DIR)/app/flight/appa/rev2/fin_calib.c
 
 # Framework
 FRAMEWORK_SOURCES =												  \
 $(ROOT_DIR)/test/framework/src/test_assert.c          	  		  \
 $(ROOT_DIR)/test/framework/src/test_runner.c
 
-C_SOURCES = $(TEST_SOURCES) $(COV_C_SOURCES) $(FRAMEWORK_SOURCES)
+C_SOURCES = $(filter-out $(EXCLUDED_SOURCES), $(TEST_SOURCES) $(COV_C_SOURCES) $(FRAMEWORK_SOURCES))
 
 ################################################################
 # Compiler 
@@ -87,13 +97,15 @@ C_INCLUDES =                                           \
 -I$(ROOT_DIR)/init/terminal/config/Inc				   \
 -I$(ROOT_DIR)/test/framework/src                       \
 -I$(ROOT_DIR)/test/app/appa/prelaunch/mock	   	   \
--I$(ROOT_DIR)/mod/common							   \
+-I$(ROOT_DIR)/mod/buzzer								\
+-I$(ROOT_DIR)/mod/commands								\
 -I$(ROOT_DIR)/mod/servo								   \
--I$(ROOT_DIR)/mod/usb								   \
+-I$(ROOT_DIR)/mod/ignition								   \
 -I$(ROOT_DIR)/mod/flash								   \
 -I$(ROOT_DIR)/mod/sensor							   \
 -I$(ROOT_DIR)/mod/imu								   \
--I$(ROOT_DIR)/lib/util
+-I$(ROOT_DIR)/lib/util									\
+-I$(ROOT_DIR)/mod/led								   								
 
 # Preprocessor definitions
 # Don't worry about the defs and flags unless you know what you're doing
@@ -101,7 +113,8 @@ C_DEFS =         \
 -DUSE_HAL_DRIVER \
 -DSTM32H750xx    \
 -DFLIGHT_COMPUTER \
--DUNIT_TEST
+-DUNIT_TEST	\
+-DA0002_REV1
 
 CFLAGS = $(C_INCLUDES) $(C_DEFS) $(OPT) -Wall -g
 
@@ -122,10 +135,13 @@ all: clean $(BUILD_DIR)/$(TARGET)
 
 # Setup the path for c files
 OBJECTS = $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
-vpath %.c $(sort $(dir $(C_SOURCES)))
+# This is to make sure fin_calib.c is excluded 
+vpath %.c ./mock
+vpath %.c $(ROOT_DIR)/app/flight/appa/rev2
+vpath %.c $(ROOT_DIR)/test/framework/src
 
 $(BUILD_DIR)/%.o: %.c $(BUILD_DIR)
-	$(CC) -c $(CFLAGS) $< -o $@
+	$(CC) -c -w $(CFLAGS) $< -o $@
 
 $(BUILD_DIR)/$(TARGET): $(OBJECTS) 
 	$(CC) $(OBJECTS) -o $@ -lgcov -lm

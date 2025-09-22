@@ -25,7 +25,7 @@ mocked_return = statusToReturn;
 }
 
 void HAL_Delay(uint32_t Delay) {
-
+    
 }
 
 HAL_StatusTypeDef HAL_UART_Receive_IT 
@@ -60,13 +60,13 @@ HAL_StatusTypeDef HAL_UART_Transmit
 return mocked_return;
 }
 
-void error_fail_fast
-    (
-    volatile ERROR_CODE error_code
-    )
-{
-last_error = error_code;
-}
+// void error_fail_fast
+//     (
+//     volatile ERROR_CODE error_code
+//     )
+// {
+// last_error = error_code;
+// }
 
 ERROR_CODE get_last_error
     (

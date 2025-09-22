@@ -16,6 +16,7 @@ Standard Includes
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <setjmp.h>
 
 
 /*------------------------------------------------------------------------------
@@ -26,6 +27,8 @@ Project Includes
 #include "sensor.h"
 #include "imu.h"
 #include "test.h"
+#include "usb.h"
+#include "commands.h"
 
 /*------------------------------------------------------------------------------
 Global Variables 
@@ -38,6 +41,23 @@ PRESET_DATA preset_data;
 FLIGHT_COMP_STATE_TYPE flight_computer_state;
 
 /*------------------------------------------------------------------------------
+Local Variables
+------------------------------------------------------------------------------*/
+/* breaking control flow */
+int jmp_val; 
+jmp_buf env_buffer;
+int do_jump = 0; // All mocks check do_jump == 1 before jumping
+int do_fake_checksum = 0;
+int do_fail = 0;
+int do_detect = 0;
+int do_switch = 0;
+int do_receive = 0;
+int call_count = 0;
+int do_drogue = 1;
+int do_main = 1;
+int skip_loop = 0;
+
+/*------------------------------------------------------------------------------
 Macros
 ------------------------------------------------------------------------------*/
 
@@ -45,96 +65,297 @@ Macros
 /*------------------------------------------------------------------------------
 Procedures: Tests // Define the tests used here
 ------------------------------------------------------------------------------*/
+void test_check_config_validity() {
+	PRESET_DATA preset_data_check_config;
 
+	/* Test One */
+	// preset_data_check_config.config_settings.enabled_features = 255u;
+	// preset_data_check_config.config_settings.enabled_features |= ACTIVE_PITCH_YAW_CONTROL_ENABLED;
+	static bool end_jmp_back = false;
 
-/*******************************************************************************
-*                                                                              *
-* PROCEDURE:                                                                   * 
-*       test_prelaunch		  			                    			       *
-*                                                                              *
-* DESCRIPTION:                                                                 * 
-*       Test the prelaunch process in 			Canard.						   *
-*                                                                              *
-*******************************************************************************/
-void test_prelaunch 
-	(
-	void
-    )
-{
-/* Step: Set up test */
-#define NUM_CASES_PRELAUNCH 6
-#define NUM_EXPECTED_SAMPLES 11
+	// TODO: Fix this stack overflowing
+	// do_jump = 1;
+	// jmp_val = setjmp(env_buffer); // Set jump back location
+	// if (!end_jmp_back) {
+	// 	end_jmp_back = true;
+		
+	// 	bool test_one = check_config_validity(&preset_data_check_config);
 
-/* Step: Set up test vectors (inputs, expected) */
-int inputsAcc[NUM_CASES_PRELAUNCH][NUM_EXPECTED_SAMPLES] = 
-{
-#include "cases/acc_inputs.txt"
-};
+	// 	_test_assert(ASSERT_TYPE_EQ, "Caught invalid config (This test jumps out of an infinite loop)", test_one, __LINE__, __FILE__);
+	// }
+	/* -------- */
 
-int inputsBaro[NUM_CASES_PRELAUNCH][NUM_EXPECTED_SAMPLES] = 
-{
-#include "cases/baro_inputs.txt"
-};
+	/* Test Two */
+	preset_data_check_config.config_settings.enabled_features = 0u;
+	end_jmp_back = false;
 
-int expected[NUM_CASES_PRELAUNCH][NUM_EXPECTED_SAMPLES] = 
-{
-#include "cases/launch_detect_expected.txt"
-};
+	jmp_val = setjmp(env_buffer); // Set jump back location
+	if (!end_jmp_back) {
+		end_jmp_back = true;
+		
+		bool test_two = check_config_validity(&preset_data_check_config);
 
-preset_data.config_settings.launch_detect_accel_threshold = 6;
-preset_data.config_settings.launch_detect_baro_threshold = 1000;
-preset_data.config_settings.launch_detect_accel_samples = 10;
-preset_data.config_settings.launch_detect_baro_samples = 10;
-
-/* Step: Execute tests */
-for ( int test_num = 0; test_num < NUM_CASES_PRELAUNCH; test_num++ )
-	{
-	TEST_begin_nested_case( "" );
-	if( test_num == 0 )
-		{
-		flight_computer_state = FC_STATE_IDLE;
-		}
-	else
-		{
-		flight_computer_state = FC_STATE_LAUNCH_DETECT;
-		}
-	
-	if( test_num > 1 )
-		{
-		preset_data.config_settings.enabled_features |= LAUNCH_DETECT_ACCEL_ENABLED;
-		}
-
-	if( test_num > 3 )
-		{
-		preset_data.config_settings.enabled_features |= LAUNCH_DETECT_BARO_ENABLED;
-		}
-
-	for ( int i = 0; i < NUM_EXPECTED_SAMPLES; i++ )
-		{
-			sensor_data.imu_data.imu_converted.accel_x = inputsAcc[test_num][i];
-			sensor_data.imu_data.imu_converted.accel_y = inputsAcc[test_num][i];
-			sensor_data.imu_data.imu_converted.accel_z = inputsAcc[test_num][i];
-			sensor_data.baro_pressure = inputsBaro[test_num][i];
-			//pre_launch_loop();
-			TEST_ASSERT_EQ_SINT( "Test that the accel flag is/isn't set.", flight_computer_state == FC_STATE_FLIGHT, expected[test_num][i] );
-
-			if( i == 0 && test_num == 1 )
-				{
-				TEST_ASSERT_EQ_SINT( "Test that the error code matches the expected.", get_last_error(), ERROR_UNSUPPORTED_OP_ERROR );
-				}
-		}
-	/* reset test */
-	sensor_data.imu_data.imu_converted.accel_x = 0;
-	sensor_data.imu_data.imu_converted.accel_y = 0;
-	sensor_data.imu_data.imu_converted.accel_z = 0;
-	sensor_data.baro_pressure = 0;
-	//pre_launch_loop();
-
-	TEST_end_nested_case();
+		_test_assert(ASSERT_TYPE_EQ, "Verified config", test_two, __LINE__, __FILE__);
 	}
+	/* -------- */
+}
 
-} /* test_prelaunch */
+void test_preset_cmd_execute() {
+	HFLASH_BUFFER* flash_handle;
+	uint32_t* flash_address;
 
+	/* PRESET_UPLOAD */
+	uint8_t subcommand_code = 0x01;
+	FLASH_STATUS test_one = preset_cmd_execute(&subcommand_code, &flash_handle, &flash_address);
+	_test_assert_sint(ASSERT_TYPE_EQ, "Working Upload Preset with not matching checksum", test_one, FLASH_OK, __LINE__, __FILE__);
+	
+	do_fake_checksum = 1;
+	FLASH_STATUS test_two = preset_cmd_execute(&subcommand_code, &flash_handle, &flash_address);
+	_test_assert_sint(ASSERT_TYPE_EQ, "Working Upload Preset with matching checksum", test_two, FLASH_OK, __LINE__, __FILE__);
+	
+	/* PRESET DOWNLOAD */
+	subcommand_code = 0x02;
+	FLASH_STATUS test_three = preset_cmd_execute(&subcommand_code, &flash_handle, &flash_address);
+	_test_assert_sint(ASSERT_TYPE_EQ, "Working Download Preset", test_three, FLASH_OK, __LINE__, __FILE__);
+	
+	do_fail = 1;
+	FLASH_STATUS test_four = preset_cmd_execute(&subcommand_code, &flash_handle, &flash_address);
+	_test_assert_sint(ASSERT_TYPE_EQ, "Failing Download Preset", test_four, FLASH_FAIL, __LINE__, __FILE__);
+	
+	/* PRESET VERIFY */
+	do_fail = 0;
+	subcommand_code = 0x03;
+	FLASH_STATUS test_five = preset_cmd_execute(&subcommand_code, &flash_handle, &flash_address);
+	_test_assert_sint(ASSERT_TYPE_EQ, "Working Verify Preset", test_five, FLASH_OK, __LINE__, __FILE__);
+
+	do_fail = 1;
+	FLASH_STATUS test_six = preset_cmd_execute(&subcommand_code, &flash_handle, &flash_address);
+	_test_assert_sint(ASSERT_TYPE_EQ, "Working Verify Preset", test_six, FLASH_OK, __LINE__, __FILE__);
+
+	/* UKNOWN SUBCOMMAND */
+	subcommand_code = 0x04;
+	FLASH_STATUS test_seven = preset_cmd_execute(&subcommand_code, &flash_handle, &flash_address);
+	_test_assert_sint(ASSERT_TYPE_EQ, "Unrecognized command code", test_seven, FLASH_FAIL, __LINE__, __FILE__);
+}
+
+void test_prelaunch_terminal() {
+	uint8_t firmware_code = 0x00;
+	FLASH_STATUS* flash_status;
+	HFLASH_BUFFER* flash_handle;
+	uint32_t* flash_address;
+	uint8_t* gps_msg_byte;
+	SENSOR_STATUS* sensor_status;
+
+	/* Test One */
+	USB_STATUS test_one = prelaunch_terminal(&firmware_code, &flash_status, &flash_handle, &flash_address, &gps_msg_byte, &sensor_status);
+	_test_assert_sint(ASSERT_TYPE_EQ, "Detecting no USB and do not enter flight mode", test_one, USB_OK, __LINE__, __FILE__);
+	call_count = 0;
+	/* -------- */
+
+	/* Test Connect */
+	do_detect = 1;
+	usb_receive_steps_count = 1;
+	usb_receive_steps[0] = (USB_RECEIVE_STEP){.action = BUFFER, .buffer_val = CONNECT_OP};
+	USB_STATUS test_connect_one = prelaunch_terminal(&firmware_code, &flash_status, &flash_handle, &flash_address, &gps_msg_byte, &sensor_status);
+	_test_assert_sint(ASSERT_TYPE_EQ, "Detecting USB, sending connect op, and do not enter flight mode", test_connect_one, USB_OK, __LINE__, __FILE__);
+	call_count = 0;
+	/* ------------ */
+
+	/* Test Sensor */
+	do_detect = 1;
+	usb_receive_steps_count = 2;
+	usb_receive_steps[0] = (USB_RECEIVE_STEP){.action = BUFFER, .buffer_val = SENSOR_OP};
+	usb_receive_steps[1] = (USB_RECEIVE_STEP){.action = RETURN, .return_val = USB_OK};
+	USB_STATUS test_sensor_one = prelaunch_terminal(&firmware_code, &flash_status, &flash_handle, &flash_address, &gps_msg_byte, &sensor_status);
+	_test_assert_sint(ASSERT_TYPE_EQ, "Detecting USB, sending sensor op, and do not enter flight mode", test_sensor_one, USB_OK, __LINE__, __FILE__);
+	call_count = 0;
+	
+	do_detect = 1;
+	usb_receive_steps_count = 2;
+	usb_receive_steps[0] = (USB_RECEIVE_STEP){.action = BUFFER, .buffer_val = SENSOR_OP};
+	usb_receive_steps[1] = (USB_RECEIVE_STEP){.action = RETURN, .return_val = USB_FAIL};
+	USB_STATUS test_sensor_two = prelaunch_terminal(&firmware_code, &flash_status, &flash_handle, &flash_address, &gps_msg_byte, &sensor_status);
+	_test_assert_sint(ASSERT_TYPE_EQ, "Detecting USB, sending sensor op, usb failing, and do not enter flight mode", test_sensor_two, USB_OK, __LINE__, __FILE__);
+	call_count = 0;
+	/* ----------- */
+
+	/* Test Fin */
+	do_detect = 1;
+	do_fail = 0;
+	usb_receive_steps_count = 1;
+	usb_receive_steps[0] = (USB_RECEIVE_STEP){.action = BUFFER, .buffer_val = FIN_OP};
+	USB_STATUS test_fin_one = prelaunch_terminal(&firmware_code, &flash_status, &flash_handle, &flash_address, &gps_msg_byte, &sensor_status);
+	_test_assert_sint(ASSERT_TYPE_EQ, "Detecting USB, sending fin op, and do not enter flight mode", test_fin_one, USB_OK, __LINE__, __FILE__);
+	call_count = 0;
+
+	do_detect = 1;
+	do_fail = 1;
+	usb_receive_steps_count = 1;
+	usb_receive_steps[0] = (USB_RECEIVE_STEP){.action = BUFFER, .buffer_val = FIN_OP};
+	USB_STATUS test_fin_two = prelaunch_terminal(&firmware_code, &flash_status, &flash_handle, &flash_address, &gps_msg_byte, &sensor_status);
+	_test_assert_sint(ASSERT_TYPE_EQ, "Detecting USB, sending fin op, failing usb, failing flash, and do not enter flight mode", test_fin_two, USB_FAIL, __LINE__, __FILE__);
+	call_count = 0;
+	do_fail = 0;
+	/* -------- */
+
+	/* Test Flash */
+	do_detect = 1;
+	usb_receive_steps_count = 2;
+	usb_receive_steps[0] = (USB_RECEIVE_STEP){.action = BUFFER, .buffer_val = FLASH_OP};
+	usb_receive_steps[1] = (USB_RECEIVE_STEP){.action = RETURN, .return_val = USB_OK};
+	USB_STATUS test_flash_one = prelaunch_terminal(&firmware_code, &flash_status, &flash_handle, &flash_address, &gps_msg_byte, &sensor_status);
+	_test_assert_sint(ASSERT_TYPE_EQ, "Detecting USB, sending flash op, and do not enter flight mode", test_flash_one, USB_OK, __LINE__, __FILE__);
+	call_count = 0;
+
+	do_detect = 1;
+	usb_receive_steps_count = 2;
+	usb_receive_steps[0] = (USB_RECEIVE_STEP){.action = BUFFER, .buffer_val = FLASH_OP};
+	usb_receive_steps[1] = (USB_RECEIVE_STEP){.action = RETURN, .return_val = USB_FAIL};
+	USB_STATUS test_flash_two = prelaunch_terminal(&firmware_code, &flash_status, &flash_handle, &flash_address, &gps_msg_byte, &sensor_status);
+	// TODO: verify USB_OK is correct. I think it is because transmit passes after?
+	_test_assert_sint(ASSERT_TYPE_EQ, "Detecting USB, sending flash op, failing usb, and do not enter flight mode", test_flash_two, USB_OK, __LINE__, __FILE__);
+	call_count = 0;
+
+	do_detect = 1;
+	usb_receive_steps_count = 2;
+	usb_receive_steps[0] = (USB_RECEIVE_STEP){.action = BUFFER, .buffer_val = FLASH_OP};
+	usb_receive_steps[1] = (USB_RECEIVE_STEP){.action = RETURN, .return_val = USB_FAIL};
+	do_fail = 1;
+	USB_STATUS test_flash_three = prelaunch_terminal(&firmware_code, &flash_status, &flash_handle, &flash_address, &gps_msg_byte, &sensor_status);
+	_test_assert_sint(ASSERT_TYPE_EQ, "Detecting USB, sending flash op, failing usb, failing usb transmit, and do not enter flight mode", test_flash_three, USB_FAIL, __LINE__, __FILE__);
+	call_count = 0;
+	do_fail = 0;
+	/* -------- */
+
+	/* Test Preset */
+	do_detect = 1;
+	usb_receive_steps_count = 2;
+	usb_receive_steps[0] = (USB_RECEIVE_STEP){.action = BUFFER, .buffer_val = PRESET_OP};
+	usb_receive_steps[1] = (USB_RECEIVE_STEP){.action = RETURN, .return_val = USB_OK};
+	USB_STATUS test_preset_one = prelaunch_terminal(&firmware_code, &flash_status, &flash_handle, &flash_address, &gps_msg_byte, &sensor_status);
+	_test_assert_sint(ASSERT_TYPE_EQ, "Detecting USB, sending preset op, and do not enter flight mode", test_preset_one, USB_OK, __LINE__, __FILE__);
+	call_count = 0;
+	
+	do_detect = 1;
+	usb_receive_steps_count = 2;
+	usb_receive_steps[0] = (USB_RECEIVE_STEP){.action = BUFFER, .buffer_val = PRESET_OP};
+	usb_receive_steps[1] = (USB_RECEIVE_STEP){.action = RETURN, .return_val = USB_FAIL};
+	USB_STATUS test_preset_two = prelaunch_terminal(&firmware_code, &flash_status, &flash_handle, &flash_address, &gps_msg_byte, &sensor_status);
+	// TODO: verify USB_OK is correct. I think it is because transmit passes after?
+	_test_assert_sint(ASSERT_TYPE_EQ, "Detecting USB, sending preset op, failing usb, and do not enter flight mode", test_preset_two, USB_OK, __LINE__, __FILE__);
+	call_count = 0;
+
+	do_detect = 1;
+	usb_receive_steps_count = 2;
+	usb_receive_steps[0] = (USB_RECEIVE_STEP){.action = BUFFER, .buffer_val = PRESET_OP};
+	usb_receive_steps[1] = (USB_RECEIVE_STEP){.action = RETURN, .return_val = USB_FAIL};
+	do_fail = 1;
+	USB_STATUS test_preset_three = prelaunch_terminal(&firmware_code, &flash_status, &flash_handle, &flash_address, &gps_msg_byte, &sensor_status);
+	_test_assert_sint(ASSERT_TYPE_EQ, "Detecting USB, sending preset op, failing usb, failing usb transmit, and do not enter flight mode", test_preset_three, USB_FAIL, __LINE__, __FILE__);
+	call_count = 0;
+	do_fail = 0;
+	/* ----------- */
+
+	/* Test Servo */
+	do_detect = 1;
+	usb_receive_steps_count = 2;
+	usb_receive_steps[0] = (USB_RECEIVE_STEP){.action = BUFFER, .buffer_val = SERVO_OP};
+	usb_receive_steps[1] = (USB_RECEIVE_STEP){.action = RETURN, .return_val = USB_OK};
+	USB_STATUS test_servo_one = prelaunch_terminal(&firmware_code, &flash_status, &flash_handle, &flash_address, &gps_msg_byte, &sensor_status);
+	_test_assert_sint(ASSERT_TYPE_EQ, "Detecting USB, sending servo op, and do not enter flight mode", test_servo_one, USB_OK, __LINE__, __FILE__);
+	call_count = 0;
+
+	do_detect = 1;
+	usb_receive_steps_count = 2;
+	usb_receive_steps[0] = (USB_RECEIVE_STEP){.action = BUFFER, .buffer_val = SERVO_OP};
+	usb_receive_steps[1] = (USB_RECEIVE_STEP){.action = RETURN, .return_val = USB_FAIL};
+	USB_STATUS test_servo_two = prelaunch_terminal(&firmware_code, &flash_status, &flash_handle, &flash_address, &gps_msg_byte, &sensor_status);
+	_test_assert_sint(ASSERT_TYPE_EQ, "Detecting USB, sending servo op, failing usb, and do not enter flight mode", test_servo_two, USB_FAIL, __LINE__, __FILE__);
+	call_count = 0;
+
+	do_detect = 1;
+	usb_receive_steps_count = 2;
+	usb_receive_steps[0] = (USB_RECEIVE_STEP){.action = BUFFER, .buffer_val = SERVO_OP};
+	usb_receive_steps[1] = (USB_RECEIVE_STEP){.action = BUFFER, .buffer_val = 0x01};
+	USB_STATUS test_servo_three = prelaunch_terminal(&firmware_code, &flash_status, &flash_handle, &flash_address, &gps_msg_byte, &sensor_status);
+	_test_assert_sint(ASSERT_TYPE_EQ, "Detecting USB, sending servo op, passing servo status, and do not enter flight mode", test_servo_three, USB_OK, __LINE__, __FILE__);
+	call_count = 0;
+	/* ---------- */
+
+	/* Test Fail USB */
+	do_detect = 1;
+	usb_receive_steps_count = 1;
+	usb_receive_steps[0] = (USB_RECEIVE_STEP){.action = RETURN, .return_val = USB_FAIL};
+	USB_STATUS test_fail_usb = prelaunch_terminal(&firmware_code, &flash_status, &flash_handle, &flash_address, &gps_msg_byte, &sensor_status);
+	_test_assert_sint(ASSERT_TYPE_EQ, "Detecting USB, failing usb, and do not enter flight mode", test_fail_usb, USB_FAIL, __LINE__, __FILE__);
+	call_count = 0;
+	/* ------------- */
+
+	/* Test Unknown OP */
+	do_detect = 1;
+	usb_receive_steps_count = 1;
+	usb_receive_steps[0] = (USB_RECEIVE_STEP){.action = BUFFER, .buffer_val = 0x09};
+	USB_STATUS test_unknown_one = prelaunch_terminal(&firmware_code, &flash_status, &flash_handle, &flash_address, &gps_msg_byte, &sensor_status);
+	_test_assert_sint(ASSERT_TYPE_EQ, "Detecting USB, sending unknown op, and do not enter flight mode", test_unknown_one, USB_OK, __LINE__, __FILE__);
+	call_count = 0;
+	/* --------------- */
+
+	/* Test Arm Flight Computer */
+	do_detect = 0;
+	do_switch = 1;
+	preset_data.config_settings.enabled_features = 0u;
+	USB_STATUS test_arm_fc_one = prelaunch_terminal(&firmware_code, &flash_status, &flash_handle, &flash_address, &gps_msg_byte, &sensor_status);
+	_test_assert_sint(ASSERT_TYPE_EQ, "Do not detect USB, enter flight mode, pass config check, do not dual deploy", test_arm_fc_one, USB_OK, __LINE__, __FILE__);
+	call_count = 0;
+
+	// TODO: how to break out the loop and return valid?
+	// do_detect = 0;
+	// do_switch = 1;
+	// preset_data.config_settings.enabled_features = ACTIVE_PITCH_YAW_CONTROL_ENABLED;
+	// USB_STATUS test_arm_fc_two = prelaunch_terminal(&firmware_code, &flash_status, &flash_handle, &flash_address, &gps_msg_byte, &sensor_status);
+	// _test_assert_sint(ASSERT_TYPE_EQ, "Do not detect USB, enter flight mode, fail config check, do not dual deploy", test_arm_fc_two, USB_OK, __LINE__, __FILE__);
+	// call_count = 0;
+
+	do_detect = 0;
+	do_switch = 1;
+	preset_data.config_settings.enabled_features = DUAL_DEPLOY_ENABLED;
+	USB_STATUS test_dual_deploy_one = prelaunch_terminal(&firmware_code, &flash_status, &flash_handle, &flash_address, &gps_msg_byte, &sensor_status);
+	_test_assert_sint(ASSERT_TYPE_EQ, "Do not detect USB, enter flight mode, fail config check, do dual deploy", test_dual_deploy_one, USB_OK, __LINE__, __FILE__);
+	call_count = 0;
+
+	do_detect = 0;
+	do_switch = 1;
+	do_drogue = 0;
+	preset_data.config_settings.enabled_features = DUAL_DEPLOY_ENABLED;
+	USB_STATUS test_dual_deploy_two = prelaunch_terminal(&firmware_code, &flash_status, &flash_handle, &flash_address, &gps_msg_byte, &sensor_status);
+	_test_assert_sint(ASSERT_TYPE_EQ, "Do not detect USB, enter flight mode, fail config check, do dual deploy with drogue fail", test_dual_deploy_two, USB_OK, __LINE__, __FILE__);
+	call_count = 0;
+
+	do_detect = 0;
+	do_switch = 1;
+	do_drogue = 1;
+	do_main = 0;
+	preset_data.config_settings.enabled_features = DUAL_DEPLOY_ENABLED;
+	USB_STATUS test_dual_deploy_three = prelaunch_terminal(&firmware_code, &flash_status, &flash_handle, &flash_address, &gps_msg_byte, &sensor_status);
+	_test_assert_sint(ASSERT_TYPE_EQ, "Do not detect USB, enter flight mode, fail config check, do dual deploy with main fail", test_dual_deploy_three, USB_OK, __LINE__, __FILE__);
+	call_count = 0;
+	/* -------------------------*/
+}
+
+void test_prelaunch_loop() {
+	uint8_t firmware_code = 0x00;
+	FLASH_STATUS* flash_status;
+	HFLASH_BUFFER* flash_handle;
+	uint32_t* flash_address;
+	uint8_t* gps_msg_byte;
+	SENSOR_STATUS* sensor_status;
+
+	skip_loop = 1;
+	pre_launch_loop(&firmware_code, &flash_status, &flash_handle, &flash_address, &gps_msg_byte, &sensor_status);
+	//_test_assert_sint(ASSERT_TYPE_EQ, "Invalid Config, do not enter loop", fc_state, FC_STATE_INIT, __LINE__, __FILE__);
+	skip_loop = 0;
+
+}
 
 /*******************************************************************************
 *                                                                              *
@@ -158,12 +379,17 @@ memset( &sensor_data, 0, sizeof( SENSOR_DATA ) );
 memset( &preset_data, 0, sizeof( PRESET_DATA ) );
 memset( &flight_computer_state, 0, sizeof( FLIGHT_COMP_STATE_TYPE ) );
 
+memset(&env_buffer, 0, sizeof(jmp_buf));
+
 /*------------------------------------------------------------------------------
 Test Cases
 ------------------------------------------------------------------------------*/
 unit_test tests[] =
 	{
-	{ "prelaunch", test_prelaunch }
+	{ "check config validity", test_check_config_validity },
+	//{ "preset cmd execute", test_preset_cmd_execute }, TODO: this is stack overflowing
+	{ "prelaunch terminal", test_prelaunch_terminal},
+	//{ "prelaunch loop", test_prelaunch_loop}
 	};
 
 /*------------------------------------------------------------------------------
