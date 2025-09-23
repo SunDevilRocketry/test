@@ -16,7 +16,7 @@ void led_set_color(LED_COLOR_CODES color) {
         set_red_count += 1;
     } 
 
-    if (set_red_count == 1) {
+    if (set_red_count == 2) {
         // Determine stuck in loop
         // Do long jump 
         if (do_jump == 1) {

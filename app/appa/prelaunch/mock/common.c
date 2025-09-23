@@ -38,6 +38,8 @@
 ------------------------------------------------------------------------------*/
 
 extern int do_fake_checksum;
+extern int skip_loop;
+extern FLIGHT_COMP_STATE_TYPE flight_computer_state;
 
 /*******************************************************************************
 *                                                                              *
@@ -73,11 +75,20 @@ if (do_fake_checksum == 1) {
 *       code to the error handler                                              *
 *                                                                              *
 *******************************************************************************/
+int error_fail_fast_count = 0;
 void error_fail_fast
     (
     volatile ERROR_CODE error_code
     )
 {
+    if (skip_loop == 1) {
+        if (error_fail_fast_count == 1) {
+            flight_computer_state = FC_STATE_INIT;
+        } else {
+            error_fail_fast_count += 1;
+        }
+    }
+    
 Error_Handler(error_code);
 
 } /* error_fail_fast */
