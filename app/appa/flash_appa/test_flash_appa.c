@@ -184,15 +184,16 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 
 	HFLASH_BUFFER flash_handle;
 	uint32_t address;
+	PRESET_DATA test_presets;
 	
 	flash_read_return = cases[test_num].flash_read_return;
-	preset_data = get_default_configs();
+	test_presets = get_default_configs();
 
 	if ( cases[test_num].is_preset_stored )
 		{
 		mock_flash_memory[0] = 1;
 		mock_flash_memory[1] = 0;
-		memcpy( &mock_flash_memory[2], &preset_data, sizeof ( PRESET_DATA ) );
+		memcpy( &mock_flash_memory[2], &test_presets, sizeof ( PRESET_DATA ) );
 		}
 
 	/*------------------------------------------------------------------------------
@@ -209,7 +210,7 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 	/*------------------------------------------------------------------------------
 	Verify results
 	------------------------------------------------------------------------------*/
-	TEST_ASSERT_EQ_MEMORY( "Test that read preset correctly loads the config preset", &mock_flash_memory[2], flash_handle.pbuffer + 2, sizeof( PRESET_DATA ) );
+	TEST_ASSERT_EQ_MEMORY( "Test that read preset correctly loads the config preset", &preset_data, &test_presets, sizeof( PRESET_DATA ) );
 	TEST_ASSERT_EQ_UINT( "Test for expected return value", result, cases[test_num].expected_return );
 
 	TEST_end_nested_case();
