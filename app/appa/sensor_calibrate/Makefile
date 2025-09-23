@@ -15,7 +15,7 @@ TARGET = sensor_calibrate
 ################################################################
 
 # Debug build?
-DEBUG = 1
+DEBUG = 0
 # Optimization
 OPT   = -Og
 
