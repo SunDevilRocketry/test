@@ -40,6 +40,7 @@
 extern int do_fake_checksum;
 extern int skip_loop;
 extern FLIGHT_COMP_STATE_TYPE flight_computer_state;
+extern bool error_fail_fast_called; 
 
 /*******************************************************************************
 *                                                                              *
@@ -81,6 +82,8 @@ void error_fail_fast
     volatile ERROR_CODE error_code
     )
 {
+    error_fail_fast_called = true;
+    
     if (skip_loop == 1) {
         if (error_fail_fast_count == 1) {
             flight_computer_state = FC_STATE_INIT;
