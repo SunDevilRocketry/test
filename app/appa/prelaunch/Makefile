@@ -15,7 +15,7 @@ TARGET = prelaunch
 ################################################################
 
 # Debug build?
-DEBUG = 1
+DEBUG = 0
 # Optimization
 OPT   = -Og
 
@@ -60,15 +60,12 @@ mock/mock_huart.c												\
 COV_C_SOURCES =													  \
 $(ROOT_DIR)/app/flight/appa/rev2/prelaunch.c 
 
-EXCLUDED_SOURCES=												  \
-$(ROOT_DIR)/app/flight/appa/rev2/fin_calib.c
-
 # Framework
 FRAMEWORK_SOURCES =												  \
 $(ROOT_DIR)/test/framework/src/test_assert.c          	  		  \
 $(ROOT_DIR)/test/framework/src/test_runner.c
 
-C_SOURCES = $(filter-out $(EXCLUDED_SOURCES), $(TEST_SOURCES) $(COV_C_SOURCES) $(FRAMEWORK_SOURCES))
+C_SOURCES = $(TEST_SOURCES) $(COV_C_SOURCES) $(FRAMEWORK_SOURCES)
 
 ################################################################
 # Compiler 
@@ -105,7 +102,10 @@ C_INCLUDES =                                           \
 -I$(ROOT_DIR)/mod/sensor							   \
 -I$(ROOT_DIR)/mod/imu								   \
 -I$(ROOT_DIR)/lib/util									\
--I$(ROOT_DIR)/mod/led								   								
+-I$(ROOT_DIR)/mod/led								   	\
+-I$(ROOT_DIR)/mod/common								\
+-I$(ROOT_DIR)/mod/sensor								\
+-I$(ROOT_DIR)/mod/usb
 
 # Preprocessor definitions
 # Don't worry about the defs and flags unless you know what you're doing

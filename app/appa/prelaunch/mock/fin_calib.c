@@ -1,4 +1,4 @@
-#include "fin_calib.h"
+#include "main.h"
 
 extern int do_fail;
 

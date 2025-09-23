@@ -29,6 +29,7 @@ Project Includes
 #include "test.h"
 #include "usb.h"
 #include "commands.h"
+#include "test_prelaunch.h"
 
 /*------------------------------------------------------------------------------
 Global Variables 
@@ -53,8 +54,22 @@ int do_drogue = 1;
 int do_main = 0;
 int skip_loop = 0;
 bool error_fail_fast_called = false;
+int usb_receive_steps_count = 0;
+USB_RECEIVE_STEP usb_receive_steps[10];
 
-// Function to reset all variables mocks use to determine return values
+/*------------------------------------------------------------------------------
+Local Variables
+------------------------------------------------------------------------------*/
+
+/*------------------------------------------------------------------------------
+Macros
+------------------------------------------------------------------------------*/
+
+/*------------------------------------------------------------------------------
+Procedures: Tests // Define the tests used here
+------------------------------------------------------------------------------*/
+
+/* Reset all variables mocks use to determine return values */
 void reset_test() {
 	do_jump = 0;
 	do_fake_checksum = 0;
@@ -71,23 +86,6 @@ void reset_test() {
 	flight_computer_state = FC_STATE_IDLE;
 	error_fail_fast_called = false;
 }
-
-/*------------------------------------------------------------------------------
-Local Variables
-------------------------------------------------------------------------------*/
-
-/*------------------------------------------------------------------------------
-Macros
-------------------------------------------------------------------------------*/
-#define test_assert_sint(assert_type, msg, actual, expected) \
-    _test_assert_sint(assert_type, msg, actual, expected, __LINE__, __FILE__)
-#define test_assert(assert_type, msg, actual) \
-    _test_assert(assert_type, msg, actual, __LINE__, __FILE__)
-
-
-/*------------------------------------------------------------------------------
-Procedures: Tests // Define the tests used here
-------------------------------------------------------------------------------*/
 
 void test_check_config_validity() {
 	PRESET_DATA preset_data_check_config;

@@ -36,6 +36,7 @@
 ------------------------------------------------------------------------------*/
 #include "main.h"
 #include "usb.h"
+#include "test_prelaunch.h"
 
 
 /*------------------------------------------------------------------------------
@@ -48,8 +49,8 @@ Global Variables
 ------------------------------------------------------------------------------*/
 extern int do_fail;
 extern int do_detect;
-int usb_receive_steps_count;
-USB_RECEIVE_STEP usb_receive_steps[10];
+extern int usb_receive_steps_count;
+extern USB_RECEIVE_STEP usb_receive_steps[10];
 extern int call_count;
 extern do_fake_checksum;
 
