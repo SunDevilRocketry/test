@@ -1,14 +1,14 @@
 ################################################################
 #
-# launch_detect unit tests (based on gcc)
+# fin_calib unit tests (based on gcc)
 #
 ################################################################
+
 
 ################################################################
 # target
 ################################################################
-TARGET = launch_detect
-
+TARGET = fin_calib
 
 ################################################################
 # build variables 
@@ -28,28 +28,33 @@ OPT   = -Og
 BUILD_DIR = build
 
 # base directory
-# depending on your test, this might not be correct.
+# depending on your test, this might not be correct. update the 
+# relative path based on where the test is compared to
+# Flight-Computer-Firmware.
 ROOT_DIR  = ../../../..
 
 # directory shortcuts for includes and sources
 LIB_DIR = $(ROOT_DIR)/lib
 MOD_DIR = $(ROOT_DIR)/mod
-
+INIT_DIR = $(ROOT_DIR)/init
 
 ################################################################
 # source 
 ################################################################
 
-# C sources
+# C sources (for test. driver, stubs, and others should go here)
 TEST_SOURCES =                                   				  \
-test_launch_detect.c                       					      \
+test_fin_calib.c                       					          \
 mock/MOCK_hal.c													  \
+mock/MOCK_usb.c                                                   \
+mock/MOCK_led.c 												  \
+mock/MOCK_servo.c                                                 \
 
-# Tested Source Files
+# Tested Source Files (anything that is being tested for coverage)
 COV_C_SOURCES =													  \
-$(ROOT_DIR)/app/canard/rev2/launch_detect.c 
+$(ROOT_DIR)/app/flight/appa/rev2/fin_calib.c 
 
-# Framework
+# Framework (just these files. do not modify.)
 FRAMEWORK_SOURCES =												  \
 $(ROOT_DIR)/test/framework/src/test_assert.c          	  		  \
 $(ROOT_DIR)/test/framework/src/test_runner.c
@@ -71,8 +76,8 @@ CC = gcc
 # This should include a path to all of the headers used in your test
 C_INCLUDES =                                           \
 -I.                                                    \
+-I$(ROOT_DIR)/app/flight/appa/rev2/					   \
 -I$(ROOT_DIR)/mod/gps/								   \
--I$(ROOT_DIR)/mod/common/							   \
 -I$(ROOT_DIR)/mod/sensor/							   \
 -I$(ROOT_DIR)/mod/imu/								   \
 -I$(LIB_DIR)                                           \
@@ -82,11 +87,14 @@ C_INCLUDES =                                           \
 -I$(LIB_DIR)/Drivers/CMSIS/Include                     \
 -I$(ROOT_DIR)/init/terminal/config/Inc				   \
 -I$(ROOT_DIR)/test/framework/src                       \
--I$(ROOT_DIR)/test/app/canard/launch_detect/mock	   \
+-I$(ROOT_DIR)/test/app/appa/fin_calib/mock	   	       \
+-I$(ROOT_DIR)/mod/common							   \
 -I$(ROOT_DIR)/mod/servo								   \
+-I$(ROOT_DIR)/mod/usb								   \
 -I$(ROOT_DIR)/mod/flash								   \
 -I$(ROOT_DIR)/mod/sensor							   \
 -I$(ROOT_DIR)/mod/imu								   \
+-I$(ROOT_DIR)/mod/led     							   \
 -I$(ROOT_DIR)/lib/util
 
 # Preprocessor definitions
@@ -95,11 +103,12 @@ C_DEFS =         \
 -DUSE_HAL_DRIVER \
 -DSTM32H750xx    \
 -DFLIGHT_COMPUTER \
--DUNIT_TEST
+-DUNIT_TEST       \
+-DA0002_REV2 
 
 CFLAGS = $(C_INCLUDES) $(C_DEFS) $(OPT) -Wall -g
 
-# Disable some warnings
+# Enable some warnings
 CFLAGS += -Wno-pointer-to-int-cast
 CFLAGS += -Wno-int-to-pointer-cast
 CFLAGS += -Wno-unused-function
@@ -112,15 +121,18 @@ CFLAGS += -fprofile-arcs
 ################################################################
 # Build all
 ################################################################
+# Wipe the build folder, then begin compilation
 all: clean $(BUILD_DIR)/$(TARGET)
 
 # Setup the path for c files
 OBJECTS = $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
 vpath %.c $(sort $(dir $(C_SOURCES)))
 
+# Compile
 $(BUILD_DIR)/%.o: %.c $(BUILD_DIR)
 	$(CC) -c $(CFLAGS) $< -o $@
 
+# Link
 $(BUILD_DIR)/$(TARGET): $(OBJECTS) 
 	$(CC) $(OBJECTS) -o $@ -lgcov -lm
 
@@ -130,6 +142,8 @@ $(BUILD_DIR):
 ################################################################
 # Build test
 ################################################################
+
+# Compile test, execute, and generate results
 test:
 	@echo THIS TEST MUST BE EXECUTED IN A BASH TERMINAL. CMD/PS do not work.
 	-rm -fR $(BUILD_DIR)
@@ -143,6 +157,7 @@ test:
 # clean up 
 ################################################################
 
+# Remove build folder
 clean:
 	-rm -fR $(BUILD_DIR)
 

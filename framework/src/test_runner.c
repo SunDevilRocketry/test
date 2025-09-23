@@ -39,6 +39,8 @@ Locals
 uint32_t passes_since_last_group;
 uint32_t fails_since_last_group;
 bool     in_test_group;
+bool     in_nested_case;
+uint32_t nested_case_num;
 
 /*------------------------------------------------------------------------------
 Macros
@@ -57,6 +59,61 @@ static void print_test_header
 /*------------------------------------------------------------------------------
 Procedures
 ------------------------------------------------------------------------------*/
+
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
+* 		TEST_begin_nested_case                                                 *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+* 		Begin the nested test case.                                            *
+*                                                                              *
+*******************************************************************************/
+void TEST_begin_nested_case
+    (
+    const char* case_description
+    )
+{
+
+if( in_test_group && !in_nested_case )
+    {
+    fprintf( outfile_handle, "-> BEGIN TEST CASE %d: %s\n\n", nested_case_num, case_description );
+    in_nested_case = true;
+    }
+else
+    {
+    _test_error( "Tried to open test case before closing previous." );
+    }
+
+} /* TEST_begin_nested_case */
+
+
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
+* 		TEST_end_nested_case                                                   *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+* 		End the test group.                                                    *
+*                                                                              *
+*******************************************************************************/
+void TEST_end_nested_case
+    (
+    void
+    )
+{
+if( in_test_group )
+    {
+    fprintf( outfile_handle, "-> END TEST CASE\n\n" );
+    in_nested_case = false;
+    nested_case_num++;
+    }
+else
+    {
+    _test_error( "Tried to close test case while not in one." );
+    }
+
+} /* TEST_end_nested_case */
 
 
 /*******************************************************************************
@@ -133,10 +190,11 @@ void _test_begin_group
     const char* group_description
     )
 {
-if( !in_test_group )
+if( !in_test_group && !in_nested_case )
     {
     fprintf( outfile_handle, "\n--BEGIN TEST GROUP: %s--\n\n", group_description );
     in_test_group = true;
+    nested_case_num = 0;
     }
 else
     {
@@ -169,6 +227,7 @@ if( in_test_group )
     passes_since_last_group = pass_counter;
     fails_since_last_group = fail_counter;
     in_test_group = false;
+    in_nested_case = false;
     }
 else
     {
@@ -209,9 +268,6 @@ fprintf( outfile_handle, "Passes: %d\n", pass_counter );
 fprintf( outfile_handle, "Fails:  %d\n", fail_counter );
 fprintf( outfile_handle, "Result: %s\n", status );
 fprintf( outfile_handle, "----------------------------------------\n" );
-
-/* will be zero with no fails. Else, returns a negative error code indicating num fails */
-exit( -1 * fail_counter );
 
 } /* _test_finalize */
 
@@ -351,6 +407,8 @@ fprintf( outfile_handle, "\n----------------------------------------\n" );
 fprintf( outfile_handle, "----------------Results-----------------\n" );
 fprintf( outfile_handle, "----------------------------------------\n\n" );
 
+_test_begin_group( "Check test environment" );
+
 /* Requires an ISO C compiler. We use features up to C17. */
 #if( defined( __STDC__ ) && __STDC__ )
 TEST_ASSERT_GE_UINT( "Test Environment: ISO C standard is C17 or greater", __STDC_VERSION__, 201700L );
@@ -358,11 +416,13 @@ TEST_ASSERT_GE_UINT( "Test Environment: ISO C standard is C17 or greater", __STD
 TEST_ASSERT_TRUE( "Test Environment: ISO C standard not defined", false );
 #endif
 
-/* Only GCC 12+ is supported at the moment. Future update could expand to clang if desired. */
+/* Only GCC 8+ is supported at the moment. Future update could expand to clang if desired. */
 #if( defined( __GNUC__ ) && __GNUC__ )
 TEST_ASSERT_GE_UINT( "Test Environment: Compiler is supported GCC version", __GNUC__, TEST_MIN_SUPPORTED_GCC_VERSION );
 #else
 TEST_ASSERT_TRUE( "Test Environment: Unsupported Compiler", false );
 #endif
+
+_test_end_group( "Check test environment" );
 
 }

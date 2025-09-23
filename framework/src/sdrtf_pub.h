@@ -93,6 +93,16 @@ typedef struct unit_test {
 ------------------------------------------------------------------------------*/
 
 /* test_runner.c */
+void TEST_begin_nested_case
+    (
+    const char* case_description
+    );
+
+void TEST_end_nested_case
+    (
+    void
+    );
+
 void _test_init
     ( 
     const char* test_name_in,

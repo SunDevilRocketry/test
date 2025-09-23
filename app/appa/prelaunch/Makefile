@@ -1,13 +1,13 @@
 ################################################################
 #
-# launch_detect unit tests (based on gcc)
+# prelaunch unit tests (based on gcc)
 #
 ################################################################
 
 ################################################################
 # target
 ################################################################
-TARGET = launch_detect
+TARGET = prelaunch
 
 
 ################################################################
@@ -15,7 +15,7 @@ TARGET = launch_detect
 ################################################################
 
 # Debug build?
-DEBUG = 1
+DEBUG = 0
 # Optimization
 OPT   = -Og
 
@@ -41,13 +41,24 @@ MOD_DIR = $(ROOT_DIR)/mod
 ################################################################
 
 # C sources
-TEST_SOURCES =                                   				  \
-test_launch_detect.c                       					      \
-mock/MOCK_hal.c													  \
+TEST_SOURCES =   												\
+mock/led.c														\
+test_prelaunch.c												\
+mock/sensor.c													\
+mock/MOCK_flight.c													\
+mock/MOCK_hal.c													\
+mock/usb.c														\
+mock/fin_calib.c												\
+mock/ignition.c													\
+mock/servo.c													\
+mock/common.c													\
+mock/MOCK_flash.c													\
+mock/sdr_error.c												\
+mock/mock_huart.c												\
 
 # Tested Source Files
 COV_C_SOURCES =													  \
-$(ROOT_DIR)/app/canard/rev2/launch_detect.c 
+$(ROOT_DIR)/app/flight/appa/rev2/prelaunch.c 
 
 # Framework
 FRAMEWORK_SOURCES =												  \
@@ -71,8 +82,8 @@ CC = gcc
 # This should include a path to all of the headers used in your test
 C_INCLUDES =                                           \
 -I.                                                    \
+-I$(ROOT_DIR)/app/flight/appa/rev2/					   \
 -I$(ROOT_DIR)/mod/gps/								   \
--I$(ROOT_DIR)/mod/common/							   \
 -I$(ROOT_DIR)/mod/sensor/							   \
 -I$(ROOT_DIR)/mod/imu/								   \
 -I$(LIB_DIR)                                           \
@@ -82,12 +93,19 @@ C_INCLUDES =                                           \
 -I$(LIB_DIR)/Drivers/CMSIS/Include                     \
 -I$(ROOT_DIR)/init/terminal/config/Inc				   \
 -I$(ROOT_DIR)/test/framework/src                       \
--I$(ROOT_DIR)/test/app/canard/launch_detect/mock	   \
+-I$(ROOT_DIR)/test/app/appa/prelaunch/mock	   	   \
+-I$(ROOT_DIR)/mod/buzzer								\
+-I$(ROOT_DIR)/mod/commands								\
 -I$(ROOT_DIR)/mod/servo								   \
+-I$(ROOT_DIR)/mod/ignition								   \
 -I$(ROOT_DIR)/mod/flash								   \
 -I$(ROOT_DIR)/mod/sensor							   \
 -I$(ROOT_DIR)/mod/imu								   \
--I$(ROOT_DIR)/lib/util
+-I$(ROOT_DIR)/lib/util									\
+-I$(ROOT_DIR)/mod/led								   	\
+-I$(ROOT_DIR)/mod/common								\
+-I$(ROOT_DIR)/mod/sensor								\
+-I$(ROOT_DIR)/mod/usb
 
 # Preprocessor definitions
 # Don't worry about the defs and flags unless you know what you're doing
@@ -95,7 +113,8 @@ C_DEFS =         \
 -DUSE_HAL_DRIVER \
 -DSTM32H750xx    \
 -DFLIGHT_COMPUTER \
--DUNIT_TEST
+-DUNIT_TEST	\
+-DA0002_REV1
 
 CFLAGS = $(C_INCLUDES) $(C_DEFS) $(OPT) -Wall -g
 
@@ -116,10 +135,13 @@ all: clean $(BUILD_DIR)/$(TARGET)
 
 # Setup the path for c files
 OBJECTS = $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
-vpath %.c $(sort $(dir $(C_SOURCES)))
+# This is to make sure fin_calib.c is excluded 
+vpath %.c ./mock
+vpath %.c $(ROOT_DIR)/app/flight/appa/rev2
+vpath %.c $(ROOT_DIR)/test/framework/src
 
 $(BUILD_DIR)/%.o: %.c $(BUILD_DIR)
-	$(CC) -c $(CFLAGS) $< -o $@
+	$(CC) -c -w $(CFLAGS) $< -o $@
 
 $(BUILD_DIR)/$(TARGET): $(OBJECTS) 
 	$(CC) $(OBJECTS) -o $@ -lgcov -lm

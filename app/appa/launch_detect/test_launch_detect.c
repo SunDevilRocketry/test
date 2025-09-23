@@ -1,14 +1,10 @@
 /*******************************************************************************
 *
 * FILE: 
-*      test_{{{FUT}}}.c
+*      test_launch_detect.c
 *
 * DESCRIPTION: 
-*      Unit tests for functions in the {{{FUT}}} module.
-*
-* NOTE: 
-*	   This is pasted from a template. Take a look at some other tests to find 
-*	   more examples.
+*      Unit tests for the launch detect functionality in Canard.
 *
 *******************************************************************************/
 
@@ -27,36 +23,23 @@ Project Includes
 ------------------------------------------------------------------------------*/
 #include "sdrtf_pub.h"
 #include "main.h"
+#include "sensor.h"
+#include "imu.h"
+#include "test.h"
 
 /*------------------------------------------------------------------------------
 Global Variables 
 ------------------------------------------------------------------------------*/
+UART_HandleTypeDef huart4;  /* GPS */
+I2C_HandleTypeDef  hi2c1;   /* Baro sensor    */
+I2C_HandleTypeDef  hi2c2;   /* IMU and GPS    */
+SENSOR_DATA sensor_data;
+PRESET_DATA preset_data;
+FLIGHT_COMP_STATE_TYPE flight_computer_state;
 
 /*------------------------------------------------------------------------------
 Macros
 ------------------------------------------------------------------------------*/
-
-/*------------------------------------------------------------------------------
-Procedures: Test Helpers
-------------------------------------------------------------------------------*/
-
-/*******************************************************************************
-*                                                                              *
-* PROCEDURE:                                                                   * 
-*       foo	          	                                                       *
-*                                                                              *
-* DESCRIPTION:                                                                 * 
-*       Example helper function for test								       *
-*                                                                              *
-*******************************************************************************/
-int foo
-	(
-	int input
-	) 
-{
-return input + 1;
-
-} /* foo */
 
 
 /*------------------------------------------------------------------------------
@@ -67,42 +50,90 @@ Procedures: Tests // Define the tests used here
 /*******************************************************************************
 *                                                                              *
 * PROCEDURE:                                                                   * 
-*       test_bar		  				                                       *
+*       test_acc_launch_detection		  			                           *
 *                                                                              *
 * DESCRIPTION:                                                                 * 
-*       Basic example test													   *
+*       Test the launch detection function in Canard.						   *
 *                                                                              *
 *******************************************************************************/
-void test_bar 
+void test_launch_detection 
 	(
 	void
     )
 {
 /* Step: Set up test */
-#define NUM_CASES_BAR 3
-printf("\nUnit Tests: test_bar\n");
+#define NUM_CASES_LAUNCH_DETECT 6
+#define NUM_EXPECTED_SAMPLES 11
 
 /* Step: Set up test vectors (inputs, expected) */
-int inputs[NUM_CASES_BAR] = 
+int inputsAcc[NUM_CASES_LAUNCH_DETECT][NUM_EXPECTED_SAMPLES] = 
 {
-#include "cases/blank_inputs.txt"
+#include "cases/acc_inputs.txt"
 };
 
-int expected[NUM_CASES_BAR] = 
+int inputsBaro[NUM_CASES_LAUNCH_DETECT][NUM_EXPECTED_SAMPLES] = 
 {
-#include "cases/blank_expected.txt"
+#include "cases/baro_inputs.txt"
 };
+
+int expected[NUM_CASES_LAUNCH_DETECT][NUM_EXPECTED_SAMPLES] = 
+{
+#include "cases/launch_detect_expected.txt"
+};
+
+preset_data.config_settings.launch_detect_accel_threshold = 6;
+preset_data.config_settings.launch_detect_baro_threshold = 1000;
+preset_data.config_settings.launch_detect_accel_samples = 10;
+preset_data.config_settings.launch_detect_baro_samples = 10;
 
 /* Step: Execute tests */
-for ( int test_num = 0; test_num < NUM_CASES_BAR; test_num++ )
+for ( int test_num = 0; test_num < NUM_CASES_LAUNCH_DETECT; test_num++ )
 	{
-	/* Call function under test*/
+	TEST_begin_nested_case( "" );
+	if( test_num == 0 )
+		{
+		flight_computer_state = FC_STATE_IDLE;
+		}
+	else
+		{
+		flight_computer_state = FC_STATE_LAUNCH_DETECT;
+		}
+	
+	if( test_num > 1 )
+		{
+		preset_data.config_settings.enabled_features |= LAUNCH_DETECT_ACCEL_ENABLED;
+		}
 
-	/* Check result*/
-	TEST_ASSERT_EQ_INT( "Test that the result equals the expected", expected[test_num], foo(inputs[test_num]));
+	if( test_num > 3 )
+		{
+		preset_data.config_settings.enabled_features |= LAUNCH_DETECT_BARO_ENABLED;
+		}
+
+	for ( int i = 0; i < NUM_EXPECTED_SAMPLES; i++ )
+		{
+			sensor_data.imu_data.imu_converted.accel_x = inputsAcc[test_num][i];
+			sensor_data.imu_data.imu_converted.accel_y = inputsAcc[test_num][i];
+			sensor_data.imu_data.imu_converted.accel_z = inputsAcc[test_num][i];
+			sensor_data.baro_pressure = inputsBaro[test_num][i];
+			launch_detection();
+			TEST_ASSERT_EQ_SINT( "Test that the accel flag is/isn't set.", flight_computer_state == FC_STATE_FLIGHT, expected[test_num][i] );
+
+			if( i == 0 && test_num == 1 )
+				{
+				TEST_ASSERT_EQ_SINT( "Test that the error code matches the expected.", get_last_error(), ERROR_UNSUPPORTED_OP_ERROR );
+				}
+		}
+	/* reset test */
+	sensor_data.imu_data.imu_converted.accel_x = 0;
+	sensor_data.imu_data.imu_converted.accel_y = 0;
+	sensor_data.imu_data.imu_converted.accel_z = 0;
+	sensor_data.baro_pressure = 0;
+	launch_detection();
+
+	TEST_end_nested_case();
 	}
 
-} /* test_bar */
+} /* test_launch_detect */
 
 
 /*******************************************************************************
@@ -121,17 +152,24 @@ int main
 	)
 {
 /*------------------------------------------------------------------------------
+Initialize Memory
+------------------------------------------------------------------------------*/
+memset( &sensor_data, 0, sizeof( SENSOR_DATA ) );
+memset( &preset_data, 0, sizeof( PRESET_DATA ) );
+memset( &flight_computer_state, 0, sizeof( FLIGHT_COMP_STATE_TYPE ) );
+
+/*------------------------------------------------------------------------------
 Test Cases
 ------------------------------------------------------------------------------*/
 unit_test tests[] =
 	{
-	{ "bar", test_bar } /* Callback to function. All you need to do is write a message in a string and the function name! */
+	{ "launch_detection", test_launch_detection }
 	};
 
 /*------------------------------------------------------------------------------
 Call the framework
 ------------------------------------------------------------------------------*/
-TEST_INITIALIZE_TEST( "{{{FUT}}}", tests );
+TEST_INITIALIZE_TEST( "launch_detect.c", tests );
 
 } /* main */
 

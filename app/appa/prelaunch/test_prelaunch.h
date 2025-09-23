@@ -1,88 +1,57 @@
 /*******************************************************************************
 *
 * FILE: 
-* 		sdrtf_prv.h
+* 		test_prelaunch.h
 *
 * DESCRIPTION: 
-* 		The Sun Devil Rocketry embedded test framework. Do not include this header
-*       in your tests.
+* 		Contains data structures for storing desired return or buffer values 
+        from the USB return function
 *
 *******************************************************************************/
 
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef SDRTF_PRV_GUARD_H
-#define SDRTF_PRV_GUARD_H
+#ifndef TEST_PRELAUNCH_H
+#define TEST_PRELAUNCH_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-
 /*------------------------------------------------------------------------------
  Includes 
 ------------------------------------------------------------------------------*/
 #include <stdio.h>
-#include <stdbool.h>
-
-/*------------------------------------------------------------------------------
- Macros and Globals 
-------------------------------------------------------------------------------*/
-#define TEST_MIN_SUPPORTED_GCC_VERSION 8
 
 /*------------------------------------------------------------------------------
  Typdefs 
 ------------------------------------------------------------------------------*/
 
+typedef enum {
+	RETURN,
+	BUFFER
+} ACTION;
+
+typedef struct {
+	ACTION action;
+	int return_val;
+	uint8_t buffer_val;
+} USB_RECEIVE_STEP;
 
 /*------------------------------------------------------------------------------
- Global Variables 
+ Macros 
 ------------------------------------------------------------------------------*/
-extern FILE* outfile_handle;
-extern char test_name[32];
 
 /*------------------------------------------------------------------------------
  Function Prototypes 
 ------------------------------------------------------------------------------*/
 
-/* test_runner.c */
-void _test_begin_group
-    (
-    const char* group_description
-    );
-
-void _test_end_group
-    (
-    const char* group_description
-    );
-
-void _test_finalize
-    (
-    void
-    );
-    
-void _test_error
-    (
-    const char* msg
-    );
-
-void _test_fail
-    (
-    const char* msg,
-    const char* err_msg
-    );
-
-void _test_pass
-    (
-    const char* msg
-    );
-
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* SDRTF_PRV_GUARD_H */
+#endif /* TEST_PRELAUNCH_H */
 
 /*******************************************************************************
-* END OF FILE                                                                  * 
+* END OF FILE                                                                  *
 *******************************************************************************/

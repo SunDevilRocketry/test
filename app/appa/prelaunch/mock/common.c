@@ -1,140 +1,119 @@
 /*******************************************************************************
 *
 * FILE: 
-*      test_{{{FUT}}}.c
+* 		common.c
 *
 * DESCRIPTION: 
-*      Unit tests for functions in the {{{FUT}}} module.
-*
-* NOTE: 
-*	   This is pasted from a template. Take a look at some other tests to find 
-*	   more examples.
+* 		Contains utility functions for SDR code.
 *
 *******************************************************************************/
 
 
 /*------------------------------------------------------------------------------
-Standard Includes                                                                     
+ Standard Includes                                                                     
 ------------------------------------------------------------------------------*/
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
 
 
 /*------------------------------------------------------------------------------
-Project Includes                                                                     
+ Project Includes                                                                     
 ------------------------------------------------------------------------------*/
-#include "sdrtf_pub.h"
 #include "main.h"
+#include "common.h"
+#include "sdr_error.h"
+#include "stm32h7xx_hal.h"
+
 
 /*------------------------------------------------------------------------------
-Global Variables 
+ Global Variables  
 ------------------------------------------------------------------------------*/
 
-/*------------------------------------------------------------------------------
-Macros
-------------------------------------------------------------------------------*/
 
 /*------------------------------------------------------------------------------
-Procedures: Test Helpers
+ Internal function prototypes 
 ------------------------------------------------------------------------------*/
+
+
+/*------------------------------------------------------------------------------
+ API Functions 
+------------------------------------------------------------------------------*/
+
+extern int do_fake_checksum;
+extern int skip_loop;
+extern FLIGHT_COMP_STATE_TYPE flight_computer_state;
+extern bool error_fail_fast_called; 
 
 /*******************************************************************************
 *                                                                              *
 * PROCEDURE:                                                                   * 
-*       foo	          	                                                       *
+* 		crc32                                                                  *
 *                                                                              *
 * DESCRIPTION:                                                                 * 
-*       Example helper function for test								       *
+* 		Returns a 32bit checksum from the given data.                          *
 *                                                                              *
 *******************************************************************************/
-int foo
-	(
-	int input
-	) 
+uint32_t crc32
+    (
+    const uint8_t *data, 
+    size_t len
+    ) 
 {
-return input + 1;
 
-} /* foo */
-
-
-/*------------------------------------------------------------------------------
-Procedures: Tests // Define the tests used here
-------------------------------------------------------------------------------*/
+if (do_fake_checksum == 1) { 
+    return 0x11111111; 
+} else {
+    return 0x22222222;
+}
+} /* crc32 */
 
 
 /*******************************************************************************
 *                                                                              *
 * PROCEDURE:                                                                   * 
-*       test_bar		  				                                       *
+* 		error_fail_fast                                                        *
 *                                                                              *
 * DESCRIPTION:                                                                 * 
-*       Basic example test													   *
+* 		In case of error occurrence, this function passes the error            *
+*       code to the error handler                                              *
 *                                                                              *
 *******************************************************************************/
-void test_bar 
-	(
-	void
+int error_fail_fast_count = 0;
+void error_fail_fast
+    (
+    volatile ERROR_CODE error_code
     )
 {
-/* Step: Set up test */
-#define NUM_CASES_BAR 3
-printf("\nUnit Tests: test_bar\n");
+    error_fail_fast_called = true;
+    
+    if (skip_loop == 1) {
+        if (error_fail_fast_count == 1) {
+            flight_computer_state = FC_STATE_INIT;
+        } else {
+            error_fail_fast_count += 1;
+        }
+    }
+    
+Error_Handler(error_code);
 
-/* Step: Set up test vectors (inputs, expected) */
-int inputs[NUM_CASES_BAR] = 
-{
-#include "cases/blank_inputs.txt"
-};
-
-int expected[NUM_CASES_BAR] = 
-{
-#include "cases/blank_expected.txt"
-};
-
-/* Step: Execute tests */
-for ( int test_num = 0; test_num < NUM_CASES_BAR; test_num++ )
-	{
-	/* Call function under test*/
-
-	/* Check result*/
-	TEST_ASSERT_EQ_INT( "Test that the result equals the expected", expected[test_num], foo(inputs[test_num]));
-	}
-
-} /* test_bar */
+} /* error_fail_fast */
 
 
 /*******************************************************************************
 *                                                                              *
 * PROCEDURE:                                                                   * 
-*       main			                                   			           *
+* 		delay_ms                                                               *
 *                                                                              *
 * DESCRIPTION:                                                                 * 
-*       Set up the testing enviroment, call tests, tear down the testing       *
-*		environment															   *
+* 		Minimum delay in miliseconds                                           *
 *                                                                              *
 *******************************************************************************/
-int main
-	(
-	void
-	)
+void delay_ms
+    (
+    uint32_t delay
+    )
 {
-/*------------------------------------------------------------------------------
-Test Cases
-------------------------------------------------------------------------------*/
-unit_test tests[] =
-	{
-	{ "bar", test_bar } /* Callback to function. All you need to do is write a message in a string and the function name! */
-	};
+HAL_Delay(delay);
 
-/*------------------------------------------------------------------------------
-Call the framework
-------------------------------------------------------------------------------*/
-TEST_INITIALIZE_TEST( "{{{FUT}}}", tests );
-
-} /* main */
-
+} /* delay_ms */
 
 /*******************************************************************************
 * END OF FILE                                                                  * 
