@@ -15,7 +15,7 @@ TARGET = apogee_detect
 ################################################################
 
 # Debug build?
-DEBUG = 1
+DEBUG = 0
 # Optimization
 OPT   = -Og
 
