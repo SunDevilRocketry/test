@@ -1,82 +1,73 @@
 import os
 import json
 
-class template_replacement:
-    key: str
-    replacement: str
+class TemplateReplacement:
+    def __init__(self):
+        self.config = {"key_pairs": []}
 
-    def __init__( self, tmpl_key: str, tmpl_replacement: str ):
-        self.key = tmpl_key
-        self.replacement = tmpl_replacement
+    def load_json_config(self, config_path: str):
+        self.config = self.get_json_data(config_path)
+
+    @staticmethod
+    def get_json_data(filepath: str) -> dict:
+        with open(filepath, 'r') as config:
+            return json.load(config)
     
-    def get_key_str( self ):
-        return str(f"{{{self.key}}}") # {key}
+    @staticmethod
+    def _get_key_format(key: str):
+        return f"{{{key}}}" # {key}
     
-    def get_replacement_str( self ):
-        return str(self.replacement)
+    def get_key_strings(self) -> list[str]:
+        return [pair[0] for pair in self.config["key_pairs"]]
 
+    def get_replacement_strings(self) -> list[str]:
+        return [pair[1] for pair in self.config["key_pairs"]]
 
-# Opens a template file, replaces any keys by loading the json, then writes the output to a new file
-# This needs to be run from Flight-Computer-Firmware/
-def replace_from_template( template_path: str, filepath: str ):
-    dir = os.getcwd() + "/"
-    json_path = dir + "test/tools/templates/generator_config.json"
+    def add_key_pair(self, pair):
+        self.config["key_pairs"].append(list(pair))
+    
+    # Opens a template file, replaces any keys, then writes the output to a new file
+    def replace_from_template(self, template_path: str, filepath: str):
+        try:
+            replacers = self.config["key_pairs"]
+        except KeyError:
+            print("Error: No replacement pairs defined")
+            return
 
-    config_data = get_json_data(json_path)
+        template_file: str
+        with open(template_path, 'r') as tmpl:
+            template_file = tmpl.read()
+            for replacer in replacers:
+                template_file = template_file.replace(self._get_key_format(replacer[0]), replacer[1]) 
 
-    replacers = []
-    for entry in config_data["key_pairs"]:
-        key, replacement = entry
-        pair = template_replacement(key, replacement)
-        replacers.append(pair)
+        with open(filepath, 'w') as out:
+            out.write(template_file)
 
-    template_file: str
-    with open(dir + template_path, 'r') as tmpl:
-        template_file = tmpl.read()
-        for replacer in replacers:
-            tmp = template_file.replace( replacer.get_key_str(), replacer.get_replacement_str() ) 
-            template_file = tmp
+    # Does the same thing as replace_from_template but overwrites the file
+    def replace_in_file(self, filepath: str):
+        self.replace_from_template(filepath, filepath)
+    
+    def make_function_stubs(self, names: list[str]) -> str:
+            # This stub is modifable, but looks like this by default when pasted in:
+            # void test_case_{name}()
+            #     {
+            #     TEST_assert_eq( "STUB: Test not written", FALSE );
+            #     }
+            #
+            stub = self.config.get("function_stub")
 
-    with open(dir + filepath, 'w') as out:
-        out.write(template_file)
+            text_block = ""
+            if stub is not None:
+                for name in names:
+                    text_block += stub.format(name)
+            else:
+                print("Error: No function stub specified")
 
-
-# Does the same thing as replace_from_template but 
-# Overwrites the file!
-def replace_in_file( filepath: str ):
-    replace_from_template( filepath, filepath )
-
-
-# The stub needs to include the newlines
-# otherwise big evil unreadable block of text
-def make_function_stubs( names: list[str] ) -> str:
-    dir = os.getcwd()
-
-    json_path = dir + "test/tools/templates/generator_config.json"
-    config = get_json_data(json_path)
-
-    # This stub is modifable, but looks like this by default when pasted in:
-    # void test_case_{}()
-    #     {
-    #     TEST_assert_eq( "STUB: Test not written", FALSE );
-    #     }/n
-    stub = config["function_stub"]
-
-    text_block = ""
-    for name in names:
-        text_block += stub.format(name)
-
-    return text_block
-
-
-def get_json_data( filepath: str ) -> dict:
-    with open(filepath, 'r') as config:
-        config_data = json.load(config)
-        return config_data
+            return text_block
 
 
 def main():
-    raise "This file does nothing on its own"
+    raise SystemExit("Exiting - this script does nothing on its own")
 
 
 if __name__ == "__main__":
