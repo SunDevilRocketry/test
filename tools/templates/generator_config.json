@@ -1,0 +1,6 @@
+{
+    "key_pairs": [
+        ["EXAMPLE", "REPLACEMENT"]
+    ],
+    "function_stub": "void test_case_{}()\n    {{\n    TEST_assert_eq( \"STUB: Test not written\", FALSE );\n    }}\n"
+}
