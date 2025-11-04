@@ -17,6 +17,15 @@
 #include "common.h"
 #include "main.h"
 #include "led.h"
+#include "test_main.h"
+
+FLASH_STATUS flash_init_return = FLASH_OK;
+BARO_STATUS baro_init_return = BARO_OK;
+IMU_STATUS imu_init_return = IMU_OK;
+SERVO_STATUS servo_init_return = SERVO_OK;
+FLASH_STATUS read_preset_return = FLASH_OK;
+ERROR_CODE last_error = ERROR_NO_ERROR;
+bool is_switch_toggled = false;
 
 HAL_StatusTypeDef HAL_Init(void)
 {
@@ -97,7 +106,7 @@ FLASH_STATUS flash_init
 	HFLASH_BUFFER* pflash_handle  /* Flash handle */
 	)
 {
-return FLASH_OK;
+return flash_init_return;
 }
 
 void sensor_init 
@@ -113,7 +122,7 @@ BARO_STATUS baro_init
 	BARO_CONFIG* config_ptr
 	)
 {
-return BARO_OK;
+return baro_init_return;
 }
 
 IMU_STATUS imu_init 
@@ -121,7 +130,7 @@ IMU_STATUS imu_init
     IMU_CONFIG* imu_config_ptr /* IMU Configuration */ 
 	)
 {
-return IMU_OK;
+return imu_init_return;
 }
 
 SERVO_STATUS servo_init
@@ -129,12 +138,12 @@ SERVO_STATUS servo_init
     void
     )
 {
-return SERVO_OK;
+return servo_init_return;
 }
 
 bool ign_switch_cont()
 {
-return false;
+return is_switch_toggled;
 }
 
 FLASH_STATUS read_preset
@@ -144,7 +153,7 @@ FLASH_STATUS read_preset
 	uint32_t*	   address
 	)
 {
-return FLASH_OK;
+return read_preset_return;
 }
 
 void error_fail_fast
@@ -152,7 +161,7 @@ void error_fail_fast
 	volatile ERROR_CODE error_code
 	)
 {
-// stub
+last_error = error_code;
 }
 
 void led_set_color

@@ -23,30 +23,28 @@ extern "C" {
 ------------------------------------------------------------------------------*/
 #include <stdio.h>
 
-/*------------------------------------------------------------------------------
- Typdefs 
-------------------------------------------------------------------------------*/
-
-typedef enum {
-	RETURN,
-	BUFFER
-} ACTION;
-
-typedef struct {
-	ACTION action;
-	int return_val;
-	uint8_t buffer_val;
-} USB_RECEIVE_STEP;
+#include "flash.h"
+#include "baro.h"
+#include "servo.h"
+#include "common.h"
 
 /*------------------------------------------------------------------------------
- Macros 
+ Constants 
 ------------------------------------------------------------------------------*/
+
+#define ERROR_NO_ERROR 0xFFFFFFFF
 
 /*------------------------------------------------------------------------------
- Function Prototypes 
+ Externs 
 ------------------------------------------------------------------------------*/
 
-int main();
+extern FLASH_STATUS flash_init_return;
+extern BARO_STATUS baro_init_return;
+extern IMU_STATUS imu_init_return;
+extern SERVO_STATUS servo_init_return;
+extern FLASH_STATUS read_preset_return;
+extern ERROR_CODE last_error;
+extern bool is_switch_toggled;
 
 #ifdef __cplusplus
 }

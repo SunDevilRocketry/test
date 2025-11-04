@@ -128,22 +128,14 @@ all: clean $(BUILD_DIR)/$(TARGET)
 OBJECTS = $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
 vpath %.c $(sort $(dir $(C_SOURCES)))
 
-# Compilation rule for normal source files (rename main for testing)
-$(BUILD_DIR)/%.o: %.c | $(BUILD_DIR)
-	$(CC) -c -w $(CFLAGS) -Dmain=original_main $< -o $@
-
-# Compile test_main.c which defines the real entry point
-$(BUILD_DIR)/test_main.o: test_main.c | $(BUILD_DIR)
+$(BUILD_DIR)/%.o: %.c $(BUILD_DIR)
 	$(CC) -c -w $(CFLAGS) $< -o $@
 
-# Link the test executable with coverage and custom entry point
-$(BUILD_DIR)/$(TARGET): $(OBJECTS) $(BUILD_DIR)/test_main.o
-	$(CC) $(OBJECTS) $(BUILD_DIR)/test_main.o -o $@ \
-	      -lgcov -mconsole -nostartfiles -Wl,--entry=main_test -lm
+$(BUILD_DIR)/$(TARGET): $(OBJECTS) 
+	$(CC) $(OBJECTS) -o $@ -lgcov -lm
 
-# Create build directory if missing
 $(BUILD_DIR):
-	mkdir -p $@
+	mkdir $@
 
 ################################################################
 # Build test

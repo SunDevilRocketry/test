@@ -147,7 +147,7 @@ $(BUILD_DIR)/$(TARGET): $(OBJECTS)
 	$(CC) $(OBJECTS) -o $@ -lgcov -lm
 
 $(BUILD_DIR):
-	mkdir $@		
+	mkdir $@
 
 ################################################################
 # Build test
