@@ -19,3 +19,8 @@ void motor_drive
 {
     return;
 }
+
+uint8_t motor_snap_to_bound(uint8_t angle, uint8_t upper, uint8_t lower)
+{
+    return angle;
+}
