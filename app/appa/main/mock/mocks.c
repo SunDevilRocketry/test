@@ -149,7 +149,6 @@ return is_switch_toggled;
 FLASH_STATUS read_preset
 	(
 	HFLASH_BUFFER* pflash_handle,
-	PRESET_DATA*   preset_data_ptr,
 	uint32_t*	   address
 	)
 {
