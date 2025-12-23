@@ -1,13 +1,13 @@
 ################################################################
 #
-# prelaunch unit tests (based on gcc)
+# main unit tests (based on gcc)
 #
 ################################################################
 
 ################################################################
 # target
 ################################################################
-TARGET = prelaunch
+TARGET = main
 
 
 ################################################################
@@ -42,25 +42,14 @@ MOD_DIR = $(ROOT_DIR)/mod
 
 # C sources
 TEST_SOURCES =   												\
-mock/led.c														\
-test_prelaunch.c												\
-mock/sensor.c													\
-mock/MOCK_flight.c													\
-mock/MOCK_hal.c													\
-mock/usb.c														\
-mock/fin_calib.c												\
-mock/ignition.c													\
-mock/servo.c													\
-mock/common.c													\
-mock/MOCK_flash.c													\
-mock/sdr_error.c												\
-mock/mock_huart.c												\
+mock/mocks.c													\
+test_main.c														\
 
 # Tested Source Files
 COV_C_SOURCES =													  \
-$(ROOT_DIR)/app/flight/appa/rev2/prelaunch.c 
+$(ROOT_DIR)/app/flight/appa/rev2/main.c 
 
-# Framework
+# Framework (do not modify)
 FRAMEWORK_SOURCES =												  \
 $(ROOT_DIR)/test/framework/src/test_assert.c          	  		  \
 $(ROOT_DIR)/test/framework/src/test_runner.c
@@ -91,9 +80,11 @@ C_INCLUDES =                                           \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc/Legacy   \
 -I$(LIB_DIR)/Drivers/CMSIS/Device/ST/STM32H7xx/Include \
 -I$(LIB_DIR)/Drivers/CMSIS/Include                     \
--I$(ROOT_DIR)/init/terminal/config/Inc				   \
+-I$(ROOT_DIR)/init/appa							   	   \
+-I$(ROOT_DIR)/init/appa/config/Inc				   	   \
 -I$(ROOT_DIR)/test/framework/src                       \
--I$(ROOT_DIR)/test/app/appa/prelaunch/mock	   	   \
+-I$(ROOT_DIR)/test/app/appa/prelaunch/mock	   	   	   \
+-I$(ROOT_DIR)/mod/baro								\
 -I$(ROOT_DIR)/mod/buzzer								\
 -I$(ROOT_DIR)/mod/commands								\
 -I$(ROOT_DIR)/mod/servo								   \
@@ -133,12 +124,9 @@ CFLAGS += -fprofile-arcs
 ################################################################
 all: clean $(BUILD_DIR)/$(TARGET)
 
-# Setup the path for c files
+# Setup the path for C files
 OBJECTS = $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
-# This is to make sure fin_calib.c is excluded 
-vpath %.c ./mock
-vpath %.c $(ROOT_DIR)/app/flight/appa/rev2
-vpath %.c $(ROOT_DIR)/test/framework/src
+vpath %.c $(sort $(dir $(C_SOURCES)))
 
 $(BUILD_DIR)/%.o: %.c $(BUILD_DIR)
 	$(CC) -c -w $(CFLAGS) $< -o $@
@@ -167,6 +155,7 @@ test:
 
 clean:
 	-rm -fR $(BUILD_DIR)
+	mkdir build
 
 
 ################################################################
