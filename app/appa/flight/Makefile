@@ -78,6 +78,7 @@ C_INCLUDES =                                           \
 -I$(ROOT_DIR)/mod/gps/								   \
 -I$(ROOT_DIR)/mod/buzzer/							   \
 -I$(ROOT_DIR)/mod/common/							   \
+-I$(ROOT_DIR)/mod/commands/							   \
 -I$(ROOT_DIR)/mod/sensor/							   \
 -I$(ROOT_DIR)/mod/ignition/							   \
 -I$(ROOT_DIR)/mod/flash/							   \
@@ -96,12 +97,13 @@ C_INCLUDES =                                           \
 
 # Preprocessor definitions
 # Don't worry about the defs and flags unless you know what you're doing
-C_DEFS =         \
--DUSE_HAL_DRIVER \
--DSTM32H750xx    \
+C_DEFS =          \
+-DUSE_HAL_DRIVER  \
+-DUSE_I2C_IT      \
+-DSTM32H750xx     \
 -DFLIGHT_COMPUTER \
--DA0002_REV2	 \
--DUNIT_TEST
+-DA0002_REV2	  \
+-DUNIT_TEST		  \
 
 CFLAGS = $(C_INCLUDES) $(C_DEFS) $(OPT) -Wall -g
 
