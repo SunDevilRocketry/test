@@ -787,6 +787,7 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 	HFLASH_BUFFER flash_buffer;
 	uint32_t flash_address = 100;
 	uint32_t ld_start_time = 0;
+	flash_buffer.address = 0;
 
 	/*------------------------------------------------------------------------------
 	Set up mocks/stubs
