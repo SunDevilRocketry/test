@@ -2,6 +2,7 @@
 #include <stddef.h>
 #include <string.h>
 #include "buzzer.h"
+#include "stm32h7xx_hal.h"
 #include "common.h"
 #include "main.h"
 #include "led.h"
@@ -14,6 +15,7 @@
 
 /* globals */
 extern FLIGHT_COMP_STATE_TYPE flight_computer_state;
+extern PRESET_DATA preset_data;
 bool ld_expected = false;
 bool was_gps_enabled = false;
 IGN_STATUS ign_main_status[3] = { IGN_OK, IGN_OK, IGN_OK };
@@ -27,8 +29,9 @@ SENSOR_STATUS sensor_status_return = SENSOR_OK;
 uint16_t preset_preserving_flash_erase_calls = 0;
 uint16_t flash_busy_calls = 0;
 uint16_t flash_busy_counts = 0;
-bool is_apogee_detected = false;
 uint16_t sensor_dump_calls = 0;
+bool store_frame_called = false;
+bool is_apogee_detected = false;
 
 /* internal use */
 
@@ -53,7 +56,9 @@ preset_preserving_flash_erase_calls = 0;
 flash_busy_calls = 0;
 flash_busy_counts = 0;
 sensor_dump_calls = 0;
+store_frame_called = false;
 is_apogee_detected = false;
+preset_data.config_settings.flash_rate_limit = 0;
 }
 
 void set_return_ign_deploy_main
@@ -112,7 +117,7 @@ void set_return_launch_detection( bool expected )
 	ld_expected = expected;
 	}
 
-/* STUBS*/
+/* STUBS */
 
 void error_fail_fast
     (
@@ -215,7 +220,7 @@ return BUZZ_OK;
 }
 
 /* Dump all sensor readings to console */
-SENSOR_STATUS sensor_dump
+SENSOR_STATUS sensor_dump_IT
 	(
     SENSOR_DATA* sensor_data_ptr 
     )
@@ -328,18 +333,17 @@ return USB_OK;
 FLASH_STATUS store_frame 
 	(
 	HFLASH_BUFFER* pflash_handle,
-	SENSOR_DATA*   sensor_data_ptr,
 	uint32_t       time,
 	uint32_t*	   address
 	)
 {
+store_frame_called = true;
 return FLASH_OK;
 }
 
 FLASH_STATUS read_preset
 	(
 	HFLASH_BUFFER* pflash_handle,
-	PRESET_DATA*   preset_data_ptr,
 	uint32_t*	   address
 	)
 {
@@ -349,7 +353,6 @@ return FLASH_OK;
 FLASH_STATUS write_preset 
 	(
 	HFLASH_BUFFER* pflash_handle,
-	PRESET_DATA*   preset_data_ptr,
 	uint32_t* 	   address
 	)
 {
@@ -368,7 +371,6 @@ return FLASH_OK;
 
 FLASH_STATUS get_sensor_frame
 	(
-	SENSOR_DATA* sensor_data_ptr, /* i: sensor data struct */
 	uint8_t* buffer, /* o: sensor frame */
 	uint32_t time 	 /* i: frame timestamp */
 	)
@@ -385,7 +387,10 @@ void sensor_frame_size_init
 }
 
 /* launch_detect.c */
-void launch_detection()
+void launch_detection
+	(
+	uint32_t* launch_detect_time
+	)
 {
 if( ld_expected )
 	{
@@ -399,20 +404,6 @@ else
 
 /* flight.c */
 // REMOVED. FUT.
-
-/* prelaunch.c */
-void pre_launch_loop
-    (
-    uint8_t firmware_code,
-    FLASH_STATUS* flash_status,
-    HFLASH_BUFFER* flash_handle,
-    uint32_t* flash_address,
-    uint8_t* gps_mesg_byte,
-    SENSOR_STATUS* sensor_status
-    )
-{
-
-}
 
 FLASH_STATUS preset_cmd_execute
     ( 
@@ -436,4 +427,13 @@ return true;
 void sensorCalibrationSWCON(SENSOR_DATA* sensor_data_ptr)
 {
 
+}
+
+/* fsm_appa.c */
+void fc_state_update
+	(
+	FLIGHT_COMP_STATE_TYPE new_state
+	)
+{
+flight_computer_state = new_state;
 }

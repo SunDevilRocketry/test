@@ -6,10 +6,6 @@
 * DESCRIPTION: 
 *      Unit tests for functions in the flight module.
 *
-* NOTE: 
-*	   This is pasted from a template. Take a look at some other tests to find 
-*	   more examples.
-*
 *******************************************************************************/
 
 
@@ -53,10 +49,12 @@ extern bool is_apogee_detected;
 extern uint16_t preset_preserving_flash_erase_calls;
 extern uint16_t flash_busy_calls;
 extern uint16_t flash_busy_counts;
+extern bool store_frame_called;
 
 /* hijacked globals */
 extern uint32_t pid_previous;
 extern uint32_t launch_detect_time;
+extern uint32_t last_flash_timestamp;
 extern float prevErr;
 extern float iVal;
 
@@ -103,68 +101,6 @@ longjmp( env_buffer, jmp_val );
 /*------------------------------------------------------------------------------
 Procedures: Tests // Define the tests used here
 ------------------------------------------------------------------------------*/
-
-/*******************************************************************************
-*                                                                              *
-* PROCEDURE:                                                                   * 
-*       test_flight_loop		  				                           	   *
-*                                                                              *
-* DESCRIPTION:                                                                 * 
-*       Test flight loop.													   *
-*                                                                              *
-*******************************************************************************/
-void test_flight_loop
-	(
-	void
-	)
-{
-/*------------------------------------------------------------------------------
-Set up mocks/stubs
-------------------------------------------------------------------------------*/
-stubs_reset();
-uint8_t gps_mesg_byte[1];
-HFLASH_BUFFER flash_handle;
-uint32_t flash_address;
-SENSOR_STATUS sensor_status = SENSOR_OK;
-FLASH_STATUS flash_status;
-preset_data.config_settings.enabled_features = 255u;
-flight_computer_state = FC_STATE_IDLE;
-
-/* Make every state advance immediately */
-set_return_launch_detection( true );
-is_apogee_detected = true;
-intercept_jmp_back = false;
-IGN_STATUS ign_ok_arr[3] = { IGN_SUCCESS, IGN_SUCCESS, IGN_SUCCESS };
-set_return_ign_deploy_drogue( ign_ok_arr );
-set_return_ign_deploy_main( ign_ok_arr );
-set_return_sensor_dump( SENSOR_OK );
-set_error_callback( TEST_CALLBACK_error_fail_fast );
-
-/*------------------------------------------------------------------------------
-Call FUT
-------------------------------------------------------------------------------*/
-jmp_val = setjmp( env_buffer ); /* used to intercept errors */
-	if( !intercept_jmp_back )
-		{
-		intercept_jmp_back = true;
-		flight_loop
-			(
-			gps_mesg_byte,
-			&flash_status,
-			&flash_handle,
-			&flash_address,
-			&sensor_status
-			);
-		}
-
-/*------------------------------------------------------------------------------
-Verify results
-------------------------------------------------------------------------------*/
-/* For testing purposes, led_set_color overrides the FC state once it's clear there's an infinite loop */
-TEST_ASSERT_EQ_UINT( "Test that the system remained in the state machine until there was external intervention.", flight_computer_state, FC_STATE_IDLE );
-
-} /* test_flight_loop */
-
 
 /*******************************************************************************
 *                                                                              *
@@ -235,13 +171,13 @@ TEST_ASSERT_EQ_UINT("Test that GPS was disabled.", was_gps_enabled, false);
 /*******************************************************************************
 *                                                                              *
 * PROCEDURE:                                                                   * 
-*       test_launch_detect			  				                           *
+*       test_flight_launch_detect					                           *
 *                                                                              *
 * DESCRIPTION:                                                                 * 
 *       Test launch detect phase of flight.									   *
 *                                                                              *
 *******************************************************************************/
-void test_launch_detect
+void test_flight_launch_detect
 	(
 	void
 	)
@@ -258,16 +194,18 @@ struct test_case
 	bool launch_detected;
 	uint8_t flash_busy_counts; /* will be the same for both calls; busy busy free busy busy free when val is 2 */
 	SENSOR_STATUS sensor_status_return;
+	FLASH_STATUS flash_status_return;
 	ERROR_CODE expected_error_code;
 	};
 struct test_case cases[] =
 	{
-		{ "Normal: Typical operation, launch not detected.", 5000, 200, 300, false, 0, SENSOR_OK, MAX_UINT_32 },
-		{ "Normal: Typical operation, launch detected.", 5000, 200, 300, true, 0, SENSOR_OK, MAX_UINT_32 },
-		{ "Normal: Timeout, launch not detected.", 5000, 0, 5001, false, 0, SENSOR_OK, MAX_UINT_32 },
-		{ "Robust: Flash busy 2x, launch not detected.", 5000, 200, 300, false, 2, SENSOR_OK, MAX_UINT_32 },
-		{ "Robust: Timeout + Flash busy 2x, launch not detected.", 5000, 0, 5001, false, 2, SENSOR_OK, MAX_UINT_32 },
-		{ "Robust: Sensor fail", 5000, 200, 300, false, 0, SENSOR_FAIL, ERROR_SENSOR_CMD_ERROR },
+		{ "Normal: Typical operation, launch not detected.", 5000, 200, 300, false, 0, SENSOR_OK, FLASH_OK, MAX_UINT_32 },
+		{ "Normal: Typical operation, launch detected.", 5000, 200, 300, true, 0, SENSOR_OK, FLASH_OK, MAX_UINT_32 },
+		{ "Normal: Timeout, launch not detected.", 5000, 0, 5001, false, 0, SENSOR_OK, FLASH_OK, MAX_UINT_32 },
+		{ "Robust: Timeout, flash fail", 5000, 0, 5001, false, 0, SENSOR_OK, FLASH_FAIL, MAX_UINT_32 },
+		{ "Robust: Flash busy 2x, launch not detected.", 5000, 200, 300, false, 2, SENSOR_OK, FLASH_OK, MAX_UINT_32 },
+		{ "Robust: Timeout + Flash busy 2x, launch not detected.", 5000, 0, 5001, false, 2, SENSOR_OK, FLASH_OK, MAX_UINT_32 },
+		{ "Robust: Sensor fail", 5000, 200, 300, false, 0, SENSOR_FAIL, FLASH_OK, ERROR_SENSOR_CMD_ERROR },
 	};
 for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); test_num++ )
 	{
@@ -277,7 +215,7 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 	Local variables
 	------------------------------------------------------------------------------*/
 	SENSOR_STATUS sensor_status_param = SENSOR_OK;
-	FLASH_STATUS flash_status_param = FLASH_OK;
+	FLASH_STATUS flash_status_param = cases[test_num].flash_status_return;
 	HFLASH_BUFFER flash_buffer;
 	uint32_t flash_address = 100;
 	uint32_t ld_start_time = cases[test_num].ld_start_time;
@@ -336,22 +274,29 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 		/* Timeout */
 		if( cases[test_num].curr_tick - cases[test_num].ld_start_time >= cases[test_num].timeout_configuration )
 			{
-			TEST_ASSERT_EQ_UINT( "Test that flash was erased (preserving presets).", preset_preserving_flash_erase_calls, 1 );
+			if( cases[test_num].flash_status_return == FLASH_OK)
+				{
+				TEST_ASSERT_EQ_UINT( "Test that flash was erased (preserving presets).", preset_preserving_flash_erase_calls, 1 );
+				TEST_ASSERT_EQ_UINT( "Test that control was stuck in the flash busy loop correctly.", flash_busy_calls, 1 + cases[test_num].flash_busy_counts );
+				}
+			else /* Flash error return */
+				{
+				TEST_ASSERT_EQ_UINT( "Test that flash was not erased (preserving presets).", preset_preserving_flash_erase_calls, 0 );
+				}
 			TEST_ASSERT_EQ_UINT( "Test that the timer was reset.", ld_start_time, cases[test_num].curr_tick );
-			TEST_ASSERT_EQ_UINT( "Test that control was stuck in the flash busy loop correctly.", flash_busy_calls, 2 + ( 2 * cases[test_num].flash_busy_counts ) );
 			}
 		else
 			{
 			TEST_ASSERT_EQ_UINT( "Test that flash was not erased (preserving presets).", preset_preserving_flash_erase_calls, 0 );
 			TEST_ASSERT_EQ_UINT( "Test that the timer was not reset.", ld_start_time, cases[test_num].ld_start_time );
-			TEST_ASSERT_EQ_UINT( "Test that control was stuck in the flash busy loop correctly.", flash_busy_calls, 1 + ( cases[test_num].flash_busy_counts ) );
+			TEST_ASSERT_EQ_UINT( "Test that control was stuck in the flash busy loop correctly.", flash_busy_calls, 1 + cases[test_num].flash_busy_counts );
 			}
 		}
 
 	TEST_end_nested_case();
 	}
 
-} /* test_launch_detect */
+} /* test_flight_launch_detect */
 
 
 /*******************************************************************************
@@ -575,8 +520,6 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 	/*------------------------------------------------------------------------------
 	Verify results
 	------------------------------------------------------------------------------*/
-	/* The only critical parts of this are GPS enablement based on feature flags. All
-	others can be proven by analysis. */
 	TEST_ASSERT_EQ_UINT("Test that main chute deployment was called the right number of times.", get_num_calls_ign_deploy_main(), cases[test_num].exp_num_attempts_needed_main);
 	TEST_ASSERT_EQ_UINT("Test that drogue chute deployment was called the right number of times.", get_num_calls_ign_deploy_drogue(), cases[test_num].exp_num_attempts_needed_drogue);
 	TEST_ASSERT_EQ_UINT("Test that the state was updated.", flight_computer_state, FC_STATE_DEPLOYED);
@@ -801,6 +744,93 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 /*******************************************************************************
 *                                                                              *
 * PROCEDURE:                                                                   * 
+*       test_should_log_next_frame          	                           	   *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Test rate limiter         		     								   *
+*                                                                              *
+*******************************************************************************/
+void test_should_log_next_frame
+	(
+	void
+	)
+{
+/* Using flight_in_flight to test if sensor frames are logged at the correct time. 
+   Integer rounding means that the actual rate limit may be less than the config value.
+   Performance can be evaluated with integration testing. */
+
+/*------------------------------------------------------------------------------
+Cases
+------------------------------------------------------------------------------*/
+struct test_case
+	{
+	const char* description;
+	uint32_t current_tick; 		 /* ms */
+	uint16_t flash_rate_limit;   /* Hz */
+	bool flash_call_expected;
+	};
+struct test_case cases[] =
+	{
+		{"Rate limiter disabled", 500, 0, true},
+		{"Rate limiter enabled, enough time elapsed", 500, 200, true},
+		{"Rate limiter enabled, not enough time elapsed", 10, 50, false}
+	};
+for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); test_num++ )
+	{
+	TEST_begin_nested_case( cases[test_num].description );
+
+	/*------------------------------------------------------------------------------
+	Local variables
+	------------------------------------------------------------------------------*/
+	SENSOR_STATUS sensor_status_param = SENSOR_OK;
+	FLASH_STATUS flash_status_param = FLASH_OK;
+	HFLASH_BUFFER flash_buffer;
+	uint32_t flash_address = 100;
+	uint32_t ld_start_time = 0;
+	flash_buffer.address = 0;
+
+	/*------------------------------------------------------------------------------
+	Set up mocks/stubs
+	------------------------------------------------------------------------------*/
+	stubs_reset();
+	flight_computer_state = FC_STATE_FLIGHT;
+	set_return_HAL_GetTick( cases[test_num].current_tick );
+	last_flash_timestamp = 0;
+	preset_data.config_settings.flash_rate_limit = cases[test_num].flash_rate_limit;
+
+	/*------------------------------------------------------------------------------
+	Call FUT
+	------------------------------------------------------------------------------*/
+	flight_in_flight
+			(
+			&ld_start_time,
+			&sensor_status_param,
+			&flash_status_param,
+			&flash_buffer,
+			&flash_address
+			);
+
+	/*------------------------------------------------------------------------------
+	Verify results
+	------------------------------------------------------------------------------*/
+	if ( cases[test_num].flash_call_expected )
+		{
+		TEST_ASSERT_TRUE( "Test that store_frame was called", store_frame_called );
+		}
+	else
+		{
+		TEST_ASSERT_FALSE( "Test that store_frame was not called", store_frame_called );
+		}
+
+	TEST_end_nested_case();
+	}
+	
+} /* test_should_log_next_frame */
+
+
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
 *       main			                                   			           *
 *                                                                              *
 * DESCRIPTION:                                                                 * 
@@ -818,13 +848,13 @@ Test Cases
 ------------------------------------------------------------------------------*/
 unit_test tests[] =
 	{
-	{ "Flight Loop: Transition Logic", test_flight_loop },
 	{ "Flight Loop: Sensor Calibration", test_flight_calib },
-	{ "Flight Loop: Launch Detect", test_launch_detect },
+	{ "Flight Loop: Launch Detect", test_flight_launch_detect },
 	{ "Flight Loop: Ascent (in_flight)", test_flight_in_flight },
 	{ "Flight Loop: Chute Deployment", test_flight_deploy },
 	{ "Flight Loop: Descent", test_flight_descent },
-	{ "Roll Control", test_pid_run }
+	{ "Roll Control", test_pid_run },
+	{ "Rate limiter", test_should_log_next_frame }
 	};
 
 /*------------------------------------------------------------------------------
