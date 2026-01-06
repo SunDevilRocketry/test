@@ -194,7 +194,7 @@ struct test_case
 	bool launch_detected;
 	uint8_t flash_busy_counts; /* will be the same for both calls; busy busy free busy busy free when val is 2 */
 	SENSOR_STATUS sensor_status_return;
-	FLASH_STATUS flash_status;
+	FLASH_STATUS flash_status_return;
 	ERROR_CODE expected_error_code;
 	};
 struct test_case cases[] =
@@ -202,7 +202,7 @@ struct test_case cases[] =
 		{ "Normal: Typical operation, launch not detected.", 5000, 200, 300, false, 0, SENSOR_OK, FLASH_OK, MAX_UINT_32 },
 		{ "Normal: Typical operation, launch detected.", 5000, 200, 300, true, 0, SENSOR_OK, FLASH_OK, MAX_UINT_32 },
 		{ "Normal: Timeout, launch not detected.", 5000, 0, 5001, false, 0, SENSOR_OK, FLASH_OK, MAX_UINT_32 },
-		{ "Robust: Timeout, Flash logging disabled", 5000, 0, 5001, false, 0, SENSOR_OK, MAX_UINT_32, MAX_UINT_32 },
+		{ "Robust: Timeout, flash fail", 5000, 0, 5001, false, 0, SENSOR_OK, FLASH_FAIL, MAX_UINT_32 },
 		{ "Robust: Flash busy 2x, launch not detected.", 5000, 200, 300, false, 2, SENSOR_OK, FLASH_OK, MAX_UINT_32 },
 		{ "Robust: Timeout + Flash busy 2x, launch not detected.", 5000, 0, 5001, false, 2, SENSOR_OK, FLASH_OK, MAX_UINT_32 },
 		{ "Robust: Sensor fail", 5000, 200, 300, false, 0, SENSOR_FAIL, FLASH_OK, ERROR_SENSOR_CMD_ERROR },
@@ -215,7 +215,7 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 	Local variables
 	------------------------------------------------------------------------------*/
 	SENSOR_STATUS sensor_status_param = SENSOR_OK;
-	FLASH_STATUS flash_status_param = cases[test_num].flash_status;
+	FLASH_STATUS flash_status_param = cases[test_num].flash_status_return;
 	HFLASH_BUFFER flash_buffer;
 	uint32_t flash_address = 100;
 	uint32_t ld_start_time = cases[test_num].ld_start_time;
@@ -274,12 +274,12 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 		/* Timeout */
 		if( cases[test_num].curr_tick - cases[test_num].ld_start_time >= cases[test_num].timeout_configuration )
 			{
-			if( cases[test_num].flash_status == FLASH_OK)
+			if( cases[test_num].flash_status_return == FLASH_OK)
 				{
 				TEST_ASSERT_EQ_UINT( "Test that flash was erased (preserving presets).", preset_preserving_flash_erase_calls, 1 );
 				TEST_ASSERT_EQ_UINT( "Test that control was stuck in the flash busy loop correctly.", flash_busy_calls, 1 + cases[test_num].flash_busy_counts );
 				}
-			else /* Flash logging disabled */
+			else /* Flash error return */
 				{
 				TEST_ASSERT_EQ_UINT( "Test that flash was not erased (preserving presets).", preset_preserving_flash_erase_calls, 0 );
 				}
@@ -824,8 +824,6 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 
 	TEST_end_nested_case();
 	}
-
-	preset_data.config_settings.flash_rate_limit = 0; /* To avoid potentilly causing problems in other tests if this is run beforehand */
 	
 } /* test_should_log_next_frame */
 

@@ -103,7 +103,7 @@ C_DEFS =          \
 -DSTM32H750xx     \
 -DFLIGHT_COMPUTER \
 -DA0002_REV2	  \
--DUNIT_TEST		  \
+-DUNIT_TEST
 
 CFLAGS = $(C_INCLUDES) $(C_DEFS) $(OPT) -Wall -g
 

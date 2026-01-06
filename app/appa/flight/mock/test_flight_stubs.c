@@ -15,6 +15,7 @@
 
 /* globals */
 extern FLIGHT_COMP_STATE_TYPE flight_computer_state;
+extern PRESET_DATA preset_data;
 bool ld_expected = false;
 bool was_gps_enabled = false;
 IGN_STATUS ign_main_status[3] = { IGN_OK, IGN_OK, IGN_OK };
@@ -57,6 +58,7 @@ flash_busy_counts = 0;
 sensor_dump_calls = 0;
 store_frame_called = false;
 is_apogee_detected = false;
+preset_data.config_settings.flash_rate_limit = 0;
 }
 
 void set_return_ign_deploy_main
