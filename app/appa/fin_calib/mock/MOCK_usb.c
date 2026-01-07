@@ -28,7 +28,7 @@ Global Variables
 ------------------------------------------------------------------------------*/
 /* Queue of simulated USB transmissions, defined in test_fin_calib.c */
 extern uint8_t* usb_queue;
-extern int  usb_pos;
+extern int usb_pos;
 
 /* Value for usb_detect to return */
 extern bool usb_detect_value;
@@ -44,8 +44,7 @@ bool usb_detect
     return usb_detect_value;
 }
 
-USB_STATUS usb_receive 
-	(
+USB_STATUS usb_receive (
 	void*    rx_data_ptr,
 	size_t   rx_data_size,
 	uint32_t timeout
@@ -56,9 +55,23 @@ USB_STATUS usb_receive
 	/* If you get an out-of-bounds error here, it's probably because you forgot to
 	include an EXIT command in usb_queue or reset
 	usb_pos to 0. */
+	 
+
 	*result = usb_queue[ usb_pos ]; 
 
 	usb_pos++;
 	
-	return USB_OK;
+	
+	//this if else is needed to exit the fincalibration funciton in fin_calib.c. 
+	// Without it, usb_pos will infinitely iterate up till segmentation fault. 
+	// With it, when usb_status == USB_FAIL and not USB_OK, then we return USB_FAIL, 
+	// which exits the fin_calib.c function and we return usb_status;
+	if (usb_detect_value) 
+	{
+		return USB_OK;
+	}
+	else
+	{
+		return USB_FAIL;
+	}
 }
