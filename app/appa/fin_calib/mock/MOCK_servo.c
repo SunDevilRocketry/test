@@ -20,7 +20,19 @@ void motor_drive
     return;
 }
 
+/* function is pasted in. teehee. */
 uint8_t motor_snap_to_bound(uint8_t angle, uint8_t upper, uint8_t lower)
 {
+if (angle >= lower && angle <= upper) 
+    {
     return angle;
+    } 
+else if ( angle > upper && angle <= ( upper + ( ( 255 - upper ) / 2 ) ) ) 
+    {
+    return upper;
+    } 
+else 
+    {
+    return lower;
+    }
 }
