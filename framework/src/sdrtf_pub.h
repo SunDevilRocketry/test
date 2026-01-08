@@ -89,6 +89,13 @@ typedef enum {
     ASSERT_TYPE_NE  /* Not equal */
 } ASSERT_TYPE;
 
+/* Test type indicates the scope of the provided test */
+typedef enum {
+    TEST_TYPE_UNIT_TEST,        /* The standard test type that is assumed if not provided */
+    TEST_TYPE_SW_INTEGRATION,   /* Applies when multiple source files are under test */
+    TEST_TYPE_HW_SW_INTEGRATION /* Should not be used for automated tests */
+} TEST_TYPE;
+
 /* Pointer to a test function. All tests should have the signature:
    void example_test_name() */
 typedef void (*test_callback)(void);
@@ -103,7 +110,7 @@ typedef struct unit_test {
  Function Prototypes 
 ------------------------------------------------------------------------------*/
 
-/* test_runner.c */
+/* test_runner.c -- PUBLIC */
 void TEST_begin_nested_case
     (
     const char* case_description
@@ -114,6 +121,7 @@ void TEST_end_nested_case
     void
     );
 
+/* test_runner.c -- PRIVATE */
 void _test_init
     ( 
     const char* test_name_in,
@@ -121,7 +129,7 @@ void _test_init
     uint16_t test_array_count
     );
 
-/* test_assert.c */
+/* test_assert.c -- PRIVATE */
 void _test_assert
     (
     ASSERT_TYPE assert_type,

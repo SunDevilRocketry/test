@@ -52,6 +52,7 @@ uint32_t fails_since_last_group;
 bool     in_test_group;
 bool     in_nested_case;
 uint32_t nested_case_num;
+TEST_TYPE type_of_test = TEST_TYPE_UNIT_TEST; /* Assume unit test by default */
 
 /*------------------------------------------------------------------------------
 Macros
@@ -65,6 +66,12 @@ Procedure Prototypes
 static void print_test_header
     (
     void
+    );
+
+static void get_gcovr_version
+    (
+    int* major,
+    int* minor
     );
 
 /*------------------------------------------------------------------------------
@@ -151,6 +158,15 @@ Validate Inputs
 if( outfile == NULL || test_name_in == NULL )
     {
     _test_error( "Null pointers given to test_init." );
+    }
+
+if( type_of_test == TEST_TYPE_HW_SW_INTEGRATION )
+    {
+    _test_error( "Invalid Test Type -- HW/SW integration tests cannot yet be automated." );
+    }
+else if( type_of_test > TEST_TYPE_HW_SW_INTEGRATION )
+    {
+    _test_error( "Invalid Test Type -- Test type does not exist." );
     }
 
 /*------------------------------------------------------------------------------
@@ -339,7 +355,7 @@ fail_counter++;
 /*******************************************************************************
 *                                                                              *
 * PROCEDURE:                                                                   * 
-* 		_test_pass                                                              *
+* 		_test_pass                                                             *
 *                                                                              *
 * DESCRIPTION:                                                                 * 
 * 		Pass a comparison and log the result.                                  *
@@ -354,6 +370,25 @@ void _test_pass
 fprintf( outfile_handle, "%s\n", msg );
 pass_counter++;
 } /* _test_pass */
+
+
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
+* 		_test_set_type                                                         *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+* 		Indicate the type of automated test being run.                         *
+*                                                                              *
+*******************************************************************************/
+void _test_set_type
+    (
+    TEST_TYPE test_type
+    )
+{
+type_of_test = test_type;
+
+} /* _test_set_type */
 
 
 /*******************************************************************************
@@ -375,7 +410,24 @@ time_t curr_time = time( NULL );
 struct tm tm = *localtime( &curr_time );
 char date[20];
 char time[20];
+char test_type[20];
 bool repo_clean = true;
+int gcovr_major = 0;
+int gcovr_minor = 0;
+
+/* Fill in test type */
+switch (type_of_test)
+    {
+    case TEST_TYPE_UNIT_TEST:
+        strcpy( test_type, "Unit Test" );
+        break;
+    case TEST_TYPE_SW_INTEGRATION:
+        strcpy( test_type, "SW Integration" );
+        break;
+    default:
+        _test_error( "Shouldn't get here, but invalid test type recorded" );
+        break;
+    }
 
 /* Format strings to match C macros*/
 strftime( date, sizeof(date), "%b %d %Y", &tm );
@@ -392,26 +444,31 @@ fprintf( outfile_handle, "----------------------------------------\n" );
 fprintf( outfile_handle, "------------Test Environment------------\n" );
 fprintf( outfile_handle, "----------------------------------------\n\n" );
 fprintf( outfile_handle, "--General Build Information--\n" );
-fprintf( outfile_handle, "Test Name:   %s\n", test_name );
-fprintf( outfile_handle, "Build Date:  %s\n", __DATE__ );
-fprintf( outfile_handle, "Build Time:  %s\n", __TIME__ );
-fprintf( outfile_handle, "Run Date:    %s\n", date );
-fprintf( outfile_handle, "Run Time:    %s\n", time );
+fprintf( outfile_handle, "Test Name:        %s\n", test_name );
+fprintf( outfile_handle, "Test Type:        %s\n", test_type );
+fprintf( outfile_handle, "Build Date:       %s\n", __DATE__ );
+fprintf( outfile_handle, "Build Time:       %s\n", __TIME__ );
+fprintf( outfile_handle, "Run Date:         %s\n", date );
+fprintf( outfile_handle, "Run Time:         %s\n", time );
 
 /* Is using ISO C compiler? */
 #if( defined( __STDC__ ) && __STDC__ )
-fprintf( outfile_handle, "ISO C?:      %d\n", __STDC__ );
-fprintf( outfile_handle, "C Standard:  %ld\n", __STDC_VERSION__ );
+fprintf( outfile_handle, "ISO C?:           %d\n", __STDC__ );
+fprintf( outfile_handle, "C Standard:       %ld\n", __STDC_VERSION__ );
 #else
-fprintf( outfile_handle, "ISO C?:      %d\n", 0 );
+fprintf( outfile_handle, "ISO C?:           %d\n", 0 );
 #endif
 
 /* GNU compilers*/
 #if( defined( __GNUC__ ) && __GNUC__ )
 fprintf( outfile_handle, "\n--GNU C Compiler (GCC) Info--\n" );
-fprintf( outfile_handle, "GCC Version: %d.%d.%d\n", __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__ );
+fprintf( outfile_handle, "GCC Version:      %d.%d.%d\n", __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__ );
 #endif
 
+/* Get GCovr Version */
+get_gcovr_version( &gcovr_major, &gcovr_minor );
+fprintf( outfile_handle, "\n--GCOVR Info--\n" );
+fprintf( outfile_handle, "GCOVR Version:    %d.%d\n", gcovr_major, gcovr_minor );
 
 /* Run test environment checks */
 fprintf( outfile_handle, "\n----------------------------------------\n" );
@@ -429,11 +486,40 @@ TEST_ASSERT_TRUE( "Test Environment: ISO C standard not defined", false );
 
 /* Only GCC 8+ is supported at the moment. Future update could expand to clang if desired. */
 #if( defined( __GNUC__ ) && __GNUC__ )
-TEST_ASSERT_GE_UINT( "Test Environment: Compiler is supported GCC version", __GNUC__, TEST_MIN_SUPPORTED_GCC_VERSION );
+TEST_ASSERT_GE_UINT( "Test Environment: Compiler at/above minimum GCC version", __GNUC__, TEST_MIN_SUPPORTED_GCC_VERSION );
+TEST_ASSERT_LE_UINT( "Test Environment: Compiler at/below maximum GCC version", __GNUC__, TEST_MAX_SUPPORTED_GCC_VERSION );
 #else
 TEST_ASSERT_TRUE( "Test Environment: Unsupported Compiler", false );
 #endif
 
+TEST_ASSERT_GE_UINT( "Test Environment: Coverage tool at/above minimum GCOVR version", gcovr_major, TEST_MIN_SUPPORTED_GCOVR_VERSION );
+TEST_ASSERT_LE_UINT( "Test Environment: Coverage tool at/below maximum GCOVR version", gcovr_major, TEST_MAX_SUPPORTED_GCOVR_VERSION );
+
 _test_end_group( "Check test environment" );
 
-}
+} /* print_test_header */
+
+static void get_gcovr_version
+    (
+    int* major,
+    int* minor
+    )
+{
+/* Locals */
+FILE* proc;
+char buffer[10];
+
+/* Open process and read output. Expected: gcovr x.x */
+proc = popen( "gcovr --version", "r" );
+if( proc != NULL && fgets( buffer, 10, proc ) != NULL )
+    {
+    *major = buffer[6] - '0'; /* get int value of digit */
+    *minor = buffer[8] - '0'; /* get int value of digit */
+    pclose(proc);
+    }
+else
+    {
+    _test_error( "Could not identify gcovr version. Please run \"gcovr --version\"." );
+    }
+
+} /* get_gcovr_version */
