@@ -375,20 +375,20 @@ pass_counter++;
 /*******************************************************************************
 *                                                                              *
 * PROCEDURE:                                                                   * 
-* 		_test_set_type                                                         *
+* 		TEST_set_type                                                         *
 *                                                                              *
 * DESCRIPTION:                                                                 * 
 * 		Indicate the type of automated test being run.                         *
 *                                                                              *
 *******************************************************************************/
-void _test_set_type
+void TEST_set_type
     (
     TEST_TYPE test_type
     )
 {
 type_of_test = test_type;
 
-} /* _test_set_type */
+} /* TEST_set_type */
 
 
 /*******************************************************************************

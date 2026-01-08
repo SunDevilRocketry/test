@@ -121,6 +121,11 @@ void TEST_end_nested_case
     void
     );
 
+void TEST_set_type
+    (
+    TEST_TYPE test_type
+    );
+
 /* test_runner.c -- PRIVATE */
 void _test_init
     ( 
