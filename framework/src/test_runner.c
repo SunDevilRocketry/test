@@ -499,6 +499,16 @@ _test_end_group( "Check test environment" );
 
 } /* print_test_header */
 
+
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
+* 		get_gcovr_version                                                      *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+* 		Helper function to run "gcovr --version" and output the result.        *
+*                                                                              *
+*******************************************************************************/
 static void get_gcovr_version
     (
     int* major,
