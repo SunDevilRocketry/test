@@ -87,6 +87,7 @@ C_INCLUDES =                                           \
 -I$(ROOT_DIR)/mod/baro								\
 -I$(ROOT_DIR)/mod/buzzer								\
 -I$(ROOT_DIR)/mod/commands								\
+-I$(ROOT_DIR)/mod/error_sdr/						   \
 -I$(ROOT_DIR)/mod/servo								   \
 -I$(ROOT_DIR)/mod/ignition								   \
 -I$(ROOT_DIR)/mod/flash								   \

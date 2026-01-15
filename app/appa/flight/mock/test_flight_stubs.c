@@ -4,6 +4,7 @@
 #include "buzzer.h"
 #include "stm32h7xx_hal.h"
 #include "common.h"
+#include "error_sdr.h"
 #include "main.h"
 #include "led.h"
 #include "servo.h"

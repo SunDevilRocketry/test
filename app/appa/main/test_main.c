@@ -29,6 +29,7 @@ Project Includes
 
 /* Low-level modules */
 #include "common.h"
+#include "error_sdr.h"
 #include "baro.h"
 #include "buzzer.h"
 #include "commands.h"

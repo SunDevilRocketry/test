@@ -30,6 +30,7 @@ Project Includes
 #include "usb.h"
 #include "commands.h"
 #include "test_prelaunch.h"
+#include "error_sdr.h"
 
 /*------------------------------------------------------------------------------
 Global Variables 

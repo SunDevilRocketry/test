@@ -78,6 +78,7 @@ C_INCLUDES =                                           \
 -I$(ROOT_DIR)/mod/gps/								   \
 -I$(ROOT_DIR)/mod/buzzer/							   \
 -I$(ROOT_DIR)/mod/common/							   \
+-I$(ROOT_DIR)/mod/error_sdr/						   \
 -I$(ROOT_DIR)/mod/commands/							   \
 -I$(ROOT_DIR)/mod/sensor/							   \
 -I$(ROOT_DIR)/mod/ignition/							   \

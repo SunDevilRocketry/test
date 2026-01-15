@@ -1,4 +1,7 @@
 #ifndef STUBS /* recursive inclusion guard */
+
+#include "error_sdr.h"
+
 /* globals */
 extern bool was_gps_enabled;
 extern bool is_apogee_detected;

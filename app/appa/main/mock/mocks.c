@@ -15,6 +15,7 @@
 #include "servo.h"
 #include "ignition.h"
 #include "common.h"
+#include "error_sdr.h"
 #include "main.h"
 #include "led.h"
 #include "test_main.h"

@@ -20,11 +20,11 @@ Standard Includes
 Project Includes                                                                     
 ------------------------------------------------------------------------------*/
 #include "main.h"
+#include "common.h"
 #include "usb.h"
 #include "string.h"
 #include "led.h"
 #include "imu.h"
-#include "sdr_error.h"
 #include "buzzer.h"
 #include "flash.h"
 #include "sensor.h"

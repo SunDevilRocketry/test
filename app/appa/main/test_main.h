@@ -27,6 +27,7 @@ extern "C" {
 #include "baro.h"
 #include "servo.h"
 #include "common.h"
+#include "error_sdr.h"
 
 /*------------------------------------------------------------------------------
  Constants 
