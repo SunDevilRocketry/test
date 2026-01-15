@@ -77,6 +77,7 @@ C_INCLUDES =                                           \
 -I$(ROOT_DIR)/mod/sensor/							   \
 -I$(ROOT_DIR)/mod/imu/								   \
 -I$(ROOT_DIR)/mod/common							   \
+-I$(ROOT_DIR)/mod/error_sdr							   \
 -I$(ROOT_DIR)/mod/servo								   \
 -I$(ROOT_DIR)/mod/usb								   \
 -I$(ROOT_DIR)/mod/flash								   \
