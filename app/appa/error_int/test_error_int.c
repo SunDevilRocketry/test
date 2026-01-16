@@ -35,6 +35,7 @@ Global Variables
 
 /* local */
 static bool intercept_jmp_back;
+static bool default_handler_hit;
 
 /* breaking control flow */
 static int jmp_val;
@@ -42,6 +43,9 @@ static jmp_buf env_buffer;
 
 /* from mocks */
 extern int last_num_beeps;
+
+/* from error */
+extern ERROR_CALLBACK default_error_handler;
 
 /*------------------------------------------------------------------------------
 Macros
@@ -70,7 +74,26 @@ void TEST_CALLBACK_delay_ms
 /* Break standard control flow. Jump to the target. */
 longjmp( env_buffer, jmp_val );
 
-} /* TEST_CALLBACK_error_fail_fast */
+} /* TEST_CALLBACK_delay_ms */
+
+
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
+*       TEST_CALLBACK_dflt_handler	  				                   		   *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Stand-in for the default error handler to allow control flow to reach. *
+*                                                                              *
+*******************************************************************************/
+void TEST_CALLBACK_dflt_handler
+	(
+	ERROR_CODE error_code
+	)
+{
+default_handler_hit = true;
+
+} /* TEST_CALLBACK_delay_ms */
 
 
 /*******************************************************************************
@@ -137,7 +160,40 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 	TEST_end_nested_case();
 	}
 
-} /* test_launch_detect */
+} /* test_i2c_init_errors */
+
+
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
+*       test_callback_table_miss		  			                           *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Test the error handler fallback.									   *
+*                                                                              *
+*******************************************************************************/
+void test_callback_table_miss 
+	(
+	void
+    )
+{
+/*------------------------------------------------------------------------------
+ Set up test
+------------------------------------------------------------------------------*/
+default_error_handler.error_callback = TEST_CALLBACK_dflt_handler; // can't be reset
+default_handler_hit = false;
+
+/*------------------------------------------------------------------------------
+ Call FUT
+------------------------------------------------------------------------------*/
+error_fail_fast( ERROR_COMMON_CLOCK_CONFIG_ERROR );
+
+/*------------------------------------------------------------------------------
+ Verify Result
+------------------------------------------------------------------------------*/
+TEST_ASSERT_EQ_UINT( "Test whether the default handler was hit.", default_handler_hit, true );
+
+} /* test_callback_table_miss */
 
 
 /*******************************************************************************
@@ -160,7 +216,8 @@ Test Cases
 ------------------------------------------------------------------------------*/
 unit_test tests[] =
 	{
-	{ "I2C (IMU and Baro) initialization callbacks.", test_i2c_init_errors }
+	{ "I2C (IMU and Baro) initialization callbacks.", test_i2c_init_errors },
+	{ "Test callback table miss.", test_callback_table_miss } /* ensure you're done with the default handler! cannot reset. */
 	};
 
 /*------------------------------------------------------------------------------
