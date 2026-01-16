@@ -57,5 +57,5 @@ last_color = led_color;
 
 uint32_t HAL_GetTick()
 {
-return 0;
+return 0xDEADBEEF;
 }
