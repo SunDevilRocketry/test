@@ -1,0 +1,177 @@
+/*******************************************************************************
+*
+* FILE: 
+*      test_error_int.c
+*
+* DESCRIPTION: 
+*      Unit tests for the error functionality in APPA, including contract 
+*	   functions and partial mod coverage.
+*
+*******************************************************************************/
+
+
+/*------------------------------------------------------------------------------
+Standard Includes                                                                     
+------------------------------------------------------------------------------*/
+#include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+#include <setjmp.h> /* NEVER do this in production code. This is used to circumvent
+					   infinite loops. */
+
+/*------------------------------------------------------------------------------
+Project Includes                                                                     
+------------------------------------------------------------------------------*/
+#include "sdrtf_pub.h"
+#include "main.h"
+#include "sensor.h"
+#include "imu.h"
+#include "test.h"
+
+/*------------------------------------------------------------------------------
+Global Variables 
+------------------------------------------------------------------------------*/
+
+/* local */
+static bool intercept_jmp_back;
+
+/* breaking control flow */
+static int jmp_val;
+static jmp_buf env_buffer;
+
+/* from mocks */
+extern int last_num_beeps;
+
+/*------------------------------------------------------------------------------
+Macros
+------------------------------------------------------------------------------*/
+
+
+/*------------------------------------------------------------------------------
+Procedures: Tests // Define the tests used here
+------------------------------------------------------------------------------*/
+
+
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
+*       TEST_CALLBACK_delay_ms		  				                   		   *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Interrupts execution of the FUT and jumps back to the "setjmp" point.  *
+*                                                                              *
+*******************************************************************************/
+void TEST_CALLBACK_delay_ms
+	(
+	uint32_t time
+	)
+{
+/* Break standard control flow. Jump to the target. */
+longjmp( env_buffer, jmp_val );
+
+} /* TEST_CALLBACK_error_fail_fast */
+
+
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
+*       test_i2c_init_errors		  			                           	   *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Test the error handler for the i2c init errors.						   *
+*                                                                              *
+*******************************************************************************/
+void test_i2c_init_errors 
+	(
+	void
+    )
+{
+/*------------------------------------------------------------------------------
+Cases
+------------------------------------------------------------------------------*/
+struct test_case
+	{
+	const char* description;
+	ERROR_CODE error_input;
+	uint8_t num_beeps_expected;
+	};
+struct test_case cases[] =
+	{
+		{ "Normal: Baro Initialization Error", ERROR_BARO_INIT_ERROR, 1 },
+		{ "Normal: IMU Initialization Error", ERROR_IMU_INIT_ERROR, 2 },
+		{ "Normal: Baro I2C Initialization Error", ERROR_BARO_I2C_INIT_ERROR, 3 },
+		{ "Normal: IMU I2C Initialization Error", ERROR_IMU_I2C_INIT_ERROR, 4 },
+		{ "Normal: I2C HAL MSP Error", ERROR_I2C_HAL_MSP_ERROR, 5 },
+		{ "Normal: Baro Calibration Error", ERROR_BARO_CAL_ERROR, 6 }
+	};
+for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); test_num++ )
+	{
+	TEST_begin_nested_case( cases[test_num].description );
+
+
+	/*------------------------------------------------------------------------------
+	Set up mocks/stubs
+	------------------------------------------------------------------------------*/
+	stubs_reset();
+	set_delay_callback( TEST_CALLBACK_delay_ms );
+	intercept_jmp_back = false;
+
+	/*------------------------------------------------------------------------------
+	Call FUT
+	------------------------------------------------------------------------------*/
+	jmp_val = setjmp( env_buffer ); /* used to intercept errors */
+	if( !intercept_jmp_back )
+		{
+		intercept_jmp_back = true;
+		error_fail_fast( cases[ test_num ].error_input );
+		}
+
+	/*------------------------------------------------------------------------------
+	Verify results
+	------------------------------------------------------------------------------*/
+
+	/* Check error handling */
+	TEST_ASSERT_EQ_UINT( "Verify that the number of beeps equals the expected result.", last_num_beeps, cases[ test_num ].num_beeps_expected );
+
+	TEST_end_nested_case();
+	}
+
+} /* test_launch_detect */
+
+
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
+*       main			                                   			           *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Set up the testing enviroment, call tests, tear down the testing       *
+*		environment															   *
+*                                                                              *
+*******************************************************************************/
+int main
+	(
+	void
+	)
+{
+/*------------------------------------------------------------------------------
+Test Cases
+------------------------------------------------------------------------------*/
+unit_test tests[] =
+	{
+	{ "I2C (IMU and Baro) initialization callbacks.", test_i2c_init_errors }
+	};
+
+/*------------------------------------------------------------------------------
+Call the framework
+------------------------------------------------------------------------------*/
+TEST_set_type( TEST_TYPE_SW_INTEGRATION );
+TEST_INITIALIZE_TEST( "error_integration", tests );
+
+} /* main */
+
+
+/*******************************************************************************
+* END OF FILE                                                                  * 
+*******************************************************************************/
