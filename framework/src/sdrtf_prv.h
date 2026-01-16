@@ -40,6 +40,10 @@ extern "C" {
  Macros and Globals 
 ------------------------------------------------------------------------------*/
 #define TEST_MIN_SUPPORTED_GCC_VERSION 8
+#define TEST_MAX_SUPPORTED_GCC_VERSION 15
+
+#define TEST_MIN_SUPPORTED_GCOVR_VERSION 8
+#define TEST_MAX_SUPPORTED_GCOVR_VERSION 8
 
 /*------------------------------------------------------------------------------
  Typdefs 
