@@ -75,7 +75,7 @@ to_return.config_settings.pitch_yaw_control_constant_p = 0.0f; /* active control
 to_return.config_settings.pitch_yaw_control_constant_i = 0.0f; /* active control disabled */
 to_return.config_settings.pitch_yaw_control_constant_d = 0.0f; /* active control disabled */
 to_return.config_settings.control_max_deflection_angle = 0;	/* active control disabled */
-to_return.config_settings.flash_rate_limt = 0;			/* unit: Hz */
+to_return.config_settings.flash_rate_limit = 0;			/* unit: Hz */
 return to_return;
 }
 
@@ -99,20 +99,14 @@ void test_store_frame
 	)
 {
 /*------------------------------------------------------------------------------
-Cases
-------------------------------------------------------------------------------*/
-
-/*------------------------------------------------------------------------------
 Local variables
 ------------------------------------------------------------------------------*/
 HFLASH_BUFFER flash_handle;
 uint32_t time = 123; /* arbitrary value */
 uint32_t address;
+sensor_data.gps_utc_time = 118.2026;
 
 reset_stubs();
-reset_mock_flash();
-
-sensor_data.imu_data.accel_x = 77;
 
 mock_flash_memory[0] = 1;
 mock_flash_memory[1] = 0;
@@ -124,7 +118,6 @@ Call FUT
 store_frame 
 	(
 	&flash_handle,
-	&sensor_data,
 	time,
 	&address
 	);
@@ -133,10 +126,10 @@ store_frame
 /*------------------------------------------------------------------------------
 Verify results
 ------------------------------------------------------------------------------*/
-uint8_t imu_data_index = 6;
+volatile uint32_t sensor_data_index = sensor_frame_size + 6;
 TEST_ASSERT_EQ_UINT( "Test that the time was placed into flash memory", time, mock_flash_memory[sensor_frame_size + 2] );
-TEST_ASSERT_EQ_MEMORY( "Test that IMU data was stored", &mock_flash_memory[sensor_frame_size + imu_data_index], &(sensor_data.imu_data), 10 * sizeof(uint16_t) );
-
+TEST_ASSERT_EQ_MEMORY( "Test that data was stored", &mock_flash_memory[sensor_data_index], &sensor_data, sizeof( SENSOR_DATA ) ); 	/* some data is stored out of order, so this doesn't work with baro, for example */
+TEST_ASSERT_EQ_UINT( "Test that the address was set correctly", address, 2 * sensor_frame_size );	/* address after preset data + one sensor frame */
 } /* test_store_frame */
 
 
@@ -180,7 +173,6 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 	Local variables
 	------------------------------------------------------------------------------*/
 	reset_stubs();
-	reset_mock_flash();
 
 	HFLASH_BUFFER flash_handle;
 	uint32_t address;
@@ -202,7 +194,6 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 	FLASH_STATUS result = read_preset
 		(
 		&flash_handle,
-		&preset_data,
 		&address
 		);
 
@@ -243,7 +234,6 @@ uint32_t address;
 Set up mocks/stubs
 ------------------------------------------------------------------------------*/
 reset_stubs();
-reset_mock_flash();
 
 /* store random junk in first block of memory */
 memset( &mock_flash_memory[0], 1, sizeof( PRESET_DATA ) + 2 );
@@ -254,7 +244,6 @@ Call FUT
 FLASH_STATUS result = write_preset
 	(
 	&flash_handle,
-	&preset_data,
 	&address
 	);
 
@@ -286,7 +275,6 @@ void test_flash_erase_preserve_preset
 Local variables
 ------------------------------------------------------------------------------*/
 reset_stubs();
-reset_mock_flash();
 
 HFLASH_BUFFER flash_handle;
 uint32_t address;
@@ -376,7 +364,6 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 	Set up mocks/stubs
 	------------------------------------------------------------------------------*/
 	reset_stubs();
-	reset_mock_flash();
 	preset_data = get_default_configs();
 	if ( cases[test_num].sensor_frame_size_initialized )
 		{
@@ -392,7 +379,6 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 	------------------------------------------------------------------------------*/
 	FLASH_STATUS result = get_sensor_frame
 		(
-		&sensor_data,
 		buffer,
 		time
 		);
@@ -423,8 +409,6 @@ int main
 	void
 	)
 {
-reset_mock_flash();
-
 /*------------------------------------------------------------------------------
 Test Cases
 ------------------------------------------------------------------------------*/

@@ -2,12 +2,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include "test_flash_appa_stubs.h"
+#include "main.h"
 #include "flash.h"
 #include "buzzer.h"
 #include "led.h"
 
 /* globals */
 extern uint8_t sensor_frame_size;
+extern FLIGHT_COMP_STATE_TYPE flight_computer_state;
 
 /* Test-only globals */
 uint8_t mock_flash_memory[FLASH_MEMORY_SIZE];
@@ -23,14 +25,7 @@ void reset_stubs
 sensor_frame_size = 0;
 flash_busy_calls = 0;
 flash_read_return = FLASH_OK;
-}
-
-void reset_mock_flash
-	(
-	void
-	)
-{
-memset( &mock_flash_memory, FLASH_ERASE_VALUE, FLASH_MEMORY_SIZE );
+memset( &mock_flash_memory, FLASH_ERASE_VALUE, FLASH_MEMORY_SIZE ); /* Reset mock flash*/
 }
 
 /* Sets the LED to a color from the LED_COLOR_CODES enum */
@@ -45,6 +40,15 @@ BUZZ_STATUS buzzer_multi_beeps
 	)
 {
 return BUZZ_OK;
+}
+
+/* fsm_appa.c */
+FLIGHT_COMP_STATE_TYPE get_fc_state
+	(
+	void
+	)
+{
+return flight_computer_state;
 }
 
 /* Check if the flash chip is ready for write operations */
@@ -66,6 +70,7 @@ else
 
 }
 
+/* flash.c */
 /* Write bytes from a flash buffer to the external flash */
 FLASH_STATUS flash_write
     (
