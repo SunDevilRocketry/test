@@ -358,7 +358,7 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 	HFLASH_BUFFER flash_handle;
 	uint8_t max_sensor_frame_size = 70 + sizeof( IMU_CONVERTED ) + sizeof( STATE_ESTIMATION );
 	uint8_t buffer[max_sensor_frame_size];
-	uint32_t time = 123; 
+	uint32_t time = 543210; 
 
 	/*------------------------------------------------------------------------------
 	Set up mocks/stubs
@@ -387,6 +387,8 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 	Verify results
 	------------------------------------------------------------------------------*/
 	TEST_ASSERT_EQ_UINT( "Test for expected get_sensor_frame return", result, cases[test_num].expected_return );
+	TEST_ASSERT_EQ_UINT( "Test that save bit is placed in buffer", buffer[0], 1 );
+	TEST_ASSERT_EQ_MEMORY( "Test that time is placed in buffer", &buffer[2], &time, 4 );
 
 	TEST_end_nested_case();
 	}
