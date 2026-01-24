@@ -122,7 +122,6 @@ store_frame
 	&address
 	);
 
-
 /*------------------------------------------------------------------------------
 Verify results
 ------------------------------------------------------------------------------*/
@@ -130,6 +129,7 @@ volatile uint32_t sensor_data_index = sensor_frame_size + 6;
 TEST_ASSERT_EQ_UINT( "Test that the time was placed into flash memory", time, mock_flash_memory[sensor_frame_size + 2] );
 TEST_ASSERT_EQ_MEMORY( "Test that data was stored", &mock_flash_memory[sensor_data_index], &sensor_data, sizeof( SENSOR_DATA ) ); 	/* some data is stored out of order, so this doesn't work with baro, for example */
 TEST_ASSERT_EQ_UINT( "Test that the address was set correctly", address, 2 * sensor_frame_size );	/* address after preset data + one sensor frame */
+
 } /* test_store_frame */
 
 
@@ -196,7 +196,6 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 		&flash_handle,
 		&address
 		);
-
 
 	/*------------------------------------------------------------------------------
 	Verify results
