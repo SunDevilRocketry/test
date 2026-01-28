@@ -221,7 +221,7 @@ return BUZZ_OK;
 }
 
 /* Dump all sensor readings to console */
-SENSOR_STATUS sensor_dump_IT
+SENSOR_STATUS sensor_dump
 	(
     SENSOR_DATA* sensor_data_ptr 
     )

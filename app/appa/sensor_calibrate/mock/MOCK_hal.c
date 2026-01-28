@@ -59,7 +59,7 @@ HAL_StatusTypeDef HAL_UART_Transmit
 return mocked_return;
 }
 
-SENSOR_STATUS sensor_dump_IT( SENSOR_DATA* sensor_data_ptr )
+SENSOR_STATUS sensor_dump( SENSOR_DATA* sensor_data_ptr )
 {
 memcpy( sensor_data_ptr, &sensor_dump_mock[sensor_dump_calls], sizeof( SENSOR_DATA ) );
 sensor_dump_calls++;
