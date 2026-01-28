@@ -25,3 +25,8 @@ ERROR_CODE get_last_error
     (
     void
     );
+
+uint32_t HAL_GetTick
+    (
+        void
+    );

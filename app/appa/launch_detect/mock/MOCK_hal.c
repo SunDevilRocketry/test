@@ -74,3 +74,8 @@ ERROR_CODE ret = last_error;
 last_error = 0;
 return ret;
 }
+
+uint32_t HAL_GetTick(void)
+{
+    return 0;
+}
