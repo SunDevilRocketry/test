@@ -86,8 +86,8 @@ preset_data.config_settings.launch_detect_baro_threshold = 1000;
 preset_data.config_settings.launch_detect_accel_samples = 10;
 preset_data.config_settings.launch_detect_baro_samples = 10;
 
-uint32_t z = 0;	
-uint32_t* sample_ld_time = &z;
+uint32_t sample_ld_time = 0;
+uint32_t* sample_ld_time_addr = &sample_ld_time;
 
 /* Step: Execute tests */
 for ( int test_num = 0; test_num < NUM_CASES_LAUNCH_DETECT; test_num++ )
@@ -119,7 +119,9 @@ for ( int test_num = 0; test_num < NUM_CASES_LAUNCH_DETECT; test_num++ )
 			sensor_data.imu_data.imu_converted.accel_z = inputsAcc[test_num][i];
 			sensor_data.baro_pressure = inputsBaro[test_num][i];
 
-			launch_detection(sample_ld_time);
+			launch_detection(&sample_ld_time);
+
+			TEST_ASSERT_EQ_MEMORY("Test that sample launch detect time address matches the expected.", &sample_ld_time, sample_ld_time_addr, 8);
 
 			TEST_ASSERT_EQ_SINT( "Test that the accel flag is/isn't set.", flight_computer_state == FC_STATE_FLIGHT, expected[test_num][i] );
 
@@ -133,7 +135,8 @@ for ( int test_num = 0; test_num < NUM_CASES_LAUNCH_DETECT; test_num++ )
 	sensor_data.imu_data.imu_converted.accel_y = 0;
 	sensor_data.imu_data.imu_converted.accel_z = 0;
 	sensor_data.baro_pressure = 0;
-	launch_detection(sample_ld_time);
+	launch_detection(&sample_ld_time);
+	sample_ld_time = 0;
 
 	TEST_end_nested_case();
 	}
