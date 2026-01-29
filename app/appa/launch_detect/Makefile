@@ -44,6 +44,7 @@ MOD_DIR = $(ROOT_DIR)/mod
 TEST_SOURCES =                                   				  \
 test_launch_detect.c                       					      \
 mock/MOCK_hal.c													  \
+mock/test_launch_detect_stubs.c
 
 # Tested Source Files
 COV_C_SOURCES =													  \

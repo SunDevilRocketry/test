@@ -86,6 +86,8 @@ preset_data.config_settings.launch_detect_baro_threshold = 1000;
 preset_data.config_settings.launch_detect_accel_samples = 10;
 preset_data.config_settings.launch_detect_baro_samples = 10;
 
+uint32_t sample_ld_time = 0;
+
 /* Step: Execute tests */
 for ( int test_num = 0; test_num < NUM_CASES_LAUNCH_DETECT; test_num++ )
 	{
@@ -108,16 +110,19 @@ for ( int test_num = 0; test_num < NUM_CASES_LAUNCH_DETECT; test_num++ )
 		{
 		preset_data.config_settings.enabled_features |= LAUNCH_DETECT_BARO_ENABLED;
 		}
-
+		
 	for ( int i = 0; i < NUM_EXPECTED_SAMPLES; i++ )
 		{
 			sensor_data.imu_data.imu_converted.accel_x = inputsAcc[test_num][i];
 			sensor_data.imu_data.imu_converted.accel_y = inputsAcc[test_num][i];
 			sensor_data.imu_data.imu_converted.accel_z = inputsAcc[test_num][i];
 			sensor_data.baro_pressure = inputsBaro[test_num][i];
-			launch_detection();
-			TEST_ASSERT_EQ_SINT( "Test that the accel flag is/isn't set.", flight_computer_state == FC_STATE_FLIGHT, expected[test_num][i] );
 
+			launch_detection(&sample_ld_time);
+
+			TEST_ASSERT_EQ_SINT( "Test that the accel flag is/isn't set.", flight_computer_state == FC_STATE_FLIGHT, expected[test_num][i] );
+			TEST_ASSERT_EQ_UINT( "Test that the launch detect time is updated correctly.", sample_ld_time, expected[test_num][i] );	
+			
 			if( i == 0 && test_num == 1 )
 				{
 				TEST_ASSERT_EQ_SINT( "Test that the error code matches the expected.", get_last_error(), ERROR_UNSUPPORTED_OP_ERROR );
@@ -128,7 +133,8 @@ for ( int test_num = 0; test_num < NUM_CASES_LAUNCH_DETECT; test_num++ )
 	sensor_data.imu_data.imu_converted.accel_y = 0;
 	sensor_data.imu_data.imu_converted.accel_z = 0;
 	sensor_data.baro_pressure = 0;
-	launch_detection();
+	launch_detection(&sample_ld_time);
+	sample_ld_time = 0;
 
 	TEST_end_nested_case();
 	}
