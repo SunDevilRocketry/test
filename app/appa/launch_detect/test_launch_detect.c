@@ -87,7 +87,6 @@ preset_data.config_settings.launch_detect_accel_samples = 10;
 preset_data.config_settings.launch_detect_baro_samples = 10;
 
 uint32_t sample_ld_time = 0;
-uint32_t* sample_ld_time_addr = &sample_ld_time;
 
 /* Step: Execute tests */
 for ( int test_num = 0; test_num < NUM_CASES_LAUNCH_DETECT; test_num++ )
@@ -121,10 +120,9 @@ for ( int test_num = 0; test_num < NUM_CASES_LAUNCH_DETECT; test_num++ )
 
 			launch_detection(&sample_ld_time);
 
-			TEST_ASSERT_EQ_MEMORY("Test that sample launch detect time address matches the expected.", &sample_ld_time, sample_ld_time_addr, 8);
-
 			TEST_ASSERT_EQ_SINT( "Test that the accel flag is/isn't set.", flight_computer_state == FC_STATE_FLIGHT, expected[test_num][i] );
-
+			TEST_ASSERT_EQ_UINT( "Test that the launch detect time is updated correctly.", sample_ld_time, expected[test_num][i] );	
+			
 			if( i == 0 && test_num == 1 )
 				{
 				TEST_ASSERT_EQ_SINT( "Test that the error code matches the expected.", get_last_error(), ERROR_UNSUPPORTED_OP_ERROR );

@@ -77,5 +77,5 @@ return ret;
 
 uint32_t HAL_GetTick(void)
 {
-    return 0;
+    return 1;
 }
