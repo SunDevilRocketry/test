@@ -89,6 +89,7 @@ C_INCLUDES =                                           \
 -I$(ROOT_DIR)/mod/usb/                                 \
 -I$(ROOT_DIR)/mod/led/                                 \
 -I$(ROOT_DIR)/mod/imu/                                 \
+-I$(ROOT_DIR)/mod/error_sdr/                           \
 -I$(LIB_DIR)                                           \
 -I$(ROOT_DIR)/lib/util                                 \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc          \

@@ -38,7 +38,7 @@ Project Includes
 #include "buzzer.h"
 #include "led.h"
 #include "test_fsm_appa_stubs.h"   /* New stub header analogous to test_flight_stubs.h */
-
+#include "error_sdr.h"
 
 /*------------------------------------------------------------------------------
 Global Variables

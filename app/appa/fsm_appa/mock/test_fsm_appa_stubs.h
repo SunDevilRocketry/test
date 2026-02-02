@@ -7,6 +7,8 @@
 #include "sensor.h"
 #include "usb.h"
 #include "flash.h"
+#include "error_sdr.h"
+
 
 /* globals */
 extern uint8_t stub_led_set_color_calls;
