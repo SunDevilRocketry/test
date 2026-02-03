@@ -89,6 +89,13 @@ void test_main
 	) 
 {
 
+/** test_main will be considered the place where structural requirements
+*   are verified. The following requirements are structural and do not
+*	have any verify statements associated with them:
+*	
+*   - APPA_Req-0000014
+*/
+
 struct test_case 
 	{
 	const char* description;
