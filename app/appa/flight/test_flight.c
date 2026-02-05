@@ -242,7 +242,7 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 	if( !intercept_jmp_back )
 		{
 		intercept_jmp_back = true;
-		flight_launch_detect
+		flight_loop
 			(
 			&ld_start_time,
 			&sensor_status_param,
@@ -408,7 +408,7 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 	if( !intercept_jmp_back )
 		{
 		intercept_jmp_back = true;
-		flight_in_flight
+		flight_loop
 			(
 			&ld_start_time,
 			&sensor_status_param,
@@ -608,7 +608,7 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 	if( !intercept_jmp_back )
 		{
 		intercept_jmp_back = true;
-		flight_descent
+		flight_loop
 			(
 			&ld_start_time,
 			&sensor_status_param,
@@ -802,7 +802,7 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 	/*------------------------------------------------------------------------------
 	Call FUT
 	------------------------------------------------------------------------------*/
-	flight_in_flight
+	flight_loop
 			(
 			&ld_start_time,
 			&sensor_status_param,

@@ -388,19 +388,13 @@ void sensor_frame_size_init
 }
 
 /* launch_detect.c */
-void launch_detection
+bool launch_detection
 	(
 	uint32_t* launch_detect_time
 	)
 {
-if( ld_expected )
-	{
-	flight_computer_state = FC_STATE_ASCENT;
-	}
-else
-	{
-	flight_computer_state = FC_STATE_LAUNCH_DETECT;
-	}
+return ld_expected;
+
 }
 
 /* flight.c */
@@ -437,4 +431,9 @@ void fc_state_update
 	)
 {
 flight_computer_state = new_state;
+}
+
+FLIGHT_COMP_STATE_TYPE get_fc_state()
+{
+return flight_computer_state;
 }
