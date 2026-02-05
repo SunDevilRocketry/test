@@ -185,8 +185,7 @@ void test_flight_launch_detect
 {
 /*------------------------------------------------------------------------------
 Tested Reqs
-APPA-Req-0000021, APPA-Req-0000022, APPA-Req-0000023, APPA-Req-0000032, 
-APPA-Req-0000033
+APPA-Req-0000021, APPA-Req-0000023
 ------------------------------------------------------------------------------*/
 
 /*------------------------------------------------------------------------------
@@ -269,6 +268,7 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 	else
 		{
 		/* State transition logic */
+		/* APPA-Req-0000022, APPA-Req-0000032, APPA-Req-0000033 */
 		if( cases[test_num].launch_detected )
 			{
 			TEST_ASSERT_EQ_UINT( "Test that the state has been advanced.", flight_computer_state, FC_STATE_FLIGHT );
