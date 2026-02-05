@@ -265,7 +265,7 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 		/* State transition logic */
 		if( cases[test_num].launch_detected )
 			{
-			TEST_ASSERT_EQ_UINT( "Test that the state has been advanced.", flight_computer_state, FC_STATE_FLIGHT );
+			TEST_ASSERT_EQ_UINT( "Test that the state has been advanced.", flight_computer_state, FC_STATE_ASCENT );
 			}
 		else
 			{
@@ -356,7 +356,7 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 	Set up mocks/stubs
 	------------------------------------------------------------------------------*/
 	stubs_reset();
-	flight_computer_state = FC_STATE_FLIGHT;
+	flight_computer_state = FC_STATE_ASCENT;
 	reported_error = MAX_UINT_32;
 	set_return_HAL_GetTick( cases[test_num].curr_tick );
 	set_return_sensor_dump( cases[test_num].sensor_status_return );
@@ -431,11 +431,11 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 		/* State transition logic */
 		if( cases[test_num].apogee_detected )
 			{
-			TEST_ASSERT_EQ_UINT( "Test that the state has been advanced.", flight_computer_state, FC_STATE_POST_APOGEE );
+			TEST_ASSERT_EQ_UINT( "Test that the state has been advanced.", flight_computer_state, FC_STATE_APOGEE );
 			}
 		else
 			{
-			TEST_ASSERT_EQ_UINT( "Test that the state has remained constant.", flight_computer_state, FC_STATE_FLIGHT );
+			TEST_ASSERT_EQ_UINT( "Test that the state has remained constant.", flight_computer_state, FC_STATE_ASCENT );
 			}
 
 		/* Timeout */
@@ -511,7 +511,7 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 	set_return_ign_deploy_drogue(cases[test_num].drogue_status_returns);
 	set_return_ign_deploy_main(cases[test_num].main_status_returns);
 	preset_data.config_settings.enabled_features = cases[test_num].enabled_features;
-	flight_computer_state = FC_STATE_POST_APOGEE;
+	flight_computer_state = FC_STATE_APOGEE;
 
 	/*------------------------------------------------------------------------------
 	Call FUT
@@ -523,7 +523,7 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 	------------------------------------------------------------------------------*/
 	TEST_ASSERT_EQ_UINT("Test that main chute deployment was called the right number of times.", get_num_calls_ign_deploy_main(), cases[test_num].exp_num_attempts_needed_main);
 	TEST_ASSERT_EQ_UINT("Test that drogue chute deployment was called the right number of times.", get_num_calls_ign_deploy_drogue(), cases[test_num].exp_num_attempts_needed_drogue);
-	TEST_ASSERT_EQ_UINT("Test that the state was updated.", flight_computer_state, FC_STATE_DEPLOYED);
+	TEST_ASSERT_EQ_UINT("Test that the state was updated.", flight_computer_state, FC_STATE_DESCENT);
 
 	TEST_end_nested_case();
 	}
@@ -583,7 +583,7 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 	Set up mocks/stubs
 	------------------------------------------------------------------------------*/
 	stubs_reset();
-	flight_computer_state = FC_STATE_DEPLOYED;
+	flight_computer_state = FC_STATE_DESCENT;
 	reported_error = MAX_UINT_32;
 	set_return_HAL_GetTick( cases[test_num].curr_tick );
 	set_return_sensor_dump( cases[test_num].sensor_status_return );
@@ -628,7 +628,7 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 		}
 	else
 		{
-		TEST_ASSERT_EQ_UINT( "Test that the state has remained constant.", flight_computer_state, FC_STATE_DEPLOYED );
+		TEST_ASSERT_EQ_UINT( "Test that the state has remained constant.", flight_computer_state, FC_STATE_DESCENT );
 
 		/* Timeout */
 		if( cases[test_num].flash_full )
@@ -794,7 +794,7 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 	Set up mocks/stubs
 	------------------------------------------------------------------------------*/
 	stubs_reset();
-	flight_computer_state = FC_STATE_FLIGHT;
+	flight_computer_state = FC_STATE_ASCENT;
 	set_return_HAL_GetTick( cases[test_num].current_tick );
 	last_flash_timestamp = 0;
 	preset_data.config_settings.flash_rate_limit = cases[test_num].flash_rate_limit;

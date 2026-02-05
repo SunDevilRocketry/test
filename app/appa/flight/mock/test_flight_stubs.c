@@ -395,7 +395,7 @@ void launch_detection
 {
 if( ld_expected )
 	{
-	flight_computer_state = FC_STATE_FLIGHT;
+	flight_computer_state = FC_STATE_ASCENT;
 	}
 else
 	{

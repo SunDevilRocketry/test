@@ -120,7 +120,7 @@ for ( int test_num = 0; test_num < NUM_CASES_LAUNCH_DETECT; test_num++ )
 
 			launch_detection(&sample_ld_time);
 
-			TEST_ASSERT_EQ_SINT( "Test that the accel flag is/isn't set.", flight_computer_state == FC_STATE_FLIGHT, expected[test_num][i] );
+			TEST_ASSERT_EQ_SINT( "Test that the accel flag is/isn't set.", flight_computer_state == FC_STATE_ASCENT, expected[test_num][i] );
 			TEST_ASSERT_EQ_UINT( "Test that the launch detect time is updated correctly.", sample_ld_time, expected[test_num][i] );	
 			
 			if( i == 0 && test_num == 1 )
