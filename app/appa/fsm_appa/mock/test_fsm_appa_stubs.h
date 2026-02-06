@@ -1,73 +1,69 @@
-#ifndef TEST_FSM_APPA_STUBS_H /* recursive inclusion guard */
+/*******************************************************************************
+*                                                                              *
+* FILE:                                                                        * 
+*       test_fsm_appa_stubs.h                                                  *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Stub declarations for FSM APPA unit tests                              *
+*                                                                              *
+*******************************************************************************/
+
+
+#ifndef TEST_FSM_APPA_STUBS_H
 #define TEST_FSM_APPA_STUBS_H
 
+
+/*------------------------------------------------------------------------------
+Includes
+------------------------------------------------------------------------------*/
 #include <stdint.h>
-#include "common.h"
-#include "servo.h"
-#include "sensor.h"
+#include <stdbool.h>
+#include "main.h"
+#include "led.h"
 #include "usb.h"
-#include "flash.h"
+#include "sensor.h"
 #include "error_sdr.h"
 
+extern uint8_t led_set_color_calls;
+extern LED_COLOR_CODES last_led_color;
+extern uint32_t appa_fsm_loop_count;
+extern uint32_t appa_fsm_loop_limit;
+extern bool exit_after_case;
 
-/* globals */
-extern uint8_t stub_led_set_color_calls;
-extern uint8_t stub_buzzer_multi_beeps_calls;
-extern uint8_t stub_buzzer_beep_calls;
-extern uint8_t stub_sensor_start_IT_calls;
 
-extern bool    stub_prelaunch_called;
-extern bool    stub_flight_calib_called;
-extern bool    stub_flight_launch_detect_called;
-extern bool    stub_flight_in_flight_called;
-extern bool    stub_flight_deploy_called;
-extern bool    stub_flight_descent_called;
+/*------------------------------------------------------------------------------
+Types
+------------------------------------------------------------------------------*/
+typedef struct
+    {
+    uint8_t servo_num;
+    uint16_t position;
+    } MOTOR_DRIVE_CALL;
 
-extern USB_STATUS   stub_usb_status_return;
-extern SENSOR_STATUS sensor_status_return;
 
-extern SERVO_PRESET servo_angles;
+/*------------------------------------------------------------------------------
+Function Prototypes
+------------------------------------------------------------------------------*/
 
-extern uint32_t systick;
-extern uint32_t systick_calls;
+/* Stub reset */
+void stubs_reset( void );
 
-extern uint16_t preset_preserving_flash_erase_calls;
-extern uint16_t flash_busy_calls;
-extern uint16_t flash_busy_counts;
+/* State management */
+void set_fc_state_direct( FLIGHT_COMP_STATE_TYPE state );
 
-extern bool ld_expected;
-extern bool is_apogee_detected;
-extern uint16_t sensor_dump_calls;
+/* Error callback */
+void set_error_callback( void (*callback)(ERROR_CODE) );
 
-/* functions */
-void stubs_reset
-    (
-    void
-    );
+/* Return value setters */
+void set_return_HAL_GetTick( uint32_t value );
 
-void set_error_callback
-    (
-    void ( *input_callback )( ERROR_CODE )
-    );
+/* Call count getters */
+uint8_t get_num_calls_HAL_GetTick( void );
 
-void set_return_launch_detection
-    (
-    bool expected
-    );
-
-void set_return_HAL_GetTick
-    (
-    uint32_t ret
-    );
-
-SERVO_PRESET get_servo_angles_struct
-    (
-    void
-    );
-
-void set_loop_exit_after_n_iterations
-    (
-    uint8_t n
-    );
 
 #endif /* TEST_FSM_APPA_STUBS_H */
+
+
+/*******************************************************************************
+* END OF FILE                                                                  * 
+*******************************************************************************/

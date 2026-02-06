@@ -1,344 +1,335 @@
 /*******************************************************************************
-*
-* FILE:
-*      test_fsm_appa_stubs.c
-*
-* DESCRIPTION:
-*      Minimal stubs and helpers for APPA FSM unit tests.
-*
+*                                                                              *
+* FILE:                                                                        * 
+*       test_fsm_appa_stubs.c                                                  *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Stub implementations for FSM APPA unit tests                           *
+*                                                                              *
 *******************************************************************************/
 
-#include <stdint.h>
 
-
-/* HAL UID stubs for unit tests (static to avoid linkage conflicts) */
-static uint32_t HAL_GetUIDw0(void) { return 0u; }
-static uint32_t HAL_GetUIDw1(void) { return 0u; }
-static uint32_t HAL_GetUIDw2(void) { return 0u; }
-
-#include <stddef.h>
-#include <string.h>
-#include "buzzer.h"
-#include "common.h"
-#include "main.h"
-#include "led.h"
-#include "servo.h"
-#include "sensor.h"
-#include "usb.h"
-#include "flash.h"
+/*------------------------------------------------------------------------------
+Includes
+------------------------------------------------------------------------------*/
 #include "test_fsm_appa_stubs.h"
+#include <string.h>
 
 
 /*------------------------------------------------------------------------------
-Globals
+External Variables (from fsm_appa.c)
 ------------------------------------------------------------------------------*/
-
-//extern FLIGHT_COMP_STATE_TYPE flight_computer_state;
-
-/* Error callback used by tests to intercept error_fail_fast */
-void ( *error_callback )( ERROR_CODE ) = NULL;
-
-/* Simple counters / flags for assertions in test_fsm_appa.c */
-uint8_t stub_led_set_color_calls         = 0;
-uint8_t stub_buzzer_multi_beeps_calls    = 0;
-uint8_t stub_buzzer_beep_calls           = 0;
-uint8_t stub_sensor_start_IT_calls       = 0;
-
-bool    stub_prelaunch_called            = false;
-bool    stub_flight_calib_called         = false;
-bool    stub_flight_launch_detect_called = false;
-bool    stub_flight_in_flight_called     = false;
-bool    stub_flight_deploy_called        = false;
-bool    stub_flight_descent_called       = false;
-
-/* USB status for prelaunch_terminal */
-USB_STATUS stub_usb_status_return        = USB_OK;
-
-/* Sensor behavior */
-SENSOR_STATUS sensor_status_return       = SENSOR_OK;
-
-/* Servo angles used for simple motor_drive verification */
-SERVO_PRESET servo_angles                = { 45, 45, 45, 45 };
-
-/* Systick behavior */
-uint32_t systick                         = 0;
-uint32_t systick_calls                   = 0;
-
-/* Flash behavior (for timeout / busy tests if needed later) */
-uint16_t preset_preserving_flash_erase_calls = 0;
-uint16_t flash_busy_calls                = 0;
-uint16_t flash_busy_counts               = 0;
-
-/* launch_detect/apogee flags (kept for consistency, but FSM tests do not rely heavily on them) */
-bool ld_expected                         = false;
-bool is_apogee_detected                  = false;
-
-/* sensor_dump watchdog */
-uint16_t sensor_dump_calls               = 0;
-
-/* Controls how many iterations appa_fsm's while loop executes before forcing exit */
-static uint8_t loop_iterations_before_exit = 0;
-static uint8_t loop_iteration_counter      = 0;
+extern FLIGHT_COMP_STATE_TYPE flight_computer_state;
 
 
 /*------------------------------------------------------------------------------
-Helpers
+Stub Global Variables
+------------------------------------------------------------------------------*/
+uint8_t led_set_color_calls = 0;
+LED_COLOR_CODES last_led_color = 1;
+uint8_t buzzer_beep_calls = 0;
+uint8_t buzzer_multi_beeps_calls = 0;
+uint8_t motor_drive_calls = 0;
+MOTOR_DRIVE_CALL motor_drive_history[10];
+USB_STATUS prelaunch_terminal_return = USB_OK;
+uint8_t prelaunch_terminal_calls = 0;
+SENSOR_STATUS sensor_start_IT_return = SENSOR_OK;
+uint8_t sensor_start_IT_calls = 0;
+uint8_t flight_calib_calls = 0;
+uint8_t flight_launch_detect_calls = 0;
+uint8_t flight_in_flight_calls = 0;
+uint8_t flight_deploy_calls = 0;
+uint8_t flight_descent_calls = 0;
+bool force_fc_state_max_exit = false;
+uint32_t HAL_GetTick_return = 0;
+uint32_t HAL_GetTick_calls = 0;
+uint32_t appa_fsm_loop_count;
+uint32_t appa_fsm_loop_limit = 1;
+
+
+
+
+/*------------------------------------------------------------------------------
+Error Callback
+------------------------------------------------------------------------------*/
+static void (*error_callback)(ERROR_CODE) = NULL;
+
+
+/*------------------------------------------------------------------------------
+Stub Implementations
 ------------------------------------------------------------------------------*/
 
+
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
+*       stubs_reset                                                            *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Reset all stub counters and state                                      *
+*                                                                              *
+*******************************************************************************/
 void stubs_reset
     (
     void
     )
 {
-error_callback                     = NULL;
+led_set_color_calls = 0;
+last_led_color = 0;
+buzzer_beep_calls = 0;
+buzzer_multi_beeps_calls = 0;
+motor_drive_calls = 0;
+memset( motor_drive_history, 0, sizeof(motor_drive_history) );
+prelaunch_terminal_return = USB_OK;
+prelaunch_terminal_calls = 0;
+sensor_start_IT_return = SENSOR_OK;
+sensor_start_IT_calls = 0;
+flight_calib_calls = 0;
+flight_launch_detect_calls = 0;
+flight_in_flight_calls = 0;
+flight_deploy_calls = 0;
+flight_descent_calls = 0;
+force_fc_state_max_exit = false;
+HAL_GetTick_return = 0;
+HAL_GetTick_calls = 0;
+error_callback = NULL;
 
-stub_led_set_color_calls           = 0;
-stub_buzzer_multi_beeps_calls      = 0;
-stub_buzzer_beep_calls             = 0;
-stub_sensor_start_IT_calls         = 0;
+} /* stubs_reset */
 
-stub_prelaunch_called              = false;
-stub_flight_calib_called           = false;
-stub_flight_launch_detect_called   = false;
-stub_flight_in_flight_called       = false;
-stub_flight_deploy_called          = false;
-stub_flight_descent_called         = false;
 
-stub_usb_status_return             = USB_OK;
+bool exit_after_case = false;
 
-sensor_status_return               = SENSOR_OK;
-
-servo_angles.rp_servo1             = 45;
-servo_angles.rp_servo2             = 45;
-servo_angles.rp_servo3             = 45;
-servo_angles.rp_servo4             = 45;
-
-systick                            = 0;
-systick_calls                      = 0;
-
-preset_preserving_flash_erase_calls= 0;
-flash_busy_calls                   = 0;
-flash_busy_counts                  = 0;
-
-ld_expected                        = false;
-is_apogee_detected                 = false;
-
-sensor_dump_calls                  = 0;
-
-loop_iterations_before_exit        = 0;
-loop_iteration_counter             = 0;
+static void exit_fsm_after_case(void)
+{
+    if (exit_after_case)
+    {
+        set_fc_state_direct(FC_STATE_MAX + 1);
+    }
 }
 
 
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
+*       set_fc_state_direct                                                    *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Directly set flight computer state (bypass validation)                 *
+*                                                                              *
+*******************************************************************************/
+void set_fc_state_direct
+    (
+    FLIGHT_COMP_STATE_TYPE state
+    )
+{
+flight_computer_state = state;
+} /* set_fc_state_direct */
+
+
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
+*       set_error_callback                                                     *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Set error callback function                                            *
+*                                                                              *
+*******************************************************************************/
 void set_error_callback
     (
-    void ( *input_callback )( ERROR_CODE )
+    void (*callback)(ERROR_CODE)
     )
 {
-error_callback = input_callback;
-}
+error_callback = callback;
+} /* set_error_callback */
 
 
-void set_return_launch_detection
-    (
-    bool expected
-    )
-{
-ld_expected = expected;
-}
-
-
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
+*       set_return_HAL_GetTick                                                 *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Set return value for HAL_GetTick stub                                  *
+*                                                                              *
+*******************************************************************************/
 void set_return_HAL_GetTick
     (
-    uint32_t ret
+    uint32_t value
     )
 {
-systick = ret;
-}
+HAL_GetTick_return = value;
+} /* set_return_HAL_GetTick */
 
 
-SERVO_PRESET get_servo_angles_struct
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
+*       get_num_calls_HAL_GetTick                                              *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Get number of times HAL_GetTick was called                             *
+*                                                                              *
+*******************************************************************************/
+uint8_t get_num_calls_HAL_GetTick
     (
     void
     )
 {
-return servo_angles;
-}
-
-
-void set_loop_exit_after_n_iterations
-    (
-    uint8_t n
-    )
-{
-loop_iterations_before_exit = n;
-loop_iteration_counter      = 0;
-}
+return HAL_GetTick_calls;
+} /* get_num_calls_HAL_GetTick */
 
 
 /*------------------------------------------------------------------------------
-Core stubs used by FSM
+Mock HAL and Hardware Functions
 ------------------------------------------------------------------------------*/
 
-void error_fail_fast
-    (
-    volatile ERROR_CODE error_code
-    )
-{
-if( error_callback != NULL )
-    {
-    error_callback( error_code );
-    }
-}
 
-
-void led_set_color
-    (
-    LED_COLOR_CODES color
-    )
-{
-(void)color;
-stub_led_set_color_calls++;
-}
-
-
-BUZZ_STATUS buzzer_beep
-    (
-    uint32_t duration
-    )
-{
-(void)duration;
-stub_buzzer_beep_calls++;
-return BUZZ_OK;
-}
-
-
-BUZZ_STATUS buzzer_multi_beeps
-    (
-    uint32_t beep_duration,
-    uint32_t time_between_beeps,
-    uint8_t  num_beeps
-    )
-{
-(void)beep_duration;
-(void)time_between_beeps;
-(void)num_beeps;
-stub_buzzer_multi_beeps_calls++;
-return BUZZ_OK;
-}
-
-
-SENSOR_STATUS sensor_start_IT
-    (
-    SENSOR_DATA* sensor_data_ptr
-    )
-{
-(void)sensor_data_ptr;
-stub_sensor_start_IT_calls++;
-return sensor_status_return;
-}
-
-
-void motor_drive
-    (
-    SERVO_ID servo,
-    uint8_t  angle
-    )
-{
-switch( servo )
-    {
-    case SERVO_1:
-        servo_angles.rp_servo1 = angle;
-        break;
-    case SERVO_2:
-        servo_angles.rp_servo2 = angle;
-        break;
-    case SERVO_3:
-        servo_angles.rp_servo3 = angle;
-        break;
-    case SERVO_4:
-        servo_angles.rp_servo4 = angle;
-        break;
-    default:
-        break;
-    }
-}
-
-
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
+*       HAL_GetTick                                                            *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Stub for HAL_GetTick                                                   *
+*                                                                              *
+*******************************************************************************/
 uint32_t HAL_GetTick
     (
     void
     )
 {
-systick_calls++;
-return systick;
-}
+HAL_GetTick_calls++;
+return HAL_GetTick_return;
+} /* HAL_GetTick */
 
 
-/* Dump all sensor readings to console; used as a generic periodic action */
-SENSOR_STATUS sensor_dump
+
+
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
+*       led_set_color                                                          *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Stub for LED control                                                   *
+*                                                                              *
+*******************************************************************************/
+void led_set_color(LED_COLOR_CODES color)
+{
+    led_set_color_calls++;
+    last_led_color = color;
+    appa_fsm_loop_count++;  /* Count each loop iteration */
+    
+    if( force_fc_state_max_exit )
+        {
+        flight_computer_state = FC_STATE_MAX + 1;
+        }
+} /* led_set_color */
+
+
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
+*       buzzer_beep                                                            *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Stub for buzzer single beep                                            *
+*                                                                              *
+*******************************************************************************/
+void buzzer_beep
     (
-    SENSOR_DATA* sensor_data_ptr
+    uint32_t duration
     )
 {
-(void)sensor_data_ptr;
-sensor_dump_calls++;
-
-/* Safety net: break potential infinite loops by forcing IDLE */
-if( sensor_dump_calls > 20 )
-    {
-    fc_state_update ( FC_STATE_IDLE );
-    }
-
-return sensor_status_return;
-}
+(void)duration;
+buzzer_beep_calls++;
+} /* buzzer_beep */
 
 
-/* Flash helpers (minimal, in case FSM interacts via flight_* wrappers) */
-bool flash_is_flash_busy
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
+*       buzzer_multi_beeps                                                     *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Stub for buzzer multiple beeps                                         *
+*                                                                              *
+*******************************************************************************/
+void buzzer_multi_beeps
     (
-    void
+    uint32_t on_time,
+    uint32_t off_time,
+    uint8_t count
     )
 {
-if( flash_busy_counts == 0 ||
-    flash_busy_calls % ( flash_busy_counts + 1 ) == flash_busy_counts )
-    {
-    flash_busy_calls++;
-    return false;
-    }
-else
-    {
-    flash_busy_calls++;
-    return true;
-    }
-}
+(void)on_time;
+(void)off_time;
+(void)count;
+buzzer_multi_beeps_calls++;
+} /* buzzer_multi_beeps */
 
 
-FLASH_STATUS flash_erase_preserve_preset
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
+*       motor_drive                                                            *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Stub for servo motor control                                           *
+*                                                                              *
+*******************************************************************************/
+void motor_drive
     (
-    HFLASH_BUFFER* pflash_handle,
-    uint32_t*      address
+    SERVO_ID servo,
+    uint8_t angle
     )
 {
-(void)pflash_handle;
-(void)address;
-preset_preserving_flash_erase_calls++;
-return FLASH_OK;
-}
+if( motor_drive_calls < 10 )
+    {
+    motor_drive_history[motor_drive_calls].servo_num = servo;
+    motor_drive_history[motor_drive_calls].position = angle;
+    }
+motor_drive_calls++;
+} /* motor_drive */
 
 
-/*------------------------------------------------------------------------------
-FSM-specific collaborators
-------------------------------------------------------------------------------*/
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
+*       sensor_start_IT                                                        *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Stub for sensor interrupt start                                        *
+*                                                                              *
+*******************************************************************************/
+SENSOR_STATUS sensor_start_IT
+    (
+    SENSOR_DATA* data
+    )
+{
+(void)data;
+sensor_start_IT_calls++;
+return sensor_start_IT_return;
+} /* sensor_start_IT */
 
-/* prelaunch.c: function called by appa_fsm in IDLE */
+
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
+*       prelaunch_terminal                                                     *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Stub for prelaunch terminal                                            *
+*                                                                              *
+*******************************************************************************/
 USB_STATUS prelaunch_terminal
     (
-    uint8_t        firmware_code,
-    FLASH_STATUS*  flash_status,
+    uint8_t firmware_code,
+    FLASH_STATUS* flash_status,
     HFLASH_BUFFER* flash_handle,
-    uint32_t*      flash_address,
-    uint8_t*       gps_mesg_byte,
+    uint32_t* flash_address,
+    uint8_t* gps_mesg_byte,
     SENSOR_STATUS* sensor_status
     )
 {
@@ -348,97 +339,163 @@ USB_STATUS prelaunch_terminal
 (void)flash_address;
 (void)gps_mesg_byte;
 (void)sensor_status;
+prelaunch_terminal_calls++;
+exit_fsm_after_case();
 
-stub_prelaunch_called = true;
-
-/* Loop exit management: after N iterations, push state beyond FC_STATE_MAX */
-if( loop_iterations_before_exit > 0 )
-    {
-    loop_iteration_counter++;
-    if( loop_iteration_counter >= loop_iterations_before_exit )
-        {
-        fc_state_update ( FC_STATE_MAX + 1 );
-        }
-    }
-
-return stub_usb_status_return;
-}
+return prelaunch_terminal_return;
+} /* prelaunch_terminal */
 
 
-/* flight.c high-level state handlers, observed by tests via flags */
-
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
+*       flight_calib                                                           *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Stub for flight calibration                                            *
+*                                                                              *
+*******************************************************************************/
 void flight_calib
     (
-    uint8_t*       gps_mesg_byte,
+    uint8_t* gps_mesg_byte,
     HFLASH_BUFFER* flash_handle,
-    uint32_t*      flash_address
+    uint32_t* flash_address
     )
 {
 (void)gps_mesg_byte;
 (void)flash_handle;
 (void)flash_address;
-stub_flight_calib_called = true;
-}
+flight_calib_calls++;
+fc_state_update(FC_STATE_LAUNCH_DETECT);
+exit_fsm_after_case();
+} /* flight_calib */
 
 
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
+*       flight_launch_detect                                                   *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Stub for launch detection                                              *
+*                                                                              *
+*******************************************************************************/
 void flight_launch_detect
     (
-    uint32_t*      ld_start_time,
+    uint32_t* launch_detect_start_time,
     SENSOR_STATUS* sensor_status,
-    FLASH_STATUS*  flash_status,
+    FLASH_STATUS* flash_status,
     HFLASH_BUFFER* flash_handle,
-    uint32_t*      flash_address
+    uint32_t* flash_address
     )
 {
-(void)ld_start_time;
+(void)launch_detect_start_time;
 (void)sensor_status;
 (void)flash_status;
 (void)flash_handle;
 (void)flash_address;
-stub_flight_launch_detect_called = true;
-}
+flight_launch_detect_calls++;
+ exit_fsm_after_case();
+} /* flight_launch_detect */
 
 
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
+*       flight_in_flight                                                       *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Stub for in-flight phase                                               *
+*                                                                              *
+*******************************************************************************/
 void flight_in_flight
     (
-    uint32_t*      ld_start_time,
+    uint32_t* launch_detect_start_time,
     SENSOR_STATUS* sensor_status,
-    FLASH_STATUS*  flash_status,
+    FLASH_STATUS* flash_status,
     HFLASH_BUFFER* flash_handle,
-    uint32_t*      flash_address
+    uint32_t* flash_address
     )
 {
-(void)ld_start_time;
+(void)launch_detect_start_time;
 (void)sensor_status;
 (void)flash_status;
 (void)flash_handle;
 (void)flash_address;
-stub_flight_in_flight_called = true;
-}
+flight_in_flight_calls++;
+ exit_fsm_after_case();
+} /* flight_in_flight */
 
 
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
+*       flight_deploy                                                          *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Stub for parachute deployment                                          *
+*                                                                              *
+*******************************************************************************/
 void flight_deploy
     (
     void
     )
 {
-stub_flight_deploy_called = true;
-}
+flight_deploy_calls++;
+
+ exit_fsm_after_case();
+} /* flight_deploy */
 
 
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
+*       flight_descent                                                         *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Stub for descent phase                                                 *
+*                                                                              *
+*******************************************************************************/
 void flight_descent
     (
-    uint32_t*      ld_start_time,
+    uint32_t* launch_detect_start_time,
     SENSOR_STATUS* sensor_status,
-    FLASH_STATUS*  flash_status,
+    FLASH_STATUS* flash_status,
     HFLASH_BUFFER* flash_handle,
-    uint32_t*      flash_address
+    uint32_t* flash_address
     )
 {
-(void)ld_start_time;
+(void)launch_detect_start_time;
 (void)sensor_status;
 (void)flash_status;
 (void)flash_handle;
 (void)flash_address;
-stub_flight_descent_called = true;
-}
+flight_descent_calls++;
+exit_fsm_after_case();
+} /* flight_descent */
+
+
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
+*       error_fail_fast                                                        *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Stub for error handling with callback support                          *
+*                                                                              *
+*******************************************************************************/
+void error_fail_fast
+    (
+    ERROR_CODE error_code
+    )
+{
+if( error_callback != NULL )
+    {
+    error_callback( error_code );
+    }
+} /* error_fail_fast */
+
+
+/*******************************************************************************
+* END OF FILE                                                                  * 
+*******************************************************************************/
