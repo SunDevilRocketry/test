@@ -56,6 +56,7 @@ extern uint8_t motor_drive_calls;
 extern MOTOR_DRIVE_CALL motor_drive_history[10];
 extern USB_STATUS prelaunch_terminal_return;
 extern uint8_t prelaunch_terminal_calls;
+extern uint8_t init_calls;
 extern SENSOR_STATUS sensor_start_IT_return;
 extern uint8_t sensor_start_IT_calls;
 extern uint8_t flight_calib_calls;
@@ -731,6 +732,7 @@ void test_appa_fsm_while_loop_coverage(void)
             &gps_mesg_byte,
             &sensor_status
         );
+        
 
         TEST_ASSERT_EQ_UINT(
             "Expected case executed exactly once",
@@ -738,6 +740,59 @@ void test_appa_fsm_while_loop_coverage(void)
             1
         );
     }
+
+    stubs_reset();
+    force_fc_state_max_exit = false; 
+    set_fc_state_direct(FC_STATE_INIT);
+    prelaunch_terminal_return = USB_OK;
+    sensor_start_IT_return = SENSOR_OK;
+    
+    appa_fsm(firmware_code, &flash_status, &flash_handle, 
+            &flash_address, &gps_mesg_byte, &sensor_status);
+    
+    TEST_ASSERT_EQ_UINT("INIT case executed", prelaunch_terminal_calls, 1);
+    TEST_ASSERT_EQ_UINT("INIT transitioned to IDLE", get_fc_state(), FC_STATE_IDLE);
+
+    TEST_end_nested_case();
+}
+
+
+void test_idle_usb_fail_inside_loop(void)
+{
+    TEST_begin_nested_case("USB_FAIL triggers error inside FSM loop");
+
+    uint8_t firmware_code = 0xAB;
+    FLASH_STATUS flash_status = FLASH_OK;
+    HFLASH_BUFFER flash_handle;
+    uint32_t flash_address = 0;
+    uint8_t gps_mesg_byte = 0;
+    SENSOR_STATUS sensor_status = SENSOR_OK;
+
+    stubs_reset();
+    set_fc_state_direct(FC_STATE_IDLE);
+    prelaunch_terminal_return = USB_FAIL;
+    appa_fsm_loop_limit = 2;
+
+    reported_error = MAX_UINT_32;
+    set_error_callback(TEST_CALLBACK_error_fail_fast);
+    intercept_jmp_back = false;
+
+    jmp_val = setjmp(env_buffer);
+    if (!intercept_jmp_back)
+    {
+        intercept_jmp_back = true;
+        appa_fsm(
+            firmware_code,
+            &flash_status,
+            &flash_handle,
+            &flash_address,
+            &gps_mesg_byte,
+            &sensor_status
+        );
+    }
+
+    TEST_ASSERT_EQ_UINT("USB error triggered",
+        reported_error, ERROR_USB_UART_ERROR);
 
     TEST_end_nested_case();
 }
@@ -768,6 +823,7 @@ unit_test tests[] =
     { "FSM: Entry and Initialization", test_appa_fsm_entry },
     { "FSM: IDLE State Behavior", test_appa_fsm_idle_state },
     { "FSM: While Loop Coverage", test_appa_fsm_while_loop_coverage },
+    { "FSM: USB Fail Inside Loop", test_idle_usb_fail_inside_loop },
     { "FSM: State Transitions", test_appa_fsm_state_transitions },
     { "FSM: Calibration to Launch Detect", test_appa_fsm_calib_to_launch_detect },
     { "FSM: Complete Mission Profile", test_appa_fsm_complete_mission }

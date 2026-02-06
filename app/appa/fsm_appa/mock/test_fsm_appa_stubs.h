@@ -29,7 +29,7 @@ extern LED_COLOR_CODES last_led_color;
 extern uint32_t appa_fsm_loop_count;
 extern uint32_t appa_fsm_loop_limit;
 extern bool exit_after_case;
-
+extern bool force_init_once;
 
 /*------------------------------------------------------------------------------
 Types
@@ -59,6 +59,7 @@ void set_return_HAL_GetTick( uint32_t value );
 
 /* Call count getters */
 uint8_t get_num_calls_HAL_GetTick( void );
+
 
 
 #endif /* TEST_FSM_APPA_STUBS_H */

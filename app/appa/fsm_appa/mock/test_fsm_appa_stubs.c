@@ -33,6 +33,7 @@ uint8_t motor_drive_calls = 0;
 MOTOR_DRIVE_CALL motor_drive_history[10];
 USB_STATUS prelaunch_terminal_return = USB_OK;
 uint8_t prelaunch_terminal_calls = 0;
+uint8_t init_calls = 0;
 SENSOR_STATUS sensor_start_IT_return = SENSOR_OK;
 uint8_t sensor_start_IT_calls = 0;
 uint8_t flight_calib_calls = 0;
@@ -45,6 +46,10 @@ uint32_t HAL_GetTick_return = 0;
 uint32_t HAL_GetTick_calls = 0;
 uint32_t appa_fsm_loop_count;
 uint32_t appa_fsm_loop_limit = 1;
+
+bool force_init_once = false;
+static bool init_already_returned = false;
+
 
 
 
@@ -82,6 +87,7 @@ motor_drive_calls = 0;
 memset( motor_drive_history, 0, sizeof(motor_drive_history) );
 prelaunch_terminal_return = USB_OK;
 prelaunch_terminal_calls = 0;
+init_calls = 0;
 sensor_start_IT_return = SENSOR_OK;
 sensor_start_IT_calls = 0;
 flight_calib_calls = 0;
@@ -93,6 +99,9 @@ force_fc_state_max_exit = false;
 HAL_GetTick_return = 0;
 HAL_GetTick_calls = 0;
 error_callback = NULL;
+
+force_init_once = false;
+init_already_returned = false;
 
 } /* stubs_reset */
 
@@ -124,6 +133,7 @@ void set_fc_state_direct
 {
 flight_computer_state = state;
 } /* set_fc_state_direct */
+
 
 
 /*******************************************************************************
