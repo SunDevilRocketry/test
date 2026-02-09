@@ -47,7 +47,9 @@ PRESET_DATA preset_data;
 PID_DATA pid_data;
 
 
-/* Test-only globals */
+/*------------------------------------------------------------------------------
+Test Only Variables 
+------------------------------------------------------------------------------*/
 extern uint8_t led_set_color_calls;
 extern LED_COLOR_CODES last_led_color;
 extern uint8_t buzzer_beep_calls;
@@ -693,6 +695,15 @@ TEST_end_nested_case();
 } /* test_appa_fsm_complete_mission */
 
 
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
+*       test_appa_fsm_while_loop_coverage                                      *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Covers entire main loop                                                *
+*                                                                              *
+*******************************************************************************/
 void test_appa_fsm_while_loop_coverage(void)
 {
     TEST_begin_nested_case("FSM while-loop and switch full coverage");
@@ -757,6 +768,15 @@ void test_appa_fsm_while_loop_coverage(void)
 }
 
 
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
+*       test_idle_usb_fail_inside_loop                                         *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Test USB fail in idle                                                  *
+*                                                                              *
+*******************************************************************************/
 void test_idle_usb_fail_inside_loop(void)
 {
     TEST_begin_nested_case("USB_FAIL triggers error inside FSM loop");
