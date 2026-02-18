@@ -49,7 +49,7 @@ mock/test_flight_stubs.c
 
 # Tested Source Files (anything that is being tested for coverage)
 COV_C_SOURCES =													  \
-$(ROOT_DIR)/app/flight/appa/rev2/flight.c
+$(ROOT_DIR)/app/rev2/flight.c
 
 # Framework (just these files. do not modify.)
 FRAMEWORK_SOURCES =												  \
@@ -74,26 +74,26 @@ CC = gcc
 C_INCLUDES =                                           \
 -I.                                                    \
 -I./mock                                               \
--I$(ROOT_DIR)/app/flight/appa/rev2/					   \
--I$(ROOT_DIR)/mod/gps/								   \
--I$(ROOT_DIR)/mod/buzzer/							   \
+-I$(ROOT_DIR)/app/rev2/					   				\
+-I$(ROOT_DIR)/driver/gps/								   \
+-I$(ROOT_DIR)/driver/buzzer/							   \
 -I$(ROOT_DIR)/mod/common/							   \
 -I$(ROOT_DIR)/mod/error_sdr/						   \
 -I$(ROOT_DIR)/mod/commands/							   \
 -I$(ROOT_DIR)/mod/sensor/							   \
--I$(ROOT_DIR)/mod/ignition/							   \
--I$(ROOT_DIR)/mod/flash/							   \
--I$(ROOT_DIR)/mod/servo/							   \
--I$(ROOT_DIR)/mod/usb/							   		\
--I$(ROOT_DIR)/mod/led/							   		\
--I$(ROOT_DIR)/mod/imu/								   \
+-I$(ROOT_DIR)/driver/ignition/							   \
+-I$(ROOT_DIR)/driver/flash/							   \
+-I$(ROOT_DIR)/driver/servo/							   \
+-I$(ROOT_DIR)/driver/usb/							   		\
+-I$(ROOT_DIR)/driver/led/							   		\
+-I$(ROOT_DIR)/driver/imu/								   \
 -I$(LIB_DIR)                                           \
 -I$(ROOT_DIR)/lib/util								   \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc          \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc/Legacy   \
 -I$(LIB_DIR)/Drivers/CMSIS/Device/ST/STM32H7xx/Include \
 -I$(LIB_DIR)/Drivers/CMSIS/Include                     \
--I$(ROOT_DIR)/init/appa/config/Inc				   	   \
+-I$(ROOT_DIR)/init/rev2/config/Inc				   	   \
 -I$(ROOT_DIR)/test/framework/src/                      
 
 # Preprocessor definitions

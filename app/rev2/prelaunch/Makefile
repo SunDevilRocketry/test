@@ -58,7 +58,7 @@ mock/mock_huart.c												\
 
 # Tested Source Files
 COV_C_SOURCES =													  \
-$(ROOT_DIR)/app/flight/appa/rev2/prelaunch.c 
+$(ROOT_DIR)/app/rev2/prelaunch.c 
 
 # Framework
 FRAMEWORK_SOURCES =												  \
@@ -82,30 +82,30 @@ CC = gcc
 # This should include a path to all of the headers used in your test
 C_INCLUDES =                                           \
 -I.                                                    \
--I$(ROOT_DIR)/app/flight/appa/rev2/					   \
--I$(ROOT_DIR)/mod/gps/								   \
+-I$(ROOT_DIR)/app/rev2/					   \
+-I$(ROOT_DIR)/driver/gps/								   \
 -I$(ROOT_DIR)/mod/sensor/							   \
--I$(ROOT_DIR)/mod/imu/								   \
+-I$(ROOT_DIR)/driver/imu/								   \
 -I$(LIB_DIR)                                           \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc          \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc/Legacy   \
 -I$(LIB_DIR)/Drivers/CMSIS/Device/ST/STM32H7xx/Include \
 -I$(LIB_DIR)/Drivers/CMSIS/Include                     \
--I$(ROOT_DIR)/init/terminal/config/Inc				   \
+-I$(ROOT_DIR)/init/rev2/config/Inc				   \
 -I$(ROOT_DIR)/test/framework/src                       \
--I$(ROOT_DIR)/test/app/appa/prelaunch/mock	   	   \
--I$(ROOT_DIR)/mod/buzzer								\
+-I$(ROOT_DIR)/test/app/rev2/prelaunch/mock	   	   \
+-I$(ROOT_DIR)/driver/buzzer								\
 -I$(ROOT_DIR)/mod/commands								\
--I$(ROOT_DIR)/mod/servo								   \
--I$(ROOT_DIR)/mod/ignition								   \
--I$(ROOT_DIR)/mod/flash								   \
+-I$(ROOT_DIR)/driver/servo								   \
+-I$(ROOT_DIR)/driver/ignition								   \
+-I$(ROOT_DIR)/driver/flash								   \
 -I$(ROOT_DIR)/mod/sensor							   \
--I$(ROOT_DIR)/mod/imu								   \
+-I$(ROOT_DIR)/driver/imu								   \
 -I$(ROOT_DIR)/lib/util									\
--I$(ROOT_DIR)/mod/led								   	\
+-I$(ROOT_DIR)/driver/led								   	\
 -I$(ROOT_DIR)/mod/common								\
 -I$(ROOT_DIR)/mod/sensor								\
--I$(ROOT_DIR)/mod/usb
+-I$(ROOT_DIR)/driver/usb
 
 # Preprocessor definitions
 # Don't worry about the defs and flags unless you know what you're doing

@@ -34,6 +34,7 @@ ROOT_DIR  = ../../../..
 # directory shortcuts for includes and sources
 LIB_DIR = $(ROOT_DIR)/lib
 MOD_DIR = $(ROOT_DIR)/mod
+DRIVER_DIR = $(ROOT_DIR)/driver
 
 
 ################################################################
@@ -47,7 +48,7 @@ mock/MOCK_hal.c													  \
 
 # Tested Source Files
 COV_C_SOURCES =													  \
-$(ROOT_DIR)/app/flight/appa/rev2/error_contract.c 				  \
+$(ROOT_DIR)/app/rev2/error_contract.c 				  			\
 $(MOD_DIR)/error_sdr/error_sdr.c
 
 # Framework
@@ -79,24 +80,24 @@ CC = gcc
 # This should include a path to all of the headers used in your test
 C_INCLUDES =                                           \
 -I.                                                    \
--I./mock   	   											\
--I$(ROOT_DIR)/app/flight/appa/rev2/					   \
--I$(ROOT_DIR)/mod/gps/								   \
--I$(ROOT_DIR)/mod/buzzer/								   \
+-I./mock   	   										   \
+-I$(ROOT_DIR)/app/rev2/								   \
+-I$(DRIVER_DIR)/gps/								   \
+-I$(DRIVER_DIR)/buzzer/								   \
 -I$(ROOT_DIR)/mod/sensor/							   \
--I$(ROOT_DIR)/mod/imu/								   \
+-I$(DRIVER_DIR)/imu/								   \
 -I$(ROOT_DIR)/mod/common							   \
 -I$(ROOT_DIR)/mod/error_sdr/						   \
--I$(ROOT_DIR)/mod/servo								   \
--I$(ROOT_DIR)/mod/usb								   \
--I$(ROOT_DIR)/mod/led								   \
--I$(ROOT_DIR)/mod/flash								   \
+-I$(DRIVER_DIR)/servo								   \
+-I$(DRIVER_DIR)/usb								   	   \
+-I$(DRIVER_DIR)/led								   	   \
+-I$(DRIVER_DIR)/flash								   \
 -I$(LIB_DIR)                                           \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc          \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc/Legacy   \
 -I$(LIB_DIR)/Drivers/CMSIS/Device/ST/STM32H7xx/Include \
 -I$(LIB_DIR)/Drivers/CMSIS/Include                     \
--I$(ROOT_DIR)/init/terminal/config/Inc				   \
+-I$(ROOT_DIR)/init/rev2/config/Inc				   	   \
 -I$(ROOT_DIR)/test/framework/src                       \
 -I$(ROOT_DIR)/lib/util
 

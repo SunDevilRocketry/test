@@ -36,6 +36,7 @@ ROOT_DIR  = ../../../..
 # directory shortcuts for includes and sources
 LIB_DIR = $(ROOT_DIR)/lib
 MOD_DIR = $(ROOT_DIR)/mod
+DRIVER_DIR = $(ROOT_DIR)/driver
 INIT_DIR = $(ROOT_DIR)/init
 
 ################################################################
@@ -52,7 +53,7 @@ mock/MOCK_servo.c                                                 \
 
 # Tested Source Files (anything that is being tested for coverage)
 COV_C_SOURCES =													  \
-$(ROOT_DIR)/app/flight/appa/rev2/fin_calib.c 
+$(ROOT_DIR)/app/rev2/fin_calib.c 
 
 # Framework (just these files. do not modify.)
 FRAMEWORK_SOURCES =												  \
@@ -76,25 +77,25 @@ CC = gcc
 # This should include a path to all of the headers used in your test
 C_INCLUDES =                                           \
 -I.                                                    \
--I$(ROOT_DIR)/app/flight/appa/rev2/					   \
--I$(ROOT_DIR)/mod/gps/								   \
+-I$(ROOT_DIR)/app/rev2/					   			   \
+-I$(DRIVER_DIR)/gps/								   \
 -I$(ROOT_DIR)/mod/sensor/							   \
--I$(ROOT_DIR)/mod/imu/								   \
+-I$(DRIVER_DIR)/imu/								   \
 -I$(LIB_DIR)                                           \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc          \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc/Legacy   \
 -I$(LIB_DIR)/Drivers/CMSIS/Device/ST/STM32H7xx/Include \
 -I$(LIB_DIR)/Drivers/CMSIS/Include                     \
--I$(ROOT_DIR)/init/terminal/config/Inc				   \
+-I$(ROOT_DIR)/init/rev2/config/Inc				   	   \
 -I$(ROOT_DIR)/test/framework/src                       \
--I$(ROOT_DIR)/test/app/appa/fin_calib/mock	   	       \
+-I$(ROOT_DIR)/test/app/rev2/fin_calib/mock	   	       \
 -I$(ROOT_DIR)/mod/common							   \
--I$(ROOT_DIR)/mod/servo								   \
--I$(ROOT_DIR)/mod/usb								   \
--I$(ROOT_DIR)/mod/flash								   \
+-I$(DRIVER_DIR)/servo								   \
+-I$(DRIVER_DIR)/usb								   	   \
+-I$(DRIVER_DIR)/flash								   \
 -I$(ROOT_DIR)/mod/sensor							   \
--I$(ROOT_DIR)/mod/imu								   \
--I$(ROOT_DIR)/mod/led     							   \
+-I$(DRIVER_DIR)/imu								       \
+-I$(DRIVER_DIR)/led     							   \
 -I$(ROOT_DIR)/lib/util
 
 # Preprocessor definitions

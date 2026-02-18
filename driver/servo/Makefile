@@ -50,7 +50,7 @@ mock/MOCK_usb.c
 
 # Tested Source Files
 COV_C_SOURCES =													  \
-$(ROOT_DIR)/mod/servo/servo.c
+$(ROOT_DIR)/driver/servo/servo.c
 
 # Framework
 FRAMEWORK_SOURCES =												  \
@@ -74,20 +74,20 @@ CC = gcc
 # This should include a path to all of the headers used in your test
 C_INCLUDES =                                           \
 -I.                                                    \
--I$(ROOT_DIR)/mod/servo/							   \
+-I$(ROOT_DIR)/driver/servo/							   \
 -I$(ROOT_DIR)/mod/sensor/							   \
--I$(ROOT_DIR)/mod/imu/								   \
--I$(ROOT_DIR)/mod/usb/								   \
--I$(ROOT_DIR)/mod/led/								   \
--I$(ROOT_DIR)/init/dual-deploy/						   \
+-I$(ROOT_DIR)/driver/imu/								   \
+-I$(ROOT_DIR)/driver/usb/								   \
+-I$(ROOT_DIR)/driver/led/								   \
+-I$(ROOT_DIR)/init/rev2/						   \
 -I$(LIB_DIR)                                           \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc          \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc/Legacy   \
 -I$(LIB_DIR)/Drivers/CMSIS/Device/ST/STM32H7xx/Include \
 -I$(LIB_DIR)/Drivers/CMSIS/Include                     \
--I$(ROOT_DIR)/init/dual-deploy/config/Inc			   \
+-I$(ROOT_DIR)/init/rev2/config/Inc			   \
 -I$(ROOT_DIR)/test/framework/src                       \
--I$(ROOT_DIR)/test/mod/servo/mock
+-I$(ROOT_DIR)/test/driver/servo/mock
 
 # Preprocessor definitions
 # Don't worry about the defs and flags unless you know what you're doing
