@@ -1,14 +1,14 @@
 ################################################################
 #
-# error_int unit tests (based on gcc)
+# flash_appa.c unit tests (based on gcc)
 #
 ################################################################
+
 
 ################################################################
 # target
 ################################################################
-TARGET = error_int
-
+TARGET = flash_appa
 
 ################################################################
 # build variables 
@@ -28,41 +28,35 @@ OPT   = -Og
 BUILD_DIR = build
 
 # base directory
-# depending on your test, this might not be correct.
+# depending on your test, this might not be correct. update the 
+# relative path based on where the test is compared to
+# Flight-Computer-Firmware.
 ROOT_DIR  = ../../../..
 
 # directory shortcuts for includes and sources
 LIB_DIR = $(ROOT_DIR)/lib
 MOD_DIR = $(ROOT_DIR)/mod
-
+INIT_DIR = $(ROOT_DIR)/init
 
 ################################################################
 # source 
 ################################################################
 
-# C sources
+# C sources (for test. driver, stubs, and others should go here)
 TEST_SOURCES =                                   				  \
-test_error_int.c                       					      	  \
-mock/MOCK_hal.c													  \
+test_flash_appa.c                       					      	\
+mock/test_flash_appa_stubs.c
 
-# Tested Source Files
+# Tested Source Files (anything that is being tested for coverage)
 COV_C_SOURCES =													  \
-$(ROOT_DIR)/app/flight/appa/rev2/error_contract.c 				  \
-$(MOD_DIR)/error_sdr/error_sdr.c
+$(ROOT_DIR)/app/rev2/flash_appa.c
 
-# Framework
+# Framework (just these files. do not modify.)
 FRAMEWORK_SOURCES =												  \
 $(ROOT_DIR)/test/framework/src/test_assert.c          	  		  \
 $(ROOT_DIR)/test/framework/src/test_runner.c
 
 C_SOURCES = $(TEST_SOURCES) $(COV_C_SOURCES) $(FRAMEWORK_SOURCES)
-
-# Some trickery for GCOVR
-GCOVR_FILTER = $(subst $(space),|,$(strip $(COV_C_SOURCES)))
-
-# Define space variable (needed for the substitution)
-empty :=
-space := $(empty) $(empty)
 
 ################################################################
 # Compiler 
@@ -79,26 +73,29 @@ CC = gcc
 # This should include a path to all of the headers used in your test
 C_INCLUDES =                                           \
 -I.                                                    \
--I./mock   	   											\
--I$(ROOT_DIR)/app/flight/appa/rev2/					   \
--I$(ROOT_DIR)/mod/gps/								   \
--I$(ROOT_DIR)/mod/buzzer/								   \
+-I./mock                                               \
+-I$(ROOT_DIR)/driver/gps/								   \
+-I$(ROOT_DIR)/driver/buzzer/							   \
+-I$(ROOT_DIR)/mod/common/							   \
+-I$(ROOT_DIR)/mod/error_sdr/							\
 -I$(ROOT_DIR)/mod/sensor/							   \
--I$(ROOT_DIR)/mod/imu/								   \
--I$(ROOT_DIR)/mod/common							   \
--I$(ROOT_DIR)/mod/error_sdr/						   \
--I$(ROOT_DIR)/mod/servo								   \
--I$(ROOT_DIR)/mod/usb								   \
--I$(ROOT_DIR)/mod/led								   \
--I$(ROOT_DIR)/mod/flash								   \
+-I$(ROOT_DIR)/driver/ignition/							   \
+-I$(ROOT_DIR)/driver/flash/							   \
+-I$(ROOT_DIR)/driver/servo/							   \
+-I$(ROOT_DIR)/driver/usb/							   		\
+-I$(ROOT_DIR)/driver/led/							   		\
+-I$(ROOT_DIR)/driver/imu/								   \
+-I$(ROOT_DIR)/mod/common/								   \
 -I$(LIB_DIR)                                           \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc          \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc/Legacy   \
 -I$(LIB_DIR)/Drivers/CMSIS/Device/ST/STM32H7xx/Include \
 -I$(LIB_DIR)/Drivers/CMSIS/Include                     \
--I$(ROOT_DIR)/init/terminal/config/Inc				   \
--I$(ROOT_DIR)/test/framework/src                       \
--I$(ROOT_DIR)/lib/util
+-I$(LIB_DIR)/util/                                     \
+-I$(ROOT_DIR)/init/rev2/config/Inc				   \
+-I$(INIT_DIR)/config/Inc                               \
+-I$(ROOT_DIR)/test/framework/src/                      \
+-I$(ROOT_DIR)/app/rev2/
 
 # Preprocessor definitions
 # Don't worry about the defs and flags unless you know what you're doing
@@ -106,12 +103,12 @@ C_DEFS =         \
 -DUSE_HAL_DRIVER \
 -DSTM32H750xx    \
 -DFLIGHT_COMPUTER \
--DUSE_CALLBACK_TABLE \
+-DA0002_REV2	 \
 -DUNIT_TEST
 
 CFLAGS = $(C_INCLUDES) $(C_DEFS) $(OPT) -Wall -g
 
-# Disable some warnings
+# Enable some warnings
 CFLAGS += -Wno-pointer-to-int-cast
 CFLAGS += -Wno-int-to-pointer-cast
 CFLAGS += -Wno-unused-function
@@ -124,15 +121,18 @@ CFLAGS += -fprofile-arcs
 ################################################################
 # Build all
 ################################################################
+# Wipe the build folder, then begin compilation
 all: clean $(BUILD_DIR)/$(TARGET)
 
 # Setup the path for c files
 OBJECTS = $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
 vpath %.c $(sort $(dir $(C_SOURCES)))
 
+# Compile
 $(BUILD_DIR)/%.o: %.c $(BUILD_DIR)
 	$(CC) -c $(CFLAGS) $< -o $@
 
+# Link
 $(BUILD_DIR)/$(TARGET): $(OBJECTS) 
 	$(CC) $(OBJECTS) -o $@ -lgcov -lm
 
@@ -142,6 +142,8 @@ $(BUILD_DIR):
 ################################################################
 # Build test
 ################################################################
+
+# Compile test, execute, and generate results
 test:
 	@echo THIS TEST MUST BE EXECUTED IN A BASH TERMINAL. CMD/PS do not work.
 	-rm -fR $(BUILD_DIR)
@@ -149,12 +151,13 @@ test:
 	$(BUILD_DIR)/$(TARGET)
 	tail -n 7 "results.txt"
 	mkdir -p coverage
-	gcovr --filter '$(GCOVR_FILTER)' --html-details coverage/coverage.html
+	gcovr --filter $(COV_C_SOURCES) --html-details coverage/coverage.html
 
 ################################################################
 # clean up 
 ################################################################
 
+# Remove build folder
 clean:
 	-rm -fR $(BUILD_DIR)
 

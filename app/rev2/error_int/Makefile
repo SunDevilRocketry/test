@@ -1,14 +1,13 @@
 ################################################################
 #
-# servo unit tests (based on gcc)
+# error_int unit tests (based on gcc)
 #
 ################################################################
 
 ################################################################
 # target
 ################################################################
-TEST = servo
-TARGET = servo.out
+TARGET = error_int
 
 
 ################################################################
@@ -30,27 +29,27 @@ BUILD_DIR = build
 
 # base directory
 # depending on your test, this might not be correct.
-ROOT_DIR  = ../../..
+ROOT_DIR  = ../../../..
 
 # directory shortcuts for includes and sources
 LIB_DIR = $(ROOT_DIR)/lib
 MOD_DIR = $(ROOT_DIR)/mod
-INIT_DIR = $(ROOT_DIR)/init
+DRIVER_DIR = $(ROOT_DIR)/driver
+
 
 ################################################################
 # source 
 ################################################################
 
 # C sources
-TEST_SOURCES =                                   				  	\
-test_servo.c                       								  	\
-mock/MOCK_hal.c													  	\
-mock/MOCK_led.c													  	\
-mock/MOCK_usb.c													  	
+TEST_SOURCES =                                   				  \
+test_error_int.c                       					      	  \
+mock/MOCK_hal.c													  \
 
 # Tested Source Files
 COV_C_SOURCES =													  \
-$(ROOT_DIR)/mod/servo/servo.c
+$(ROOT_DIR)/app/rev2/error_contract.c 				  			\
+$(MOD_DIR)/error_sdr/error_sdr.c
 
 # Framework
 FRAMEWORK_SOURCES =												  \
@@ -58,6 +57,13 @@ $(ROOT_DIR)/test/framework/src/test_assert.c          	  		  \
 $(ROOT_DIR)/test/framework/src/test_runner.c
 
 C_SOURCES = $(TEST_SOURCES) $(COV_C_SOURCES) $(FRAMEWORK_SOURCES)
+
+# Some trickery for GCOVR
+GCOVR_FILTER = $(subst $(space),|,$(strip $(COV_C_SOURCES)))
+
+# Define space variable (needed for the substitution)
+empty :=
+space := $(empty) $(empty)
 
 ################################################################
 # Compiler 
@@ -74,20 +80,26 @@ CC = gcc
 # This should include a path to all of the headers used in your test
 C_INCLUDES =                                           \
 -I.                                                    \
--I$(ROOT_DIR)/mod/servo/							   \
+-I./mock   	   										   \
+-I$(ROOT_DIR)/app/rev2/								   \
+-I$(DRIVER_DIR)/gps/								   \
+-I$(DRIVER_DIR)/buzzer/								   \
 -I$(ROOT_DIR)/mod/sensor/							   \
--I$(ROOT_DIR)/mod/imu/								   \
--I$(ROOT_DIR)/mod/usb/								   \
--I$(ROOT_DIR)/mod/led/								   \
--I$(ROOT_DIR)/init/dual-deploy/						   \
+-I$(DRIVER_DIR)/imu/								   \
+-I$(ROOT_DIR)/mod/common							   \
+-I$(ROOT_DIR)/mod/error_sdr/						   \
+-I$(DRIVER_DIR)/servo								   \
+-I$(DRIVER_DIR)/usb								   	   \
+-I$(DRIVER_DIR)/led								   	   \
+-I$(DRIVER_DIR)/flash								   \
 -I$(LIB_DIR)                                           \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc          \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc/Legacy   \
 -I$(LIB_DIR)/Drivers/CMSIS/Device/ST/STM32H7xx/Include \
 -I$(LIB_DIR)/Drivers/CMSIS/Include                     \
--I$(ROOT_DIR)/init/dual-deploy/config/Inc			   \
+-I$(ROOT_DIR)/init/rev2/config/Inc				   	   \
 -I$(ROOT_DIR)/test/framework/src                       \
--I$(ROOT_DIR)/test/mod/servo/mock
+-I$(ROOT_DIR)/lib/util
 
 # Preprocessor definitions
 # Don't worry about the defs and flags unless you know what you're doing
@@ -95,6 +107,7 @@ C_DEFS =         \
 -DUSE_HAL_DRIVER \
 -DSTM32H750xx    \
 -DFLIGHT_COMPUTER \
+-DUSE_CALLBACK_TABLE \
 -DUNIT_TEST
 
 CFLAGS = $(C_INCLUDES) $(C_DEFS) $(OPT) -Wall -g
@@ -118,13 +131,11 @@ all: clean $(BUILD_DIR)/$(TARGET)
 OBJECTS = $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
 vpath %.c $(sort $(dir $(C_SOURCES)))
 
-# Compile
 $(BUILD_DIR)/%.o: %.c $(BUILD_DIR)
 	$(CC) -c $(CFLAGS) $< -o $@
 
-# Link
 $(BUILD_DIR)/$(TARGET): $(OBJECTS) 
-	$(CC) $(OBJECTS) -o $@ -lgcov
+	$(CC) $(OBJECTS) -o $@ -lgcov -lm
 
 $(BUILD_DIR):
 	mkdir $@		
@@ -139,17 +150,12 @@ test:
 	$(BUILD_DIR)/$(TARGET)
 	tail -n 7 "results.txt"
 	mkdir -p coverage
-	gcovr --filter $(COV_C_SOURCES) --html-details coverage/coverage.html
+	gcovr --filter '$(GCOVR_FILTER)' --html-details coverage/coverage.html
 
 ################################################################
 # clean up 
 ################################################################
 
-################################################################
-# clean up 
-################################################################
-
-# Windows users should use git bash so this command works as expected.
 clean:
 	-rm -fR $(BUILD_DIR)
 

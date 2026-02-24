@@ -1,6 +1,6 @@
 ################################################################
 #
-# flight.c unit tests (based on gcc)
+# fin_calib unit tests (based on gcc)
 #
 ################################################################
 
@@ -8,7 +8,7 @@
 ################################################################
 # target
 ################################################################
-TARGET = flight
+TARGET = fin_calib
 
 ################################################################
 # build variables 
@@ -36,6 +36,7 @@ ROOT_DIR  = ../../../..
 # directory shortcuts for includes and sources
 LIB_DIR = $(ROOT_DIR)/lib
 MOD_DIR = $(ROOT_DIR)/mod
+DRIVER_DIR = $(ROOT_DIR)/driver
 INIT_DIR = $(ROOT_DIR)/init
 
 ################################################################
@@ -44,12 +45,15 @@ INIT_DIR = $(ROOT_DIR)/init
 
 # C sources (for test. driver, stubs, and others should go here)
 TEST_SOURCES =                                   				  \
-test_flight.c                       					      	\
-mock/test_flight_stubs.c
+test_fin_calib.c                       					          \
+mock/MOCK_hal.c													  \
+mock/MOCK_usb.c                                                   \
+mock/MOCK_led.c 												  \
+mock/MOCK_servo.c                                                 \
 
 # Tested Source Files (anything that is being tested for coverage)
 COV_C_SOURCES =													  \
-$(ROOT_DIR)/app/flight/appa/rev2/flight.c
+$(ROOT_DIR)/app/rev2/fin_calib.c 
 
 # Framework (just these files. do not modify.)
 FRAMEWORK_SOURCES =												  \
@@ -73,38 +77,35 @@ CC = gcc
 # This should include a path to all of the headers used in your test
 C_INCLUDES =                                           \
 -I.                                                    \
--I./mock                                               \
--I$(ROOT_DIR)/app/flight/appa/rev2/					   \
--I$(ROOT_DIR)/mod/gps/								   \
--I$(ROOT_DIR)/mod/buzzer/							   \
--I$(ROOT_DIR)/mod/common/							   \
--I$(ROOT_DIR)/mod/error_sdr/						   \
--I$(ROOT_DIR)/mod/commands/							   \
+-I$(ROOT_DIR)/app/rev2/					   			   \
+-I$(DRIVER_DIR)/gps/								   \
 -I$(ROOT_DIR)/mod/sensor/							   \
--I$(ROOT_DIR)/mod/ignition/							   \
--I$(ROOT_DIR)/mod/flash/							   \
--I$(ROOT_DIR)/mod/servo/							   \
--I$(ROOT_DIR)/mod/usb/							   		\
--I$(ROOT_DIR)/mod/led/							   		\
--I$(ROOT_DIR)/mod/imu/								   \
+-I$(DRIVER_DIR)/imu/								   \
 -I$(LIB_DIR)                                           \
--I$(ROOT_DIR)/lib/util								   \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc          \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc/Legacy   \
 -I$(LIB_DIR)/Drivers/CMSIS/Device/ST/STM32H7xx/Include \
 -I$(LIB_DIR)/Drivers/CMSIS/Include                     \
--I$(ROOT_DIR)/init/appa/config/Inc				   	   \
--I$(ROOT_DIR)/test/framework/src/                      
+-I$(ROOT_DIR)/init/rev2/config/Inc				   	   \
+-I$(ROOT_DIR)/test/framework/src                       \
+-I$(ROOT_DIR)/test/app/rev2/fin_calib/mock	   	       \
+-I$(ROOT_DIR)/mod/common							   \
+-I$(DRIVER_DIR)/servo								   \
+-I$(DRIVER_DIR)/usb								   	   \
+-I$(DRIVER_DIR)/flash								   \
+-I$(ROOT_DIR)/mod/sensor							   \
+-I$(DRIVER_DIR)/imu								       \
+-I$(DRIVER_DIR)/led     							   \
+-I$(ROOT_DIR)/lib/util
 
 # Preprocessor definitions
 # Don't worry about the defs and flags unless you know what you're doing
-C_DEFS =          \
--DUSE_HAL_DRIVER  \
--DUSE_I2C_IT      \
--DSTM32H750xx     \
+C_DEFS =         \
+-DUSE_HAL_DRIVER \
+-DSTM32H750xx    \
 -DFLIGHT_COMPUTER \
--DA0002_REV2	  \
--DUNIT_TEST
+-DUNIT_TEST       \
+-DA0002_REV2 
 
 CFLAGS = $(C_INCLUDES) $(C_DEFS) $(OPT) -Wall -g
 

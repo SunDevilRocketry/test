@@ -47,7 +47,7 @@ mock/MOCK_hal.c													  \
 
 # Tested Source Files
 COV_C_SOURCES =													  \
-$(ROOT_DIR)/app/flight/appa/rev2/apogee_detect.c 
+$(ROOT_DIR)/app/rev2/apogee_detect.c 
 
 # Framework
 FRAMEWORK_SOURCES =												  \
@@ -72,21 +72,21 @@ CC = gcc
 C_INCLUDES =                                           \
 -I.                                                    \
 -I./mock   	   										\
--I$(ROOT_DIR)/app/flight/appa/rev2/					   \
--I$(ROOT_DIR)/mod/gps/								   \
+-I$(ROOT_DIR)/app/rev2/					   			 \
+-I$(ROOT_DIR)/driver/gps/								   \
 -I$(ROOT_DIR)/mod/sensor/							   \
--I$(ROOT_DIR)/mod/imu/								   \
+-I$(ROOT_DIR)/driver/imu/								   \
 -I$(ROOT_DIR)/mod/common							   \
 -I$(ROOT_DIR)/mod/error_sdr							   \
--I$(ROOT_DIR)/mod/servo								   \
--I$(ROOT_DIR)/mod/usb								   \
--I$(ROOT_DIR)/mod/flash								   \
+-I$(ROOT_DIR)/driver/servo								   \
+-I$(ROOT_DIR)/driver/usb								   \
+-I$(ROOT_DIR)/driver/flash								   \
 -I$(LIB_DIR)                                           \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc          \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc/Legacy   \
 -I$(LIB_DIR)/Drivers/CMSIS/Device/ST/STM32H7xx/Include \
 -I$(LIB_DIR)/Drivers/CMSIS/Include                     \
--I$(ROOT_DIR)/init/terminal/config/Inc				   \
+-I$(ROOT_DIR)/init/rev2/config/Inc							   \
 -I$(ROOT_DIR)/test/framework/src                       \
 -I$(ROOT_DIR)/lib/util
 

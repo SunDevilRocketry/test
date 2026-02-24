@@ -1,21 +1,21 @@
 ################################################################
 #
-# flash_appa.c unit tests (based on gcc)
+# prelaunch unit tests (based on gcc)
 #
 ################################################################
-
 
 ################################################################
 # target
 ################################################################
-TARGET = flash_appa
+TARGET = prelaunch
+
 
 ################################################################
 # build variables 
 ################################################################
 
 # Debug build?
-DEBUG = 1
+DEBUG = 0
 # Optimization
 OPT   = -Og
 
@@ -28,30 +28,39 @@ OPT   = -Og
 BUILD_DIR = build
 
 # base directory
-# depending on your test, this might not be correct. update the 
-# relative path based on where the test is compared to
-# Flight-Computer-Firmware.
+# depending on your test, this might not be correct.
 ROOT_DIR  = ../../../..
 
 # directory shortcuts for includes and sources
 LIB_DIR = $(ROOT_DIR)/lib
 MOD_DIR = $(ROOT_DIR)/mod
-INIT_DIR = $(ROOT_DIR)/init
+
 
 ################################################################
 # source 
 ################################################################
 
-# C sources (for test. driver, stubs, and others should go here)
-TEST_SOURCES =                                   				  \
-test_flash_appa.c                       					      	\
-mock/test_flash_appa_stubs.c
+# C sources
+TEST_SOURCES =   												\
+mock/led.c														\
+test_prelaunch.c												\
+mock/sensor.c													\
+mock/MOCK_flight.c													\
+mock/MOCK_hal.c													\
+mock/usb.c														\
+mock/fin_calib.c												\
+mock/ignition.c													\
+mock/servo.c													\
+mock/common.c													\
+mock/MOCK_flash.c													\
+mock/sdr_error.c												\
+mock/mock_huart.c												\
 
-# Tested Source Files (anything that is being tested for coverage)
+# Tested Source Files
 COV_C_SOURCES =													  \
-$(ROOT_DIR)/app/flight/appa/rev2/flash_appa.c
+$(ROOT_DIR)/app/rev2/prelaunch.c 
 
-# Framework (just these files. do not modify.)
+# Framework
 FRAMEWORK_SOURCES =												  \
 $(ROOT_DIR)/test/framework/src/test_assert.c          	  		  \
 $(ROOT_DIR)/test/framework/src/test_runner.c
@@ -73,29 +82,30 @@ CC = gcc
 # This should include a path to all of the headers used in your test
 C_INCLUDES =                                           \
 -I.                                                    \
--I./mock                                               \
--I$(ROOT_DIR)/mod/gps/								   \
--I$(ROOT_DIR)/mod/buzzer/							   \
--I$(ROOT_DIR)/mod/common/							   \
--I$(ROOT_DIR)/mod/error_sdr/							\
+-I$(ROOT_DIR)/app/rev2/					   \
+-I$(ROOT_DIR)/driver/gps/								   \
 -I$(ROOT_DIR)/mod/sensor/							   \
--I$(ROOT_DIR)/mod/ignition/							   \
--I$(ROOT_DIR)/mod/flash/							   \
--I$(ROOT_DIR)/mod/servo/							   \
--I$(ROOT_DIR)/mod/usb/							   		\
--I$(ROOT_DIR)/mod/led/							   		\
--I$(ROOT_DIR)/mod/imu/								   \
--I$(ROOT_DIR)/mod/common/								   \
+-I$(ROOT_DIR)/driver/imu/								   \
 -I$(LIB_DIR)                                           \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc          \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc/Legacy   \
 -I$(LIB_DIR)/Drivers/CMSIS/Device/ST/STM32H7xx/Include \
 -I$(LIB_DIR)/Drivers/CMSIS/Include                     \
--I$(LIB_DIR)/util/                                     \
--I$(ROOT_DIR)/init/terminal/config/Inc				   \
--I$(INIT_DIR)/config/Inc                               \
--I$(ROOT_DIR)/test/framework/src/                      \
--I$(ROOT_DIR)/app/flight/appa/rev2/
+-I$(ROOT_DIR)/init/rev2/config/Inc				   \
+-I$(ROOT_DIR)/test/framework/src                       \
+-I$(ROOT_DIR)/test/app/rev2/prelaunch/mock	   	   \
+-I$(ROOT_DIR)/driver/buzzer								\
+-I$(ROOT_DIR)/mod/commands								\
+-I$(ROOT_DIR)/driver/servo								   \
+-I$(ROOT_DIR)/driver/ignition								   \
+-I$(ROOT_DIR)/driver/flash								   \
+-I$(ROOT_DIR)/mod/sensor							   \
+-I$(ROOT_DIR)/driver/imu								   \
+-I$(ROOT_DIR)/lib/util									\
+-I$(ROOT_DIR)/driver/led								   	\
+-I$(ROOT_DIR)/mod/common								\
+-I$(ROOT_DIR)/mod/sensor								\
+-I$(ROOT_DIR)/driver/usb
 
 # Preprocessor definitions
 # Don't worry about the defs and flags unless you know what you're doing
@@ -103,12 +113,12 @@ C_DEFS =         \
 -DUSE_HAL_DRIVER \
 -DSTM32H750xx    \
 -DFLIGHT_COMPUTER \
--DA0002_REV2	 \
--DUNIT_TEST
+-DUNIT_TEST	\
+-DA0002_REV1
 
 CFLAGS = $(C_INCLUDES) $(C_DEFS) $(OPT) -Wall -g
 
-# Enable some warnings
+# Disable some warnings
 CFLAGS += -Wno-pointer-to-int-cast
 CFLAGS += -Wno-int-to-pointer-cast
 CFLAGS += -Wno-unused-function
@@ -121,29 +131,27 @@ CFLAGS += -fprofile-arcs
 ################################################################
 # Build all
 ################################################################
-# Wipe the build folder, then begin compilation
 all: clean $(BUILD_DIR)/$(TARGET)
 
 # Setup the path for c files
 OBJECTS = $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
-vpath %.c $(sort $(dir $(C_SOURCES)))
+# This is to make sure fin_calib.c is excluded 
+vpath %.c ./mock
+vpath %.c $(ROOT_DIR)/app/flight/appa/rev2
+vpath %.c $(ROOT_DIR)/test/framework/src
 
-# Compile
 $(BUILD_DIR)/%.o: %.c $(BUILD_DIR)
-	$(CC) -c $(CFLAGS) $< -o $@
+	$(CC) -c -w $(CFLAGS) $< -o $@
 
-# Link
 $(BUILD_DIR)/$(TARGET): $(OBJECTS) 
 	$(CC) $(OBJECTS) -o $@ -lgcov -lm
 
 $(BUILD_DIR):
-	mkdir $@		
+	mkdir $@
 
 ################################################################
 # Build test
 ################################################################
-
-# Compile test, execute, and generate results
 test:
 	@echo THIS TEST MUST BE EXECUTED IN A BASH TERMINAL. CMD/PS do not work.
 	-rm -fR $(BUILD_DIR)
@@ -157,7 +165,6 @@ test:
 # clean up 
 ################################################################
 
-# Remove build folder
 clean:
 	-rm -fR $(BUILD_DIR)
 

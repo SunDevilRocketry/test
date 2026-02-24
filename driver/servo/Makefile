@@ -1,21 +1,22 @@
 ################################################################
 #
-# sensor_calibrate unit tests (based on gcc)
+# servo unit tests (based on gcc)
 #
 ################################################################
-
 
 ################################################################
 # target
 ################################################################
-TARGET = sensor_calibrate
+TEST = servo
+TARGET = servo.out
+
 
 ################################################################
 # build variables 
 ################################################################
 
 # Debug build?
-DEBUG = 0
+DEBUG = 1
 # Optimization
 OPT   = -Og
 
@@ -28,10 +29,8 @@ OPT   = -Og
 BUILD_DIR = build
 
 # base directory
-# depending on your test, this might not be correct. update the 
-# relative path based on where the test is compared to
-# Flight-Computer-Firmware.
-ROOT_DIR  = ../../../..
+# depending on your test, this might not be correct.
+ROOT_DIR  = ../../..
 
 # directory shortcuts for includes and sources
 LIB_DIR = $(ROOT_DIR)/lib
@@ -42,16 +41,18 @@ INIT_DIR = $(ROOT_DIR)/init
 # source 
 ################################################################
 
-# C sources (for test. driver, stubs, and others should go here)
-TEST_SOURCES =                                   				  \
-test_sensor_calibrate.c                       					          \
-mock/MOCK_hal.c
+# C sources
+TEST_SOURCES =                                   				  	\
+test_servo.c                       								  	\
+mock/MOCK_hal.c													  	\
+mock/MOCK_led.c													  	\
+mock/MOCK_usb.c													  	
 
-# Tested Source Files (anything that is being tested for coverage)
+# Tested Source Files
 COV_C_SOURCES =													  \
-$(ROOT_DIR)/app/flight/appa/rev2/sensor_calibrate.c 
+$(ROOT_DIR)/driver/servo/servo.c
 
-# Framework (just these files. do not modify.)
+# Framework
 FRAMEWORK_SOURCES =												  \
 $(ROOT_DIR)/test/framework/src/test_assert.c          	  		  \
 $(ROOT_DIR)/test/framework/src/test_runner.c
@@ -73,27 +74,20 @@ CC = gcc
 # This should include a path to all of the headers used in your test
 C_INCLUDES =                                           \
 -I.                                                    \
--I$(ROOT_DIR)/app/flight/appa/rev2/					   \
--I$(ROOT_DIR)/mod/gps/								   \
+-I$(ROOT_DIR)/driver/servo/							   \
 -I$(ROOT_DIR)/mod/sensor/							   \
--I$(ROOT_DIR)/mod/imu/								   \
+-I$(ROOT_DIR)/driver/imu/								   \
+-I$(ROOT_DIR)/driver/usb/								   \
+-I$(ROOT_DIR)/driver/led/								   \
+-I$(ROOT_DIR)/init/rev2/						   \
 -I$(LIB_DIR)                                           \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc          \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc/Legacy   \
 -I$(LIB_DIR)/Drivers/CMSIS/Device/ST/STM32H7xx/Include \
 -I$(LIB_DIR)/Drivers/CMSIS/Include                     \
--I$(ROOT_DIR)/init/terminal/config/Inc				   \
+-I$(ROOT_DIR)/init/rev2/config/Inc			   \
 -I$(ROOT_DIR)/test/framework/src                       \
--I$(ROOT_DIR)/test/app/appa/fin_calib/mock	   	       \
--I$(ROOT_DIR)/mod/common							   \
--I$(ROOT_DIR)/mod/error_sdr/						   \
--I$(ROOT_DIR)/mod/servo								   \
--I$(ROOT_DIR)/mod/usb								   \
--I$(ROOT_DIR)/mod/flash								   \
--I$(ROOT_DIR)/mod/sensor							   \
--I$(ROOT_DIR)/mod/imu								   \
--I$(ROOT_DIR)/mod/led     							   \
--I$(ROOT_DIR)/lib/util
+-I$(ROOT_DIR)/test/driver/servo/mock
 
 # Preprocessor definitions
 # Don't worry about the defs and flags unless you know what you're doing
@@ -101,13 +95,11 @@ C_DEFS =         \
 -DUSE_HAL_DRIVER \
 -DSTM32H750xx    \
 -DFLIGHT_COMPUTER \
--DUNIT_TEST       \
--DUSE_I2C_IT	  \
--DA0002_REV2 
+-DUNIT_TEST
 
 CFLAGS = $(C_INCLUDES) $(C_DEFS) $(OPT) -Wall -g
 
-# Enable some warnings
+# Disable some warnings
 CFLAGS += -Wno-pointer-to-int-cast
 CFLAGS += -Wno-int-to-pointer-cast
 CFLAGS += -Wno-unused-function
@@ -120,7 +112,6 @@ CFLAGS += -fprofile-arcs
 ################################################################
 # Build all
 ################################################################
-# Wipe the build folder, then begin compilation
 all: clean $(BUILD_DIR)/$(TARGET)
 
 # Setup the path for c files
@@ -133,7 +124,7 @@ $(BUILD_DIR)/%.o: %.c $(BUILD_DIR)
 
 # Link
 $(BUILD_DIR)/$(TARGET): $(OBJECTS) 
-	$(CC) $(OBJECTS) -o $@ -lgcov -lm
+	$(CC) $(OBJECTS) -o $@ -lgcov
 
 $(BUILD_DIR):
 	mkdir $@		
@@ -141,8 +132,6 @@ $(BUILD_DIR):
 ################################################################
 # Build test
 ################################################################
-
-# Compile test, execute, and generate results
 test:
 	@echo THIS TEST MUST BE EXECUTED IN A BASH TERMINAL. CMD/PS do not work.
 	-rm -fR $(BUILD_DIR)
@@ -156,7 +145,11 @@ test:
 # clean up 
 ################################################################
 
-# Remove build folder
+################################################################
+# clean up 
+################################################################
+
+# Windows users should use git bash so this command works as expected.
 clean:
 	-rm -fR $(BUILD_DIR)
 

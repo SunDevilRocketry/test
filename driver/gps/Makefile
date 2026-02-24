@@ -1,13 +1,15 @@
-################################################################
+################################################################ 
 #
-# launch_detect unit tests (based on gcc)
+# gps.c unit tests (based on gcc)
 #
 ################################################################
+
 
 ################################################################
 # target
 ################################################################
-TARGET = launch_detect
+TEST = test_gps
+TARGET = test_gps.out
 
 
 ################################################################
@@ -28,12 +30,12 @@ OPT   = -Og
 BUILD_DIR = build
 
 # base directory
-# depending on your test, this might not be correct.
-ROOT_DIR  = ../../../..
+ROOT_DIR  = ../../..
 
-# directory shortcuts for includes and sources
+# library directory
 LIB_DIR = $(ROOT_DIR)/lib
-MOD_DIR = $(ROOT_DIR)/mod
+
+INIT_DIR = $(ROOT_DIR)/init
 
 
 ################################################################
@@ -42,12 +44,12 @@ MOD_DIR = $(ROOT_DIR)/mod
 
 # C sources
 TEST_SOURCES =                                   				  \
-test_launch_detect.c                       					      \
-mock/MOCK_hal.c													  \
+test_gps.c                       								  \
+mock/MOCK_hal.c
 
 # Tested Source Files
 COV_C_SOURCES =													  \
-$(ROOT_DIR)/app/canard/rev2/launch_detect.c 
+$(ROOT_DIR)/driver/gps/gps.c
 
 # Framework
 FRAMEWORK_SOURCES =												  \
@@ -59,38 +61,30 @@ C_SOURCES = $(TEST_SOURCES) $(COV_C_SOURCES) $(FRAMEWORK_SOURCES)
 ################################################################
 # Compiler 
 ################################################################
-
-# You might be used to arm-none-eabi-gcc, but unit tests are run locally!
 CC = gcc
+
 
 ################################################################
 # C flags 
 ################################################################
 
 # C Includes
-# This should include a path to all of the headers used in your test
 C_INCLUDES =                                           \
 -I.                                                    \
--I$(ROOT_DIR)/mod/gps/								   \
--I$(ROOT_DIR)/mod/common/							   \
+-I$(ROOT_DIR)/driver/gps/								   \
 -I$(ROOT_DIR)/mod/sensor/							   \
--I$(ROOT_DIR)/mod/imu/								   \
+-I$(ROOT_DIR)/driver/imu/								   \
 -I$(LIB_DIR)                                           \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc          \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc/Legacy   \
 -I$(LIB_DIR)/Drivers/CMSIS/Device/ST/STM32H7xx/Include \
 -I$(LIB_DIR)/Drivers/CMSIS/Include                     \
--I$(ROOT_DIR)/init/terminal/config/Inc				   \
--I$(ROOT_DIR)/test/framework/src                       \
--I$(ROOT_DIR)/test/app/canard/launch_detect/mock	   \
--I$(ROOT_DIR)/mod/servo								   \
--I$(ROOT_DIR)/mod/flash								   \
--I$(ROOT_DIR)/mod/sensor							   \
--I$(ROOT_DIR)/mod/imu								   \
--I$(ROOT_DIR)/lib/util
+-I$(ROOT_DIR)/init/rev2/config/Inc				   \
+-I$(INIT_DIR)/config/Inc                               \
+-I$(ROOT_DIR)/test/framework/src				   	   \
+-I$(ROOT_DIR)/test/driver/gps/mock/
 
 # Preprocessor definitions
-# Don't worry about the defs and flags unless you know what you're doing
 C_DEFS =         \
 -DUSE_HAL_DRIVER \
 -DSTM32H750xx    \
@@ -122,7 +116,7 @@ $(BUILD_DIR)/%.o: %.c $(BUILD_DIR)
 	$(CC) -c $(CFLAGS) $< -o $@
 
 $(BUILD_DIR)/$(TARGET): $(OBJECTS) 
-	$(CC) $(OBJECTS) -o $@ -lgcov -lm
+	$(CC) $(OBJECTS) -o $@ -lgcov
 
 $(BUILD_DIR):
 	mkdir $@		

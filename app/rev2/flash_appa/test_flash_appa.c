@@ -75,7 +75,7 @@ to_return.config_settings.pitch_yaw_control_constant_p = 0.0f; /* active control
 to_return.config_settings.pitch_yaw_control_constant_i = 0.0f; /* active control disabled */
 to_return.config_settings.pitch_yaw_control_constant_d = 0.0f; /* active control disabled */
 to_return.config_settings.control_max_deflection_angle = 0;	/* active control disabled */
-to_return.config_settings.flash_rate_limt = 0;			/* unit: Hz */
+to_return.config_settings.flash_rate_limit = 0;			/* unit: Hz */
 return to_return;
 }
 
