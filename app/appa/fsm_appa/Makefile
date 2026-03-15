@@ -37,6 +37,7 @@ ROOT_DIR  = ../../../..
 LIB_DIR  = $(ROOT_DIR)/lib
 MOD_DIR  = $(ROOT_DIR)/mod
 INIT_DIR = $(ROOT_DIR)/init
+DRIVER_DIR = $(ROOT_DIR)/driver
 
 
 
@@ -51,7 +52,7 @@ mock/test_fsm_appa_stubs.c
 
 # Tested Source Files (anything that is being tested for coverage)
 COV_C_SOURCES =                               \
-$(ROOT_DIR)/app/flight/appa/rev2/fsm_appa.c
+$(ROOT_DIR)/app/rev2/fsm_appa.c
 
 # Framework (just these files. do not modify.)
 FRAMEWORK_SOURCES =                           \
@@ -78,7 +79,7 @@ CC = gcc
 C_INCLUDES =                                           \
 -I.                                                    \
 -I./mock                                               \
--I$(ROOT_DIR)/app/flight/appa/rev2/                    \
+-I$(ROOT_DIR)/app/rev2/                				   \
 -I$(ROOT_DIR)/mod/gps/                                 \
 -I$(ROOT_DIR)/mod/buzzer/                              \
 -I$(ROOT_DIR)/mod/common/                              \
