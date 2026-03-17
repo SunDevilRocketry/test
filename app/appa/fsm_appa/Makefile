@@ -97,7 +97,7 @@ C_INCLUDES =                                           \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc/Legacy   \
 -I$(LIB_DIR)/Drivers/CMSIS/Device/ST/STM32H7xx/Include \
 -I$(LIB_DIR)/Drivers/CMSIS/Include                     \
--I$(ROOT_DIR)/init/appa/config/Inc                     \
+-I$(INIT_DIR)/rev2/config/Inc							\
 -I$(ROOT_DIR)/test/framework/src/
 
 # Preprocessor definitions
