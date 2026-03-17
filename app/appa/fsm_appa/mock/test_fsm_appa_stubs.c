@@ -19,7 +19,7 @@ Includes
 /*------------------------------------------------------------------------------
 External Variables (from fsm_appa.c)
 ------------------------------------------------------------------------------*/
-extern FLIGHT_COMP_STATE_TYPE flight_computer_state;
+static FLIGHT_COMP_STATE_TYPE flight_computer_state;
 
 
 /*------------------------------------------------------------------------------
@@ -418,7 +418,7 @@ flight_launch_detect_calls++;
 *       Stub for in-flight phase                                               *
 *                                                                              *
 *******************************************************************************/
-void flight_in_flight
+void flight_loop
     (
     uint32_t* launch_detect_start_time,
     SENSOR_STATUS* sensor_status,
