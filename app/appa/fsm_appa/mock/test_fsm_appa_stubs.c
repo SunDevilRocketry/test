@@ -19,7 +19,7 @@ Includes
 /*------------------------------------------------------------------------------
 External Variables (from fsm_appa.c)
 ------------------------------------------------------------------------------*/
-static FLIGHT_COMP_STATE_TYPE flight_computer_state;
+extern FLIGHT_COMP_STATE_TYPE flight_computer_state; // Remove static from FLIGHT_COMP_STATE_TYPE in fsm_appa for testing
 
 
 /*------------------------------------------------------------------------------

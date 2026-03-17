@@ -151,14 +151,14 @@ struct test_case cases[] =
         { "Normal: Sequential forward transition (IDLE->CALIB)", FC_STATE_IDLE, FC_STATE_CALIB, false, MAX_UINT_32 },
         { "Normal: Same state transition (IDLE->IDLE)", FC_STATE_IDLE, FC_STATE_IDLE, false, MAX_UINT_32 },
         { "Normal: Sequential forward transition (CALIB->LAUNCH_DETECT)", FC_STATE_CALIB, FC_STATE_LAUNCH_DETECT, false, MAX_UINT_32 },
-        { "Normal: Sequential forward transition (LAUNCH_DETECT->FLIGHT)", FC_STATE_LAUNCH_DETECT, FC_STATE_FLIGHT, false, MAX_UINT_32 },
-        { "Normal: Sequential forward transition (FLIGHT->POST_APOGEE)", FC_STATE_FLIGHT, FC_STATE_POST_APOGEE, false, MAX_UINT_32 },
-        { "Normal: Sequential forward transition (POST_APOGEE->DEPLOYED)", FC_STATE_POST_APOGEE, FC_STATE_DEPLOYED, false, MAX_UINT_32 },
+        { "Normal: Sequential forward transition (LAUNCH_DETECT->FLIGHT)", FC_STATE_LAUNCH_DETECT, FC_STATE_ASCENT, false, MAX_UINT_32 },
+        { "Normal: Sequential forward transition (FLIGHT->POST_APOGEE)", FC_STATE_ASCENT, FC_STATE_APOGEE, false, MAX_UINT_32 },
+        { "Normal: Sequential forward transition (POST_APOGEE->DEPLOYED)", FC_STATE_APOGEE, FC_STATE_DESCENT, false, MAX_UINT_32 },
         { "Error: Skip states (INIT->CALIB)", FC_STATE_INIT, FC_STATE_CALIB, true, ERROR_INVALID_STATE_ERROR },
         { "Error: Skip states (IDLE->LAUNCH_DETECT)", FC_STATE_IDLE, FC_STATE_LAUNCH_DETECT, true, ERROR_INVALID_STATE_ERROR },
         { "Error: Backward transition (CALIB->IDLE)", FC_STATE_CALIB, FC_STATE_IDLE, true, ERROR_INVALID_STATE_ERROR },
-        { "Error: Backward transition (FLIGHT->LAUNCH_DETECT)", FC_STATE_FLIGHT, FC_STATE_LAUNCH_DETECT, true, ERROR_INVALID_STATE_ERROR },
-        { "Error: Jump to DEPLOYED from INIT", FC_STATE_INIT, FC_STATE_DEPLOYED, true, ERROR_INVALID_STATE_ERROR },
+        { "Error: Backward transition (FLIGHT->LAUNCH_DETECT)", FC_STATE_ASCENT, FC_STATE_LAUNCH_DETECT, true, ERROR_INVALID_STATE_ERROR },
+        { "Error: Jump to DEPLOYED from INIT", FC_STATE_INIT, FC_STATE_DESCENT, true, ERROR_INVALID_STATE_ERROR },
     };
 for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); test_num++ )
     {
@@ -235,9 +235,9 @@ struct test_case cases[] =
         { "Get state: IDLE", FC_STATE_IDLE },
         { "Get state: CALIB", FC_STATE_CALIB },
         { "Get state: LAUNCH_DETECT", FC_STATE_LAUNCH_DETECT },
-        { "Get state: FLIGHT", FC_STATE_FLIGHT },
-        { "Get state: POST_APOGEE", FC_STATE_POST_APOGEE },
-        { "Get state: DEPLOYED", FC_STATE_DEPLOYED },
+        { "Get state: FLIGHT", FC_STATE_ASCENT },
+        { "Get state: POST_APOGEE", FC_STATE_APOGEE },
+        { "Get state: DEPLOYED", FC_STATE_DESCENT },
     };
 for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); test_num++ )
     {
@@ -497,9 +497,9 @@ struct test_case cases[] =
         { "State: IDLE runs prelaunch", FC_STATE_IDLE, FC_STATE_IDLE, 0, 0, 0, 0, 0 },
         { "State: CALIB runs calibration", FC_STATE_CALIB, FC_STATE_LAUNCH_DETECT, 1, 0, 0, 0, 0 },
         { "State: LAUNCH_DETECT runs launch detect", FC_STATE_LAUNCH_DETECT, FC_STATE_LAUNCH_DETECT, 0, 1, 0, 0, 0 },
-        { "State: FLIGHT runs in_flight", FC_STATE_FLIGHT, FC_STATE_FLIGHT, 0, 0, 1, 0, 0 },
-        { "State: POST_APOGEE runs deploy", FC_STATE_POST_APOGEE, FC_STATE_DEPLOYED, 0, 0, 0, 1, 0 },
-        { "State: DEPLOYED runs descent", FC_STATE_DEPLOYED, FC_STATE_DEPLOYED, 0, 0, 0, 0, 1 },
+        { "State: FLIGHT runs in_flight", FC_STATE_ASCENT, FC_STATE_ASCENT, 0, 0, 1, 0, 0 },
+        { "State: POST_APOGEE runs deploy", FC_STATE_APOGEE, FC_STATE_DESCENT, 0, 0, 0, 1, 0 },
+        { "State: DEPLOYED runs descent", FC_STATE_DESCENT, FC_STATE_DESCENT, 0, 0, 0, 0, 1 },
     };
 for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); test_num++ )
     {
@@ -675,18 +675,18 @@ TEST_ASSERT_EQ_UINT( "Test CALIB->LAUNCH_DETECT transition.", get_fc_state(), FC
 
 
 /* LAUNCH_DETECT -> FLIGHT */
-fc_state_update( FC_STATE_FLIGHT );
-TEST_ASSERT_EQ_UINT( "Test LAUNCH_DETECT->FLIGHT transition.", get_fc_state(), FC_STATE_FLIGHT );
+fc_state_update( FC_STATE_ASCENT );
+TEST_ASSERT_EQ_UINT( "Test LAUNCH_DETECT->FLIGHT transition.", get_fc_state(), FC_STATE_ASCENT );
 
 
 /* FLIGHT -> POST_APOGEE */
-fc_state_update( FC_STATE_POST_APOGEE );
-TEST_ASSERT_EQ_UINT( "Test FLIGHT->POST_APOGEE transition.", get_fc_state(), FC_STATE_POST_APOGEE );
+fc_state_update( FC_STATE_APOGEE );
+TEST_ASSERT_EQ_UINT( "Test FLIGHT->POST_APOGEE transition.", get_fc_state(), FC_STATE_APOGEE );
 
 
 /* POST_APOGEE -> DEPLOYED */
-fc_state_update( FC_STATE_DEPLOYED );
-TEST_ASSERT_EQ_UINT( "Test POST_APOGEE->DEPLOYED transition.", get_fc_state(), FC_STATE_DEPLOYED );
+fc_state_update( FC_STATE_DESCENT );
+TEST_ASSERT_EQ_UINT( "Test POST_APOGEE->DEPLOYED transition.", get_fc_state(), FC_STATE_DESCENT );
 
 
 TEST_end_nested_case();
@@ -724,9 +724,9 @@ void test_appa_fsm_while_loop_coverage(void)
         { FC_STATE_IDLE,         &prelaunch_terminal_calls },
         { FC_STATE_CALIB,        &flight_calib_calls },
         { FC_STATE_LAUNCH_DETECT,&flight_launch_detect_calls },
-        { FC_STATE_FLIGHT,       &flight_in_flight_calls },
-        { FC_STATE_POST_APOGEE,  &flight_deploy_calls },
-        { FC_STATE_DEPLOYED,     &flight_descent_calls },
+        { FC_STATE_ASCENT,       &flight_in_flight_calls },
+        { FC_STATE_APOGEE,  &flight_deploy_calls },
+        { FC_STATE_DESCENT,     &flight_descent_calls },
     };
 
     for (uint8_t i = 0; i < sizeof(cases)/sizeof(cases[0]); i++)
