@@ -91,6 +91,7 @@ C_INCLUDES =                                           \
 -I$(DRIVER_DIR)/servo								   \
 -I$(DRIVER_DIR)/usb								   	   \
 -I$(DRIVER_DIR)/led								   	   \
+-I$(DRIVER_DIR)/timer								   \
 -I$(DRIVER_DIR)/flash								   \
 -I$(LIB_DIR)                                           \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc          \
