@@ -86,7 +86,7 @@ C_INCLUDES =                                           \
 -I$(DRIVER_DIR)/buzzer/								   \
 -I$(ROOT_DIR)/mod/sensor/							   \
 -I$(DRIVER_DIR)/imu/								   \
--I$(ROOT_DIR)/mod/common							   \
+-I$(ROOT_DIR)/mod/math_sdr							   \
 -I$(ROOT_DIR)/mod/error_sdr/						   \
 -I$(DRIVER_DIR)/servo								   \
 -I$(DRIVER_DIR)/usb								   	   \

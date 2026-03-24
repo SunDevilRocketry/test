@@ -89,7 +89,7 @@ C_INCLUDES =                                           \
 -I$(ROOT_DIR)/init/rev2/config/Inc				   	   \
 -I$(ROOT_DIR)/test/framework/src                       \
 -I$(ROOT_DIR)/test/app/rev2/fin_calib/mock	   	       \
--I$(ROOT_DIR)/mod/common							   \
+-I$(ROOT_DIR)/mod/math_sdr							   \
 -I$(DRIVER_DIR)/servo								   \
 -I$(DRIVER_DIR)/usb								   	   \
 -I$(DRIVER_DIR)/flash								   \

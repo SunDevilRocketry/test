@@ -14,7 +14,7 @@
 #include "imu.h"
 #include "servo.h"
 #include "ignition.h"
-#include "common.h"
+#include "math_sdr.h"
 #include "error_sdr.h"
 #include "main.h"
 #include "led.h"

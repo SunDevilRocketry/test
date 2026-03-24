@@ -25,7 +25,7 @@ Project Includes
 ------------------------------------------------------------------------------*/
 #include "sdrtf_pub.h"
 #include "main.h"
-#include "common.h"
+#include "math_sdr.h"
 #include "error_sdr.h"
 #include "sensor.h"
 #include "servo.h"
