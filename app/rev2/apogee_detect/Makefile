@@ -76,7 +76,7 @@ C_INCLUDES =                                           \
 -I$(ROOT_DIR)/driver/gps/								   \
 -I$(ROOT_DIR)/mod/sensor/							   \
 -I$(ROOT_DIR)/driver/imu/								   \
--I$(ROOT_DIR)/mod/common							   \
+-I$(ROOT_DIR)/mod/math_sdr							   \
 -I$(ROOT_DIR)/mod/error_sdr							   \
 -I$(ROOT_DIR)/driver/servo								   \
 -I$(ROOT_DIR)/driver/usb								   \

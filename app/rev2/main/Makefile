@@ -95,7 +95,7 @@ C_INCLUDES =                                           \
 -I$(ROOT_DIR)/driver/imu								   \
 -I$(ROOT_DIR)/lib/util									\
 -I$(ROOT_DIR)/driver/led								   	\
--I$(ROOT_DIR)/mod/common								\
+-I$(ROOT_DIR)/mod/math_sdr								\
 -I$(ROOT_DIR)/mod/sensor								\
 -I$(ROOT_DIR)/driver/usb
 
@@ -156,7 +156,6 @@ test:
 
 clean:
 	-rm -fR $(BUILD_DIR)
-	mkdir build
 
 
 ################################################################

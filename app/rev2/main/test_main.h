@@ -26,7 +26,6 @@ extern "C" {
 #include "flash.h"
 #include "baro.h"
 #include "servo.h"
-#include "common.h"
 #include "error_sdr.h"
 
 /*------------------------------------------------------------------------------
