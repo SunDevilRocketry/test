@@ -26,7 +26,7 @@ Project Includes
 ------------------------------------------------------------------------------*/
 #include "sdrtf_pub.h"
 #include "main.h"
-#include "common.h"
+#include "math_sdr.h"
 #include "led.h"
 #include "usb.h"
 #include "sensor.h"
