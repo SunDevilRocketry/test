@@ -80,6 +80,7 @@ C_INCLUDES =                                           \
 -I$(ROOT_DIR)/mod/error_sdr							   \
 -I$(ROOT_DIR)/driver/servo								   \
 -I$(ROOT_DIR)/driver/usb								   \
+-I$(ROOT_DIR)/driver/lora								   \
 -I$(ROOT_DIR)/driver/flash								   \
 -I$(LIB_DIR)                                           \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc          \

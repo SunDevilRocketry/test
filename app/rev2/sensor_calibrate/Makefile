@@ -36,6 +36,7 @@ ROOT_DIR  = ../../../..
 # directory shortcuts for includes and sources
 LIB_DIR = $(ROOT_DIR)/lib
 MOD_DIR = $(ROOT_DIR)/mod
+DRIVER_DIR = $(ROOT_DIR)/driver
 INIT_DIR = $(ROOT_DIR)/init
 
 ################################################################
@@ -89,6 +90,7 @@ C_INCLUDES =                                           \
 -I$(ROOT_DIR)/mod/error_sdr/						   \
 -I$(ROOT_DIR)/driver/servo								   \
 -I$(ROOT_DIR)/driver/usb								   \
+-I$(DRIVER_DIR)/lora								   \
 -I$(ROOT_DIR)/driver/flash								   \
 -I$(ROOT_DIR)/mod/sensor							   \
 -I$(ROOT_DIR)/driver/imu								   \
