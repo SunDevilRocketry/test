@@ -91,6 +91,7 @@ C_INCLUDES =                                           \
 -I$(ROOT_DIR)/mod/error_sdr/						   \
 -I$(ROOT_DIR)/driver/servo								   \
 -I$(DRIVER_DIR)/lora								   \
+-I$(DRIVER_DIR)/timer								   \
 -I$(ROOT_DIR)/driver/ignition								   \
 -I$(ROOT_DIR)/driver/flash								   \
 -I$(ROOT_DIR)/mod/sensor							   \
