@@ -20,7 +20,7 @@ Standard Includes
 Project Includes                                                                     
 ------------------------------------------------------------------------------*/
 #include "main.h"
-#include "common.h"
+#include "math_sdr.h"
 #include "usb.h"
 #include "string.h"
 #include "led.h"
@@ -59,13 +59,13 @@ static PRESET_DATA get_default_configs
 {
 PRESET_DATA to_return;
 memset(&to_return, 0, sizeof( PRESET_DATA ));
-to_return.config_settings.enabled_features = 0b11100001; /* launch detect, dual deploy, data logging */
-to_return.config_settings.enabled_data = 0b11111111; 	   /* all data enabled */
+to_return.config_settings.enabled_features = 0x00000041; /* dual deploy, accel LD */
+to_return.config_settings.enabled_data = 0xFFFFFFFF; 	   /* all data enabled */
 to_return.config_settings.sensor_calibration_samples = 1000;		/* unitless */
 to_return.config_settings.launch_detect_timeout 	   = 30000; 		/* unit: ms */
 to_return.config_settings.launch_detect_accel_threshold = 2;		/* unit: g	*/
 to_return.config_settings.launch_detect_accel_samples	  = 5;		/* unitless */
-to_return.config_settings.launch_detect_baro_threshold    = 300;	/* unit: Pa */
+to_return.config_settings.launch_detect_baro_threshold  = 300;	/* unit: Pa */
 to_return.config_settings.launch_detect_baro_samples	  = 5;		/* unitless */
 to_return.config_settings.control_delay_after_launch	  = 4000;	/* unit: ms */
 to_return.config_settings.roll_control_constant_p = 0.0f; /* active control disabled */
@@ -75,7 +75,7 @@ to_return.config_settings.pitch_yaw_control_constant_p = 0.0f; /* active control
 to_return.config_settings.pitch_yaw_control_constant_i = 0.0f; /* active control disabled */
 to_return.config_settings.pitch_yaw_control_constant_d = 0.0f; /* active control disabled */
 to_return.config_settings.control_max_deflection_angle = 0;	/* active control disabled */
-to_return.config_settings.flash_rate_limit = 0;			/* unit: Hz */
+to_return.config_settings.flash_rate_limit = 0;					/* unit: Hz */
 return to_return;
 }
 
@@ -99,20 +99,14 @@ void test_store_frame
 	)
 {
 /*------------------------------------------------------------------------------
-Cases
-------------------------------------------------------------------------------*/
-
-/*------------------------------------------------------------------------------
 Local variables
 ------------------------------------------------------------------------------*/
 HFLASH_BUFFER flash_handle;
 uint32_t time = 123; /* arbitrary value */
 uint32_t address;
+sensor_data.gps_utc_time = 118.2026;
 
 reset_stubs();
-reset_mock_flash();
-
-sensor_data.imu_data.accel_x = 77;
 
 mock_flash_memory[0] = 1;
 mock_flash_memory[1] = 0;
@@ -124,18 +118,17 @@ Call FUT
 store_frame 
 	(
 	&flash_handle,
-	&sensor_data,
 	time,
 	&address
 	);
 
-
 /*------------------------------------------------------------------------------
 Verify results
 ------------------------------------------------------------------------------*/
-uint8_t imu_data_index = 6;
+volatile uint32_t sensor_data_index = sensor_frame_size + 6;
 TEST_ASSERT_EQ_UINT( "Test that the time was placed into flash memory", time, mock_flash_memory[sensor_frame_size + 2] );
-TEST_ASSERT_EQ_MEMORY( "Test that IMU data was stored", &mock_flash_memory[sensor_frame_size + imu_data_index], &(sensor_data.imu_data), 10 * sizeof(uint16_t) );
+TEST_ASSERT_EQ_MEMORY( "Test that data was stored", &mock_flash_memory[sensor_data_index], &sensor_data, sizeof( SENSOR_DATA ) ); 	/* some data is stored out of order, so this doesn't work with baro, for example */
+TEST_ASSERT_EQ_UINT( "Test that the address was set correctly", address, 2 * sensor_frame_size );	/* address after preset data + one sensor frame */
 
 } /* test_store_frame */
 
@@ -180,7 +173,6 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 	Local variables
 	------------------------------------------------------------------------------*/
 	reset_stubs();
-	reset_mock_flash();
 
 	HFLASH_BUFFER flash_handle;
 	uint32_t address;
@@ -202,10 +194,8 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 	FLASH_STATUS result = read_preset
 		(
 		&flash_handle,
-		&preset_data,
 		&address
 		);
-
 
 	/*------------------------------------------------------------------------------
 	Verify results
@@ -243,7 +233,6 @@ uint32_t address;
 Set up mocks/stubs
 ------------------------------------------------------------------------------*/
 reset_stubs();
-reset_mock_flash();
 
 /* store random junk in first block of memory */
 memset( &mock_flash_memory[0], 1, sizeof( PRESET_DATA ) + 2 );
@@ -254,7 +243,6 @@ Call FUT
 FLASH_STATUS result = write_preset
 	(
 	&flash_handle,
-	&preset_data,
 	&address
 	);
 
@@ -286,7 +274,6 @@ void test_flash_erase_preserve_preset
 Local variables
 ------------------------------------------------------------------------------*/
 reset_stubs();
-reset_mock_flash();
 
 HFLASH_BUFFER flash_handle;
 uint32_t address;
@@ -370,13 +357,12 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 	HFLASH_BUFFER flash_handle;
 	uint8_t max_sensor_frame_size = 70 + sizeof( IMU_CONVERTED ) + sizeof( STATE_ESTIMATION );
 	uint8_t buffer[max_sensor_frame_size];
-	uint32_t time = 123; 
+	uint32_t time = 543210; 
 
 	/*------------------------------------------------------------------------------
 	Set up mocks/stubs
 	------------------------------------------------------------------------------*/
 	reset_stubs();
-	reset_mock_flash();
 	preset_data = get_default_configs();
 	if ( cases[test_num].sensor_frame_size_initialized )
 		{
@@ -392,7 +378,6 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 	------------------------------------------------------------------------------*/
 	FLASH_STATUS result = get_sensor_frame
 		(
-		&sensor_data,
 		buffer,
 		time
 		);
@@ -401,6 +386,8 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 	Verify results
 	------------------------------------------------------------------------------*/
 	TEST_ASSERT_EQ_UINT( "Test for expected get_sensor_frame return", result, cases[test_num].expected_return );
+	TEST_ASSERT_EQ_UINT( "Test that save bit is placed in buffer", buffer[0], 1 );
+	TEST_ASSERT_EQ_MEMORY( "Test that time is placed in buffer", &buffer[2], &time, 4 );
 
 	TEST_end_nested_case();
 	}
@@ -423,8 +410,6 @@ int main
 	void
 	)
 {
-reset_mock_flash();
-
 /*------------------------------------------------------------------------------
 Test Cases
 ------------------------------------------------------------------------------*/

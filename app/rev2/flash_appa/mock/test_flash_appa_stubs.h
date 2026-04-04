@@ -11,9 +11,4 @@ void reset_stubs
     void
     );
 
-void reset_mock_flash
-	(
-	void
-	);
-
 #endif
