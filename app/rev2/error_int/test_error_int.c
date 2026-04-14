@@ -126,7 +126,9 @@ struct test_case cases[] =
 		{ "Normal: Baro I2C Initialization Error", ERROR_BARO_I2C_INIT_ERROR, 3 },
 		{ "Normal: IMU I2C Initialization Error", ERROR_IMU_I2C_INIT_ERROR, 4 },
 		{ "Normal: I2C HAL MSP Error", ERROR_I2C_HAL_MSP_ERROR, 5 },
-		{ "Normal: Baro Calibration Error", ERROR_BARO_CAL_ERROR, 6 }
+		{ "Normal: Baro Calibration Error", ERROR_BARO_CAL_ERROR, 6 },
+        { "Normal: LoRa cmd or init Error", ERROR_LORA_CMD_ERROR, 1 },
+        { "Normal: LoRa cmd or init Error", ERROR_LORA_INIT_ERROR, 1 },
 	};
 for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); test_num++ )
 	{
