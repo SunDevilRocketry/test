@@ -32,6 +32,7 @@ Project Includes
 #include "ignition.h"
 #include "flash.h"
 #include "test_flight_stubs.h"
+#include "telemetry.h"
 
 /*------------------------------------------------------------------------------
 Global Variables 
@@ -51,6 +52,7 @@ extern uint16_t preset_preserving_flash_erase_calls;
 extern uint16_t flash_busy_calls;
 extern uint16_t flash_busy_counts;
 extern bool store_frame_called;
+extern TELEMETRY_EVENT last_event;
 
 /* hijacked globals */
 extern uint32_t pid_previous;
@@ -650,6 +652,112 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 /*******************************************************************************
 *                                                                              *
 * PROCEDURE:                                                                   * 
+*       test_telemetry_sync		  				                           	   *
+*                                                                              *
+* DESCRIPTION:                                                                 * 
+*       Test telemetry state												   *
+*                                                                              *
+*******************************************************************************/
+void test_telemetry_sync
+    (
+    void
+    )
+{
+/*------------------------------------------------------------------------------
+Case 1: Telemetry not enabled
+------------------------------------------------------------------------------*/
+TEST_begin_nested_case( "Test behavior when telemetry is disabled." );
+
+/*------------------------------------------------------------------------------
+Local variables
+------------------------------------------------------------------------------*/
+SENSOR_STATUS sensor_status_param = SENSOR_OK;
+FLASH_STATUS flash_status_param = FLASH_OK;
+HFLASH_BUFFER flash_buffer;
+uint32_t flash_address = 100;
+uint32_t ld_start_time = 0xDEADBEEF;
+
+/*------------------------------------------------------------------------------
+Set up mocks/stubs
+------------------------------------------------------------------------------*/
+stubs_reset();
+flight_computer_state = FC_STATE_ASCENT;
+reported_error = MAX_UINT_32;
+set_return_sensor_dump( SENSOR_OK );
+preset_data.config_settings.launch_detect_timeout = 2000;
+preset_data.config_settings.enabled_features &= WIRELESS_TRANSMISSION_ENABLED;
+intercept_jmp_back = false;
+flash_busy_counts = 0;
+
+/*------------------------------------------------------------------------------
+Call FUT
+------------------------------------------------------------------------------*/
+flight_loop
+    (
+    &ld_start_time,
+    &sensor_status_param,
+    &flash_status_param,
+    &flash_buffer,
+    &flash_address
+    );
+
+/*------------------------------------------------------------------------------
+Verify results
+------------------------------------------------------------------------------*/
+TEST_ASSERT_EQ_UINT("Test that the last telemetry state update was not caused by this function", last_event, TELEMETRY_EVENT_CANCEL);
+
+TEST_end_nested_case();
+
+/*------------------------------------------------------------------------------
+Case 2: Telemetry enabled
+------------------------------------------------------------------------------*/
+TEST_begin_nested_case( "Test behavior when telemetry is enabled." );
+
+/*------------------------------------------------------------------------------
+Local variables
+------------------------------------------------------------------------------*/
+sensor_status_param = SENSOR_OK;
+flash_status_param = FLASH_OK;
+flash_address = 100;
+ld_start_time = 0xDEADBEEF;
+
+/*------------------------------------------------------------------------------
+Set up mocks/stubs
+------------------------------------------------------------------------------*/
+stubs_reset();
+flight_computer_state = FC_STATE_ASCENT;
+reported_error = MAX_UINT_32;
+set_return_sensor_dump( SENSOR_OK );
+preset_data.config_settings.launch_detect_timeout = 2000;
+preset_data.config_settings.enabled_features |= WIRELESS_TRANSMISSION_ENABLED;
+intercept_jmp_back = false;
+flash_busy_counts = 0;
+
+/*------------------------------------------------------------------------------
+Call FUT
+------------------------------------------------------------------------------*/
+flight_loop
+    (
+    &ld_start_time,
+    &sensor_status_param,
+    &flash_status_param,
+    &flash_buffer,
+    &flash_address
+    );
+
+/*------------------------------------------------------------------------------
+Verify results
+------------------------------------------------------------------------------*/
+TEST_ASSERT_EQ_UINT("Test that the last telemetry state update was a synchronous update.", last_event, TELEMETRY_EVENT_SYNCHRONOUS_UPDATE);
+
+TEST_end_nested_case();
+
+} /* test_telemetry_sync */
+
+
+/*******************************************************************************
+*                                                                              *
+* PROCEDURE:                                                                   * 
 *       test_pid_run			  				                           	   *
 *                                                                              *
 * DESCRIPTION:                                                                 * 
@@ -854,6 +962,7 @@ unit_test tests[] =
 	{ "Flight Loop: Ascent (in_flight)", test_flight_in_flight },
 	{ "Flight Loop: Chute Deployment", test_flight_deploy },
 	{ "Flight Loop: Descent", test_flight_descent },
+    { "Flight Loop: Telemetry", test_telemetry_sync },
 	{ "Roll Control", test_pid_run },
 	{ "Rate limiter", test_should_log_next_frame }
 	};
