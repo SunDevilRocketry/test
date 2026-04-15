@@ -34,7 +34,7 @@ ROOT_DIR  = ../../../..
 # directory shortcuts for includes and sources
 LIB_DIR = $(ROOT_DIR)/lib
 MOD_DIR = $(ROOT_DIR)/mod
-DRIVER_DIR = $(DRIVER_DIR)/driver
+DRIVER_DIR = $(ROOT_DIR)/driver
 
 
 ################################################################
