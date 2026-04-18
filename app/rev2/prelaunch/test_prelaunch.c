@@ -58,6 +58,7 @@ bool error_fail_fast_called = false;
 int usb_receive_steps_count = 0;
 USB_RECEIVE_STEP usb_receive_steps[10];
 bool ping_reached = false;
+USB_STATUS dashboard_dump_return = USB_OK;
 
 /*------------------------------------------------------------------------------
 Local Variables
@@ -88,6 +89,7 @@ void reset_test() {
 	flight_computer_state = FC_STATE_IDLE;
 	error_fail_fast_called = false;
 	ping_reached = false;
+	dashboard_dump_return = USB_OK;
 }
 
 void test_check_config_validity() {
@@ -222,6 +224,27 @@ void test_prelaunch_terminal() {
 	usb_receive_steps[0] = (USB_RECEIVE_STEP){.action = BUFFER, .buffer_val = FIN_OP};
 	USB_STATUS test_fin_two = prelaunch_terminal(&firmware_code, &flash_status, &flash_handle, &flash_address, &gps_msg_byte, &sensor_status);
 	TEST_ASSERT_EQ_SINT("Detecting USB, sending fin op, failing usb, failing flash, and do not enter flight mode", test_fin_two, USB_FAIL);
+	reset_test();
+	/* -------- */
+
+	/* Test Dashboard */
+	do_detect = 1;
+	do_fail = 0;
+	usb_receive_steps_count = 1;
+	usb_receive_steps[0] = (USB_RECEIVE_STEP){.action = BUFFER, .buffer_val = DASHBOARD_OP};
+	USB_STATUS test_dashboard_one = prelaunch_terminal(&firmware_code, &flash_status, &flash_handle, &flash_address, &gps_msg_byte, &sensor_status);
+	TEST_ASSERT_EQ_SINT("Dashboard Dump -- Nominal", test_dashboard_one, USB_OK);
+	TEST_ASSERT_EQ_UINT("Dashboard Dump: was fail?", error_fail_fast_called, false);
+	reset_test();
+
+	do_detect = 1;
+	do_fail = 1;
+	usb_receive_steps_count = 1;
+	dashboard_dump_return = USB_FAIL;
+	usb_receive_steps[0] = (USB_RECEIVE_STEP){.action = BUFFER, .buffer_val = DASHBOARD_OP};
+	USB_STATUS test_dashboard_two = prelaunch_terminal(&firmware_code, &flash_status, &flash_handle, &flash_address, &gps_msg_byte, &sensor_status);
+	TEST_ASSERT_EQ_SINT("Dashboard Dump -- Fail", test_dashboard_one, USB_OK);
+	TEST_ASSERT_EQ_UINT("Dashboard Dump: was fail?", error_fail_fast_called, true);
 	reset_test();
 	/* -------- */
 

@@ -29,7 +29,7 @@
 /*------------------------------------------------------------------------------
  Global Variables  
 ------------------------------------------------------------------------------*/
-
+extern USB_STATUS dashboard_dump_return;
 
 /*------------------------------------------------------------------------------
  Internal function prototypes 
@@ -45,7 +45,7 @@ USB_STATUS dashboard_dump
     void
     )
 {
-return USB_OK;
+return dashboard_dump_return;
 }
 
 void fc_state_update
