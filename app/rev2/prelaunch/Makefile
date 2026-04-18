@@ -45,16 +45,15 @@ TEST_SOURCES =   												\
 mock/led.c														\
 test_prelaunch.c												\
 mock/sensor.c													\
-mock/MOCK_flight.c													\
 mock/MOCK_hal.c													\
 mock/usb.c														\
 mock/fin_calib.c												\
 mock/ignition.c													\
 mock/servo.c													\
+mock/mocks.c													\
 mock/common.c													\
 mock/MOCK_flash.c													\
-mock/sdr_error.c												\
-mock/mock_huart.c												\
+mock/mock_huart.c
 
 # Tested Source Files
 COV_C_SOURCES =													  \
@@ -103,8 +102,11 @@ C_INCLUDES =                                           \
 -I$(ROOT_DIR)/driver/imu								   \
 -I$(ROOT_DIR)/lib/util									\
 -I$(ROOT_DIR)/driver/led								   	\
+-I$(ROOT_DIR)/driver/lora								   	\
 -I$(ROOT_DIR)/mod/common								\
+-I$(ROOT_DIR)/mod/error_sdr								\
 -I$(ROOT_DIR)/mod/sensor								\
+-I$(ROOT_DIR)/mod/math_sdr								\
 -I$(ROOT_DIR)/driver/usb
 
 # Preprocessor definitions
@@ -137,7 +139,7 @@ all: clean $(BUILD_DIR)/$(TARGET)
 OBJECTS = $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
 # This is to make sure fin_calib.c is excluded 
 vpath %.c ./mock
-vpath %.c $(ROOT_DIR)/app/flight/appa/rev2
+vpath %.c $(ROOT_DIR)/app/rev2
 vpath %.c $(ROOT_DIR)/test/framework/src
 
 $(BUILD_DIR)/%.o: %.c $(BUILD_DIR)

@@ -6,7 +6,7 @@ extern int do_switch;
 extern int do_drogue;
 extern int do_main;
 
-bool ign_switch_cont(void) { 
+bool ign_switch_armed(void) { 
     if (do_switch == 1) {
         return true;
     } else {
@@ -28,3 +28,10 @@ bool ign_main_cont(void) {
         return false;
     }
  }
+ IGN_STATUS ign_cmd_execute
+	(
+    IGN_SUBCOMMAND ign_subcommand
+    )
+{
+return IGN_OK;
+}

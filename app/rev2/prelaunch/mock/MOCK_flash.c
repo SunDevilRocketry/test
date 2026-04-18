@@ -37,7 +37,6 @@ extern int do_fail;
 FLASH_STATUS write_preset
 (
     HFLASH_BUFFER* pflash_handle,
-    PRESET_DATA*   preset_data_ptr,
     uint32_t*      address
 ) 
 {

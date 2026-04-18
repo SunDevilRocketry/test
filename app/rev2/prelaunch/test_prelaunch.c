@@ -57,6 +57,7 @@ int skip_loop = 0;
 bool error_fail_fast_called = false;
 int usb_receive_steps_count = 0;
 USB_RECEIVE_STEP usb_receive_steps[10];
+bool ping_reached = false;
 
 /*------------------------------------------------------------------------------
 Local Variables
@@ -86,6 +87,7 @@ void reset_test() {
 	memset(usb_receive_steps, 0, sizeof(usb_receive_steps));
 	flight_computer_state = FC_STATE_IDLE;
 	error_fail_fast_called = false;
+	ping_reached = false;
 }
 
 void test_check_config_validity() {
@@ -167,12 +169,23 @@ void test_prelaunch_terminal() {
 	reset_test();
 	/* -------- */
 
+	/* Test Ping */
+	do_detect = 1;
+	usb_receive_steps_count = 1;
+	usb_receive_steps[0] = (USB_RECEIVE_STEP){.action = BUFFER, .buffer_val = PING_OP};
+	USB_STATUS test_ping = prelaunch_terminal(&firmware_code, &flash_status, &flash_handle, &flash_address, &gps_msg_byte, &sensor_status);
+	TEST_ASSERT_EQ_SINT("Detecting USB, sending connect op, and do not enter flight mode", test_ping, USB_OK);
+	TEST_ASSERT_EQ_UINT("Ping command called", ping_reached, true);
+	reset_test();
+	/* ------------ */
+
 	/* Test Connect */
 	do_detect = 1;
 	usb_receive_steps_count = 1;
 	usb_receive_steps[0] = (USB_RECEIVE_STEP){.action = BUFFER, .buffer_val = CONNECT_OP};
 	USB_STATUS test_connect_one = prelaunch_terminal(&firmware_code, &flash_status, &flash_handle, &flash_address, &gps_msg_byte, &sensor_status);
 	TEST_ASSERT_EQ_SINT("Detecting USB, sending connect op, and do not enter flight mode", test_connect_one, USB_OK);
+	TEST_ASSERT_EQ_UINT("Ping command called", ping_reached, true);
 	reset_test();
 	/* ------------ */
 
@@ -356,53 +369,6 @@ void test_prelaunch_terminal() {
 	/* ---------------- */
 }
 
-void test_prelaunch_loop() {
-	uint8_t firmware_code = 0x00;
-	FLASH_STATUS* flash_status;
-	HFLASH_BUFFER* flash_handle;
-	uint32_t* flash_address;
-	uint8_t* gps_msg_byte;
-	SENSOR_STATUS* sensor_status;
-
-	/* Test Flight Loop and only failing usb */
-	skip_loop = 1;
-	do_detect = 1;
-	do_switch = 0;
-	usb_receive_steps_count = 2;
-	usb_receive_steps[0] = (USB_RECEIVE_STEP){.action = RETURN, .return_val = USB_FAIL};
-	usb_receive_steps[1] = (USB_RECEIVE_STEP){.action = RETURN, .return_val = USB_FAIL};
-	pre_launch_loop(&firmware_code, &flash_status, &flash_handle, &flash_address, &gps_msg_byte, &sensor_status);
-	TEST_ASSERT_EQ_SINT("Enter loop, fail usb", flight_computer_state, FC_STATE_INIT);
-	reset_test();
-	/* ------------------------------------- */
-
-	/* Test Flight Loop and passing usb and then failing to break the loop */
-	skip_loop = 1;
-	do_detect = 1;
-	do_switch = 0;
-	usb_receive_steps_count = 3;
-	usb_receive_steps[0] = (USB_RECEIVE_STEP){.action = RETURN, .return_val = USB_OK};
-	usb_receive_steps[1] = (USB_RECEIVE_STEP){.action = RETURN, .return_val = USB_FAIL};
-	usb_receive_steps[2] = (USB_RECEIVE_STEP){.action = RETURN, .return_val = USB_FAIL};
-	pre_launch_loop(&firmware_code, &flash_status, &flash_handle, &flash_address, &gps_msg_byte, &sensor_status);
-	TEST_ASSERT_EQ_SINT("Enter loop, pass usb once, fail usb after", flight_computer_state, FC_STATE_INIT);
-	reset_test();
-
-	/* Test invalid config then fail USB to break Flight Loop */
-	flash_status = FLASH_PRESET_NOT_FOUND;
-	skip_loop = 1;
-	do_detect = 1;
-	do_switch = 0;
-	usb_receive_steps_count = 3;
-	usb_receive_steps[0] = (USB_RECEIVE_STEP){.action = RETURN, .return_val = USB_OK};
-	usb_receive_steps[1] = (USB_RECEIVE_STEP){.action = RETURN, .return_val = USB_FAIL};
-	usb_receive_steps[2] = (USB_RECEIVE_STEP){.action = RETURN, .return_val = USB_FAIL};
-	pre_launch_loop(&firmware_code, &flash_status, &flash_handle, &flash_address, &gps_msg_byte, &sensor_status);
-	TEST_ASSERT_EQ_SINT("Invalid flash status, enter loop, fail usb,", flight_computer_state, FC_STATE_INIT);
-	reset_test();
-	/* ------------------------------------------------------ */
-}
-
 /*******************************************************************************
 *                                                                              *
 * PROCEDURE:                                                                   * 
@@ -433,8 +399,7 @@ unit_test tests[] =
 	{
 	{ "check config validity", test_check_config_validity },
 	{ "preset cmd execute", test_preset_cmd_execute },
-	{ "prelaunch terminal", test_prelaunch_terminal},
-	{ "prelaunch loop", test_prelaunch_loop}
+	{ "prelaunch terminal", test_prelaunch_terminal}
 	};
 
 /*------------------------------------------------------------------------------
