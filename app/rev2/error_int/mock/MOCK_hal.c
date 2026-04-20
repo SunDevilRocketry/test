@@ -59,3 +59,8 @@ uint32_t HAL_GetTick()
 {
 return 0xDEADBEEF;
 }
+
+BUZZ_STATUS buzzer_beep(uint32_t duration) {
+    last_num_beeps = 1;
+    return BUZZ_OK;
+}

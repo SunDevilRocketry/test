@@ -88,6 +88,7 @@ C_INCLUDES =                                           \
 -I$(DRIVER_DIR)/flash/                               \
 -I$(DRIVER_DIR)/servo/                               \
 -I$(DRIVER_DIR)/usb/                                 \
+-I$(DRIVER_DIR)/lora								   \
 -I$(DRIVER_DIR)/led/                                 \
 -I$(DRIVER_DIR)/imu/                                 \
 -I$(MOD_DIR)/error_sdr/                           \

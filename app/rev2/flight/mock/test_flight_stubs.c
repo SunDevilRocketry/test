@@ -13,6 +13,7 @@
 #include "ignition.h"
 #include "gps.h"
 #include "flash.h"
+#include "telemetry.h"
 
 /* globals */
 extern FLIGHT_COMP_STATE_TYPE flight_computer_state;
@@ -33,6 +34,7 @@ uint16_t flash_busy_counts = 0;
 uint16_t sensor_dump_calls = 0;
 bool store_frame_called = false;
 bool is_apogee_detected = false;
+TELEMETRY_EVENT last_event = TELEMETRY_EVENT_CANCEL;
 
 /* internal use */
 
@@ -60,6 +62,7 @@ sensor_dump_calls = 0;
 store_frame_called = false;
 is_apogee_detected = false;
 preset_data.config_settings.flash_rate_limit = 0;
+last_event = TELEMETRY_EVENT_CANCEL;
 }
 
 void set_return_ign_deploy_main
@@ -436,4 +439,8 @@ flight_computer_state = new_state;
 FLIGHT_COMP_STATE_TYPE get_fc_state()
 {
 return flight_computer_state;
+}
+
+void telemetry_update(TELEMETRY_EVENT event) {
+last_event = event;
 }

@@ -37,6 +37,7 @@ ROOT_DIR  = ../../../..
 LIB_DIR = $(ROOT_DIR)/lib
 MOD_DIR = $(ROOT_DIR)/mod
 INIT_DIR = $(ROOT_DIR)/init
+DRIVER_DIR = $(ROOT_DIR)/driver
 
 ################################################################
 # source 
@@ -81,9 +82,11 @@ C_INCLUDES =                                           \
 -I$(ROOT_DIR)/mod/error_sdr/						   \
 -I$(ROOT_DIR)/mod/commands/							   \
 -I$(ROOT_DIR)/mod/sensor/							   \
+-I$(ROOT_DIR)/mod/telemetry/							   \
 -I$(ROOT_DIR)/driver/ignition/							   \
 -I$(ROOT_DIR)/driver/flash/							   \
 -I$(ROOT_DIR)/driver/servo/							   \
+-I$(DRIVER_DIR)/lora								   \
 -I$(ROOT_DIR)/driver/usb/							   		\
 -I$(ROOT_DIR)/driver/led/							   		\
 -I$(ROOT_DIR)/driver/imu/								   \

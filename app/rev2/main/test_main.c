@@ -36,6 +36,7 @@ Project Includes
 #include "flash.h"
 #include "ignition.h"
 #include "imu.h"
+#include "lora.h"
 #include "led.h"
 #include "sensor.h"
 #include "servo.h"
@@ -49,13 +50,16 @@ Project Includes
 /*------------------------------------------------------------------------------
 Global Variables 
 ------------------------------------------------------------------------------*/
+extern PRESET_DATA returned_presets;
 extern FLASH_STATUS flash_init_return;
 extern BARO_STATUS baro_init_return;
 extern IMU_STATUS imu_init_return;
 extern SERVO_STATUS servo_init_return;
 extern FLASH_STATUS read_preset_return;
 extern ERROR_CODE last_error;
+extern LORA_STATUS lora_configure_return;
 extern bool is_switch_toggled;
+extern bool preset_change_case_hit;
 
 /*------------------------------------------------------------------------------
 Local Variables
@@ -88,27 +92,31 @@ void test_main
 	void
 	) 
 {
-
 struct test_case 
 	{
-	const char* description;
+    const char* description;
+    bool tx_enabled;
 	FLASH_STATUS flash_init;
 	BARO_STATUS baro_init;
 	IMU_STATUS imu_init;
 	SERVO_STATUS servo_init;
 	FLASH_STATUS read_preset;
+    LORA_STATUS lora_configure;
 	bool switch_continuity;
 	ERROR_CODE expected_error;
 	};
 struct test_case cases[] =
 	{
-	{ "Normal Case: Initialization Correct", FLASH_OK, BARO_OK, IMU_OK, SERVO_OK, FLASH_OK, false, ERROR_NO_ERROR },
-	{ "Robust Case: Flash Init Fail", FLASH_INIT_FAIL, BARO_OK, IMU_OK, SERVO_OK, FLASH_OK, false, ERROR_FLASH_INIT_ERROR },
-	{ "Robust Case: Baro Init Fail", FLASH_OK, BARO_FAIL, IMU_OK, SERVO_OK, FLASH_OK, false, ERROR_BARO_INIT_ERROR },
-	{ "Robust Case: IMU Init Fail", FLASH_OK, BARO_OK, IMU_FAIL, SERVO_OK, FLASH_OK, false, ERROR_IMU_INIT_ERROR },
-	{ "Robust Case: Servo Init Fail", FLASH_OK, BARO_OK, IMU_OK, SERVO_FAIL, FLASH_OK, false, ERROR_SERVO_INIT_ERROR },
-	{ "Robust Case: Read Preset Fail", FLASH_OK, BARO_OK, IMU_OK, SERVO_OK, FLASH_FAIL, false, ERROR_FLASH_CMD_ERROR },
-	{ "Robust Case: Switch Terminal Toggled", FLASH_OK, BARO_OK, IMU_OK, SERVO_OK, FLASH_OK, true, ERROR_DATA_HAZARD_ERROR }
+	{ "Normal Case: Initialization Correct", false, FLASH_OK, BARO_OK, IMU_OK, SERVO_OK, FLASH_OK, LORA_OK, false, ERROR_NO_ERROR },
+    { "Normal Case: Initialization w/ Valid LoRa", true, FLASH_OK, BARO_OK, IMU_OK, SERVO_OK, FLASH_OK, LORA_OK, false, ERROR_NO_ERROR },
+    { "Normal Case: Initialization w/ Invalid Lora", true, FLASH_OK, BARO_OK, IMU_OK, SERVO_OK, FLASH_OK, LORA_USING_DEFAULTS, false, ERROR_NO_ERROR},
+	{ "Robust Case: Flash Init Fail", false, FLASH_INIT_FAIL, BARO_OK, IMU_OK, SERVO_OK, FLASH_OK, LORA_OK, false, ERROR_FLASH_INIT_ERROR },
+	{ "Robust Case: Baro Init Fail", false, FLASH_OK, BARO_FAIL, IMU_OK, SERVO_OK, FLASH_OK, LORA_OK, false, ERROR_BARO_INIT_ERROR },
+	{ "Robust Case: IMU Init Fail", false, FLASH_OK, BARO_OK, IMU_FAIL, SERVO_OK, FLASH_OK, LORA_OK, false, ERROR_IMU_INIT_ERROR },
+	{ "Robust Case: Servo Init Fail", false, FLASH_OK, BARO_OK, IMU_OK, SERVO_FAIL, FLASH_OK, LORA_OK, false, ERROR_SERVO_INIT_ERROR },
+	{ "Robust Case: Read Preset Fail", false, FLASH_OK, BARO_OK, IMU_OK, SERVO_OK, FLASH_FAIL, LORA_OK, false, ERROR_FLASH_CMD_ERROR },
+	{ "Robust Case: Switch Terminal Toggled", false, FLASH_OK, BARO_OK, IMU_OK, SERVO_OK, FLASH_OK, LORA_OK, true, ERROR_DATA_HAZARD_ERROR },
+    { "Robust Case: LoRa init fail", true, FLASH_OK, BARO_OK, IMU_OK, SERVO_OK, FLASH_OK, LORA_FAIL, false, ERROR_LORA_INIT_ERROR }
 	};
 
 for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); test_num++ )
@@ -123,6 +131,17 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 	servo_init_return = cases[test_num].servo_init;
 	read_preset_return = cases[test_num].read_preset;
 	is_switch_toggled = cases[test_num].switch_continuity;
+    lora_configure_return = cases[test_num].lora_configure;
+    preset_change_case_hit = false;
+
+    if( cases[test_num].tx_enabled ) 
+        {
+        returned_presets.config_settings.enabled_features = WIRELESS_TRANSMISSION_ENABLED;
+        }
+    else
+        {
+        returned_presets.config_settings.enabled_features = 0;
+        }
 	
 	/*------------------------------------------------------------------------------
 	Call FUT
@@ -133,6 +152,11 @@ for( uint8_t test_num = 0; test_num < sizeof(cases) / sizeof(struct test_case); 
 	Verify Results
 	------------------------------------------------------------------------------*/
 	TEST_ASSERT_EQ_UINT( "Test that the returned error code equals the expected.", last_error, cases[test_num].expected_error );
+
+    if( cases[test_num].lora_configure == LORA_USING_DEFAULTS )
+        {
+        TEST_ASSERT_EQ_UINT( "Test that the default LoRa configs were set and indicated", preset_change_case_hit, 1 );
+        }
 
 	TEST_end_nested_case();
 	}

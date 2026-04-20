@@ -81,6 +81,7 @@ C_INCLUDES =                                           \
 -I$(DRIVER_DIR)/gps/								   \
 -I$(ROOT_DIR)/mod/sensor/							   \
 -I$(DRIVER_DIR)/imu/								   \
+-I$(DRIVER_DIR)/lora								   \
 -I$(LIB_DIR)                                           \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc          \
 -I$(LIB_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc/Legacy   \
