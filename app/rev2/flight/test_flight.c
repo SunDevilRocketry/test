@@ -685,7 +685,7 @@ flight_computer_state = FC_STATE_ASCENT;
 reported_error = MAX_UINT_32;
 set_return_sensor_dump( SENSOR_OK );
 preset_data.config_settings.launch_detect_timeout = 2000;
-preset_data.config_settings.enabled_features &= WIRELESS_TRANSMISSION_ENABLED;
+preset_data.config_settings.enabled_features = 0;
 intercept_jmp_back = false;
 flash_busy_counts = 0;
 
