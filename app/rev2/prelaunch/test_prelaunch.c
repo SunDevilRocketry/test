@@ -245,7 +245,7 @@ void test_prelaunch_terminal() {
 	dashboard_dump_return = USB_FAIL;
 	usb_receive_steps[0] = (USB_RECEIVE_STEP){.action = BUFFER, .buffer_val = DASHBOARD_OP};
 	USB_STATUS test_dashboard_two = prelaunch_terminal(firmware_code, &flash_status, &flash_handle, &flash_address, &gps_msg_byte, &sensor_status);
-	TEST_ASSERT_EQ_SINT("Dashboard Dump -- Fail", test_dashboard_one, USB_OK);
+	TEST_ASSERT_EQ_SINT("Dashboard Dump -- Fail", test_dashboard_two, USB_OK);
 	TEST_ASSERT_EQ_UINT("Dashboard Dump: was fail?", error_fail_fast_called, true);
 	reset_test();
 	/* -------- */
