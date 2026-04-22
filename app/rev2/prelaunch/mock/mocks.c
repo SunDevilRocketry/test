@@ -30,6 +30,7 @@
  Global Variables  
 ------------------------------------------------------------------------------*/
 extern USB_STATUS dashboard_dump_return;
+extern LORA_STATUS lora_configure_return;
 
 /*------------------------------------------------------------------------------
  Internal function prototypes 
@@ -70,7 +71,7 @@ LORA_STATUS lora_configure
     LORA_PRESET* preset
     )
 {
-return LORA_OK;
+return lora_configure_return;
 }
 
 /*******************************************************************************
