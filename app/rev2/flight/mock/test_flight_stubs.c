@@ -239,6 +239,11 @@ if( sensor_dump_calls > 20 )
 return sensor_status_return;
 }
 
+/* Reset velocity values to prevent accumulation of drift */
+void sensor_reset_velo( void )
+{
+}
+
 /* Check if the flash chip is ready for write operations */
 bool flash_is_flash_busy
 	(

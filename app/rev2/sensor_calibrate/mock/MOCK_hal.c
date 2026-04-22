@@ -65,3 +65,5 @@ memcpy( sensor_data_ptr, &sensor_dump_mock[sensor_dump_calls], sizeof( SENSOR_DA
 sensor_dump_calls++;
 return SENSOR_OK;
 }
+
+void sensor_initialize_tick(void) {}
