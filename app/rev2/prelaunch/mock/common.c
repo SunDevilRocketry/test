@@ -18,8 +18,8 @@
  Project Includes                                                                     
 ------------------------------------------------------------------------------*/
 #include "main.h"
-#include "common.h"
-#include "sdr_error.h"
+#include "math_sdr.h"
+#include "error_sdr.h"
 #include "stm32h7xx_hal.h"
 
 
@@ -91,8 +91,6 @@ void error_fail_fast
             error_fail_fast_count += 1;
         }
     }
-    
-Error_Handler(error_code);
 
 } /* error_fail_fast */
 

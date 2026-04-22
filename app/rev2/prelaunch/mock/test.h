@@ -13,6 +13,7 @@
 #include "stm32h7xx_hal_uart.h"
 
 #include <stdint.h>
+#include "error_sdr.h"
 
 
 void MOCK_HAL_Status_Return

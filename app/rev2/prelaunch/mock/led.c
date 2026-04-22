@@ -1,11 +1,13 @@
 #include "led.h"
 #include <setjmp.h>
+#include <stdbool.h>
 
 extern int do_jump;
 extern int jmp_val;
 extern jmp_buf env_buffer;
 
 int set_red_count = 0;
+extern bool ping_reached;
 
 void led_set_color(LED_COLOR_CODES color) {
     // add a counter for times set red to count while loop in check_config_validity
@@ -34,5 +36,5 @@ void buzzer_multi_beeps(int var0, int var2, int var3) {
 }
 
 void ping () {
-
+ping_reached = true;
 }

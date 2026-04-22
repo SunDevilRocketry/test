@@ -11,6 +11,7 @@
 
 #include <stdint.h>
 #include "main.h"
+#include "error_sdr.h"
 
 HAL_StatusTypeDef mocked_return = HAL_OK; /* Default to "OK" return */
 ERROR_CODE last_error = 0;
