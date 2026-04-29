@@ -6,6 +6,17 @@
 * DESCRIPTION: 
 * 		The Sun Devil Rocketry embedded test framework. Do not include this header
 *       in your tests.
+*                                                                              
+* COPYRIGHT:                                                                   
+*       Copyright (c) 2025 Sun Devil Rocketry.                                 
+*       All rights reserved.                                                   
+*                                                                              
+*       This software is licensed under terms that can be found in the LICENSE 
+*       file in the root directory of this software component.                 
+*       If no LICENSE file comes with this software, it is covered under the   
+*       BSD-3-Clause.                                                          
+*                                                                              
+*       https://opensource.org/license/bsd-3-clause                            
 *
 *******************************************************************************/
 
@@ -29,6 +40,10 @@ extern "C" {
  Macros and Globals 
 ------------------------------------------------------------------------------*/
 #define TEST_MIN_SUPPORTED_GCC_VERSION 8
+#define TEST_MAX_SUPPORTED_GCC_VERSION 15
+
+#define TEST_MIN_SUPPORTED_GCOVR_VERSION 8
+#define TEST_MAX_SUPPORTED_GCOVR_VERSION 8
 
 /*------------------------------------------------------------------------------
  Typdefs 

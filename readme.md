@@ -1,10 +1,10 @@
 # test
 Submodule for unit testing in Sun Devil Rocketry firmware.
 
-DEPENDENCIES:
-- GNU C Compiler (GCC) for Windows. If you're used to our embedded environment, it's a different version of GCC for testing.
-- GNU GCov. This should be included in whatever gives you access to GCC. This is a dependency of GCovr.
-- GCovr (simply do pip install gcovr, then add it to your PATH).
+EXTERNAL DEPENDENCIES:
+- GNU C Compiler (GCC). If you're used to our embedded environment, it's a different version of GCC for testing, you need to build for your own hardware.
+- GNU GCov. This should be included in whatever gives you access to GCC. We use this to generate the coverage reports that tell developers how often a given statement or branch is hit. GDB is also highly recommended.
+- GCovr (simply do pip install gcovr, then add it to your PATH. Alternatively, if you're on linux, you can use your preferred package manager).
 - A bash terminal of some kind. Git Bash is recommended on Windows, and most Linux terminals should do. The makefiles use bash commands during execution to achieve the desired terminal and file output.
 
 GETTING STARTED:
