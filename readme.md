@@ -1,3 +1,7 @@
+## NOTE
+
+**This submodule has been archived and is no longer in use by Sun Devil Rocketry. We have elected to move the framework to a leaner submodule, and nest each project's tests in their own directory structure. See https://github.com/SunDevilRocketry/sdrtf.**
+
 # test
 Submodule for unit testing in Sun Devil Rocketry firmware.
 
